@@ -34,7 +34,19 @@ class Local extends Base{
 	public function remove(){
 		$file = trim($_POST['key']);
 		$config    = $this->config;
+
 		$root_path = $config['root_path'];
+
+		//安全验证
+		$pathlist = explode("/", $file); 
+		if ($pathlist[0] != 'uploads' && $pathlist[1] != 'uploads') {
+			return array(
+				'state' => 'ERROR',
+				'error' => 'Folders start from uploads'
+			);
+			exit();
+		}
+
 		$file_path = $root_path.$file;
 		if( file_exists($file_path) ){
 			$result = @unlink($file_path);
@@ -69,7 +81,8 @@ class Local extends Base{
 		    "pathFormat" => $ue_config['catcherPathFormat'],
 		    "maxSize" 	 => $ue_config['catcherMaxSize'],
 		    "allowFiles" => $ue_config['catcherAllowFiles'],
-		    "oriName" 	 => "remote.png"
+		    "oriName" 	 => "remote.png",
+		    "rootPath"	 => $ue_config['rootPath']
 		);
 
 		$fieldName = $ue_config['catcherFieldName'];
@@ -83,7 +96,7 @@ class Local extends Base{
 		}
 
 		foreach ( $source as $img_url ) {
-		    $file = new File($img_url, $config, "remote");
+		    $file = new LocalDriver($img_url, $config, "remote");
 		    $info = $file->getFileInfo();
 		    array_push($list, array(
 		        "state"    => $info["state"],
@@ -195,6 +208,30 @@ class Local extends Base{
 	            }
 	        }
 	    }
+	    $files = $this->list_sort_by($files, 'mtime', 'desc'); //按照时间排序
 	    return $files;
+	}
+
+	public function list_sort_by($list, $field, $sortby='asc') {
+	   if(is_array($list)){ //判断是否数组
+	       $refer = $resultSet = array(); //初始化数组变量
+	       foreach ($list as $i => $data) //foreach数组
+	           $refer[$i] = &$data[$field]; //存储要排序的数组字段键和值
+	       switch ($sortby) {//进行排序
+	           case 'asc': // 正向排序
+	                asort($refer);
+	                break;
+	           case 'desc':// 逆向排序
+	                arsort($refer);
+	                break;
+	           case 'nat': // 自然排序
+	                natcasesort($refer);
+	                break;
+	       }
+	       foreach ( $refer as $key=> $val)//重新组合排序后的数组
+	           $resultSet[] = &$list[$key];
+	       return $resultSet;
+	   }
+	   return false;
 	}
 }

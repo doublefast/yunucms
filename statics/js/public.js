@@ -1,3 +1,8 @@
+$(document).on('keydown',function(){
+    if (event.keyCode==13){
+        $("a.layui-layer-btn0").click();
+    }
+}); 
 $(function(){
 	var sidebar_tool = 1;
 	var sidebar2_tool = 1;

@@ -16,7 +16,7 @@ class SitelinkModel extends Model
     {
         $param['status'] = array_key_exists("status", $param) ? 1 : 0;
         try{
-            $result = $this->save($param);
+            $result = $this->strict(false)->insertGetId($param);
             if(false === $result){            
                 return ['code' => -1, 'data' => '', 'msg' => $this->getError()];
             }else{
@@ -31,7 +31,7 @@ class SitelinkModel extends Model
     {
         $param['status'] = array_key_exists("status", $param) ? 1 : 0;
         try{
-            $result =  $this->save($param, ['id' => $param['id']]);
+            $result =  $this->allowField(true)->save($param, ['id' => $param['id']]);
             if(false === $result){            
                 return ['code' => 0, 'data' => '', 'msg' => $this->getError()];
             }else{

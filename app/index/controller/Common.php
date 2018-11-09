@@ -15,7 +15,7 @@ class Common extends Controller{
         
         $lock = 'data/install.lock';
         if(!is_file($lock)){
-            $this->redirect('/index.php/index/install/index');
+            $this->redirect('/index.php?s=index/install/index');
         }
 
     	$module     = strtolower(request()->module());
@@ -50,10 +50,21 @@ class Common extends Controller{
                 $area = $defaultarea;
             }
         }
-        $this->area = $area;
-        config('sys.sys_area', $area);
-        session('sys_area', $area ? $area : null);
-        
+
+        if ($area) {
+            $areainfo = db('area')->where(['etitle'=>$area])->find();
+            if ($areainfo && !$areainfo['isopen']) {
+                abort(404);
+            }
+           	$this->area = $area;
+            session('sys_area', $area);
+            session('sys_areainfo', $areainfo);
+            config('sys.sys_area', $area);
+        }else{
+            config('sys.sys_area', null);
+            session('sys_area', null);
+            session('sys_areainfo', null);
+        }
         if (is_mobile() && config('sys.wap_auto')) {
             $wapurl = get_wapurl($_SERVER['REQUEST_URI']);
             $this->redirect($wapurl);

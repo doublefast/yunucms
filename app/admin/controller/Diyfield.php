@@ -169,7 +169,7 @@ class Diyfield extends Common
                 break;
             case 'int':
                 $defaultvalue = intval($defaultvalue);
-                $sql = "ALTER TABLE `{$tablename}` ADD `{$field}` INT(10) UNSIGNED DEFAULT '{$defaultvalue}'";
+                $sql = "ALTER TABLE `{$tablename}` ADD `{$field}` INT(11) UNSIGNED DEFAULT '{$defaultvalue}'";
                 Db::execute($sql);
                 break;
             case 'smallint':

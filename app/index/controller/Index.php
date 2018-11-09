@@ -5,7 +5,7 @@ use think\Db;
 class Index extends Common
 {
     public function index()
-    {   	
+    {   
         //记录浏览
     	$browse = array(
     		'ip' => request()->ip(),
@@ -18,4 +18,5 @@ class Index extends Common
 		}
         return $this->fetch();
     }
+
 }

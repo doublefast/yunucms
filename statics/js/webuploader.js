@@ -2166,8 +2166,8 @@
              * ```
              */
             compress: {
-                width: 1600,
-                height: 1600,
+                width: 16000,
+                height: 16000,
                 quality: 90,
                 allowMagnify: false,
                 crop: false,

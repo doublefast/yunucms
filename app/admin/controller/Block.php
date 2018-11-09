@@ -65,7 +65,7 @@ class Block extends Common
     public function index(){
 
     	$cid = input('cid');
-    	$where = "cid='$cid'";
+    	$where = ['cid'=>$cid];
 
         $Block = new BlockModel();
 

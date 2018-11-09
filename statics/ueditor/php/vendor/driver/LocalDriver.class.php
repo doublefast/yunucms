@@ -7,6 +7,7 @@
  * Time: 上午11: 32
  * UEditor编辑器通用上传类
  */
+
 class LocalDriver
 {
     private $fileField; //文件域名
@@ -128,6 +129,44 @@ class LocalDriver
         } else { //移动成功
             $this->stateInfo = $this->stateMap[0];
         }
+
+
+        $isimg = extension_loaded('gd') && preg_match("/\.(jpg|jpeg|gif|png)/i", $this->filePath, $m) && file_exists($this->filePath) && function_exists('imagecreatefrom'.($m[1] == 'jpg' ? 'jpeg' : $m[1]));
+
+        if ($isimg) {
+            $configsys = include('../../../config/extra/sys.php');
+
+            //添加水印操作
+            if ($configsys['image_watermark']) {
+
+            	include "../../../app/extend/Image/image/Exception.php";
+	            include "../../../app/extend/Image/image/gif/Decoder.php";
+	            include "../../../app/extend/Image/image/gif/Encoder.php";
+	            include "../../../app/extend/Image/image/gif/Gif.php";
+                include "../../../app/extend/Image/Image.php";
+	 
+	            $image = \Image\Image::open($this->filePath);
+
+                if ($configsys['image_watermark'] == 1) {
+                    $font = "../../..".$configsys['image_watermark_text_font'];
+                    if (is_file($font)) {
+                        $image->text($configsys['image_watermark_text'], $font, $configsys['image_watermark_text_size'], "#".$configsys['image_watermark_text_color'],$configsys['image_watermark_pos'],0,$configsys['image_watermark_text_angle'])
+                        ->save($this->filePath); 
+                    }
+                }else{
+                	if (!strpos($configsys['image_watermark_pic'], 'http')) {
+                		$configsys['image_watermark_pic'] = "../../..".$configsys['image_watermark_pic'];
+                	}
+
+                    if (is_file($configsys['image_watermark_pic'])) {
+                        $image->water($configsys['image_watermark_pic'], $configsys['image_watermark_pos'], $configsys['image_watermark_pic_opacity'])
+                        ->save($this->filePath); 
+                    }
+                }
+            } 
+
+
+        }
     }
 
     /**
@@ -239,11 +278,16 @@ class LocalDriver
         $this->fileName = $this->getFileName();
         $dirname = dirname($this->filePath);
 
+        $mainfilepath = str_replace(DS."statics".DS."ueditor".DS."php".DS."vendor".DS."driver".DS."LocalDriver.class.php", '', __FILE__);
+
         //检查文件大小是否超出限制
         if (!$this->checkSize()) {
             $this->stateInfo = $this->getStateInfo("ERROR_SIZE_EXCEED");
             return;
         }
+
+        $this->filePath = $mainfilepath.$this->filePath;
+        $dirname = $mainfilepath.$dirname;
 
         //创建目录失败
         if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
@@ -255,7 +299,10 @@ class LocalDriver
         }
 
         //移动文件
-        if (!(file_put_contents($this->filePath, $img) && file_exists($this->filePath))) { //移动失败
+        $fileget = file_put_contents($this->filePath, $img);
+        $fileexists = file_exists($this->filePath);
+
+        if (!($fileget && $fileexists)) { //移动失败
             $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
         } else { //移动成功
             $this->stateInfo = $this->stateMap[0];

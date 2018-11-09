@@ -6,7 +6,7 @@ class Tag extends Common
 {
 	public function index(){
 		$input = input();
-		$input['title'] = urldecode($input['title']);
+		$input['title'] = htmlspecialchars($input['title']);
 		$this->assign($input);
 		return $this->fetch();
 	}

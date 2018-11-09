@@ -1,9 +1,7 @@
 {include file="public/header" /}
 <style>
-.content_nav_list{
-	overflow:auto;
-	height: 100%;
-}
+.content_nav_list{overflow:auto;height: 100%;}
+.content_nav_list i { display: inline-block; width: 30px; text-align: center; color: #333; height: 35px; line-height: 35px; vertical-align: top; }
 </style>
 <link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
 <script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
@@ -21,32 +19,87 @@
 				<ul class="content_nav_list">
 					{notempty name="catlist"}
 		            {volist name="catlist" id="v"}
-		            <li><a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">{if $v.pid eq 0}<i class="fa fa-folder-open"></i>{else}<span style="display:inline-block;width:{$v.leftpin / 2}px;"></span>├ {/if}{$v['title']}</a></li>
+		            <li data-pid="{$v['pid']}">
+                        <a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
+                            {if $v.pid eq 0}
+                                <i data-id="{$v['id']}" ></i>
+                            {else}
+                                <span style="display:inline-block;width:{$v.leftpin / 2}px;"></span>├ 
+                            {/if}
+                            {$v['title']}
+                        </a>
+                    </li>
 		            {/volist}
 		            {/notempty}
 				</ul>
 			</div>
+            <script type="text/javascript">
+                ;(function () {
+                    var item = $('.content_nav_list>li');
+                    var localStorage = window.localStorage || {
+                        getItem: function () {return false},
+                        setItem: function () {return false},
+                        removeItem: function () {return false}
+                    }
+                    var active = localStorage.getItem('content_nav_list_active');
+                    var slideToggle = function (obj) {
+                        if (obj.attr('data-pid') > 0) {
+                            obj.slideToggle();
+                            slideToggle(obj.next());
+                        }
+                    }
+
+                    item.filter('[data-pid!=0]').hide();
+                    item.each(function (i, v) {
+                        var $this = $(v);
+                        var pid = $this.next().attr('data-pid');
+                        if (pid > 0) {
+                            $this.find('i').addClass('fa fa-folder');
+                        }
+                    }).find('i').on('click', function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        var $this = $(this);
+                        var id = $this.attr('data-id');
+
+                     	if (!$this.hasClass('fa')) return;
+
+                        slideToggle($this.closest('li').next());
+                        // item.filter('[data-pid='+id+']').slideToggle();
+                        if ($this.hasClass('fa-folder')) {
+                            $this.removeClass('fa-folder').addClass('fa-folder-open');
+                            localStorage.setItem('content_nav_list_active', id);
+                        } else {
+                            $this.removeClass('fa-folder-open').addClass('fa-folder');
+                            localStorage.removeItem('content_nav_list_active');
+                        }
+                    });
+                    if (active) {
+                        item.find('i').filter('[data-id='+active+']').click();
+                    }
+                })();
+            </script>
 			<div class="content_box">
 				<form class="layui-form layui-form-pane" id="formrec" method="post" role="form">
                     
                     <!--area_start-->
                     <div class="layui-form check_diqu" id="diqu">
                         <ul>
+                        	{notempty name="arealist"}
+                            <li>&nbsp;&nbsp;<button type="button" class="btn diqu_select">全选</button></li>
                             {volist name="arealist" id="v"}
                             <li>
-                                <input type="checkbox" name="diqu[]" value="{$v['id']}" lay-skin="primary" lay-filter="diqu" title="{$v['title']}">
-                                
+                                <label class="diqu_checkbox"><input {if $v['ischk'] }checked{/if} type="checkbox" value="{$v['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v['title']}</span></label>
                                 {notempty name="v.node"}
                                 <ul>
                                 {volist name="v.node" id="v1"}
                                 <li>
-                                    <input type="checkbox" name="diqu[]" value="{$v1['id']}" lay-skin="primary" lay-filter="diqu" title="{$v1['title']}">
+                                    <label class="diqu_checkbox"><input {if $v1['ischk'] }checked{/if} type="checkbox" value="{$v1['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v1['title']}</span></label>
                                     {notempty name="v1.node"}
                                     <ul>
                                     {volist name="v1.node" id="v2"}
-                                    <li>
-                                    <input type="checkbox" name="diqu[]" value="{$v2['id']}" lay-skin="primary" lay-filter="diqu" title="{$v2['title']}">
-                                    </li>
+                                    <label class="diqu_checkbox"><input {if $v2['ischk'] }checked{/if} type="checkbox" value="{$v2['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v2['title']}</span></label>
                                     {/volist}
                                     </ul>
                                     {/notempty}
@@ -56,7 +109,7 @@
                                 {/notempty}
                             </li>
                             {/volist}
-                           
+                           	{/notempty}
                         </ul>
                     </div>
                     <!--area_end-->
@@ -191,7 +244,7 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
 			pick: '#upload_imagelist',
 			accept:{
 				title: 'Images',
-				extensions: 'gif,jpg,jpeg,bmp,png',
+				extensions: '{:config('sys.upload_image_ext')}',
                 mimeTypes: 'image/'
 			},
 			duplicate :true 

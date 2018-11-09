@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
+    <meta name="description" content="<yunu:config name='seo_description'/>">
+    <title>{$category.title}-<yunu:config name="site_title"/></title>
+	<link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+</head>
+<body>
+<include file="public:header" />
+    <div class="main container">
+    	<div class="center">
+<include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+    			<div class="show_guest">
+                    <div class="fl">
+                        <i></i>
+                        <div class="guestbook">
+                            <b><img src="__PUBLIC__/img/liuyan.jpg" alt=""></b>
+                            <p>
+                                <strong>在线留言</strong>
+                                <span>ONLINE MESSAG</span>
+                            </p>
+                        </div>
+                    </div>
+	    			<div class="fr">
+	    				<p>
+	    					<span>标题</span>
+	    					<input type="text" name="">
+	    				</p>
+	    				<p>
+	    					<span>内容</span>
+	    					<textarea></textarea>
+	    				</p>
+	    				<p>
+	    					<input class="btn" type="submit" name="" value="提交">
+	    				</p>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+<include file="public:footer" />
+</div>
+</body>
+</html>

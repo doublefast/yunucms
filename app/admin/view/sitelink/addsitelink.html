@@ -10,6 +10,7 @@
                     <span>{$position.name}</span>
                 </div>
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <input name="type" type="hidden" value="">
 					<div class="layui-form-item">
 			            <label class="layui-form-label">关键词名称</label>
 			            <div class="layui-input-inline">
@@ -18,10 +19,19 @@
 			        </div>
 
                     <div class="layui-form-item">
-                        <label class="layui-form-label">链接地址</label>
+                        <label class="layui-form-label">PC链接地址</label>
                         <div class="layui-input-inline">
                             <input class="layui-input" type="text" name="url" placeholder="链接地址" lay-verify="required">
                         </div>
+                        <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">WAP链接地址</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="wapurl" placeholder="链接地址">
+                        </div>
+                        <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
                     </div>
 
                     <div class="layui-form-item">

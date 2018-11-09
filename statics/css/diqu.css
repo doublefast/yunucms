@@ -23,14 +23,8 @@
     clear: both;
     visibility: hidden;
 }
-.check_diqu .layui-form-checkbox {
+.check_diqu .diqu_checkbox {
     padding: 5px 10px!important;
-}
-.check_diqu .diqu_submit {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
 }
 .check_diqu>ul {
     padding: 20px;
@@ -39,7 +33,7 @@
     display: block;
     margin-bottom: 15px;
 }
-.check_diqu>ul>li>.layui-form-checkbox {
+.check_diqu>ul>li>.diqu_checkbox {
     float: left;
     max-width: 150px;
 }
@@ -50,46 +44,121 @@
     position: relative;
     float: left;
 }
-.check_diqu>ul>li>ul>li>.layui-form-checkbox {
+.check_diqu>ul>li>ul>li>.diqu_checkbox {
     position: relative;
     border: 1px solid #fff!important;
+    transition: border-color 0s;
+    margin: 0;
 }
 .check_diqu>ul>li>ul>li>ul {
     opacity: 0;
-    transition: all .3s;
+    transition: all .3s,border-color 0s;
     visibility: hidden;
     position: absolute;
     z-index: 1;
     width: 300px;
     padding: 10px 0;
-    border: 1px solid #ccc;
-    top: 98%;
+    border: 1px solid #fff;
+    top: 100%;
+    margin-top: -1px;
     background-color: #fff;
     margin-bottom: 20px;
+}
+.check_diqu>ul>li>ul>li>ul.no-child {
+    width: 100%;
+    padding: 0;
 }
 .check_diqu .diqu_popup_r {
     right: 0;
 }
 .check_diqu>ul>li>ul>li:hover>ul {
+    border-color: #ccc;
     opacity: 1;
     visibility: visible;
 }
-.check_diqu>ul>li>ul>li:hover>.layui-form-checkbox {
+.check_diqu>ul>li>ul>li:hover>.diqu_checkbox {
     z-index: 2;
+    transition: border-color .3s;
     border-top-color: #ccc!important;
     border-left-color: #ccc!important;
     border-right-color: #ccc!important;
 }
-.check_diqu .layui-form-checked-some + .layui-form-checkbox .layui-icon {
+.check_diqu>ul>li>ul>li:hover.no-child>.diqu_checkbox {
+    border-bottom-color: #ccc!important;
+}
+.check_diqu .layui-form-checked-some .layui-icon {
     background-color: #fff;
     position: relative;
 }
-.check_diqu .layui-form-checked-some + .layui-form-checkbox .layui-icon:after {
+.check_diqu .layui-form-checked-some .layui-icon:after {
     content: '';
     position: absolute;
     left: 12.5%;
     top: 12.5%;
     width: 75%;
     height: 75%;
-    background-color: #5FB878;
+    background-color: #00a2e9;
+}
+
+.diqu_checkbox {
+    display: inline-block;
+    vertical-align: middle;
+    height: auto!important;
+    line-height: normal!important;
+    border: none!important;
+    margin-right: 0;
+    padding-right: 0;
+    background: 0 0;
+    position: relative;
+    cursor: pointer;
+    font-size: 0;
+    border-radius: 2px;
+    -webkit-transition: .1s linear;
+    transition: .1s linear;
+}
+.diqu_checkbox input {
+    display: none!important;
+}
+.diqu_checkbox span {
+    float: right;
+    line-height: 18px;
+    background: 0 0;
+    color: #666;
+    padding: 0 10px;
+    height: 100%;
+    font-size: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.diqu_checkbox:hover span {
+    background-color: transparent;
+}
+.diqu_checkbox i {
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    top: 0;
+    right: 0;
+    width: 18px;
+    line-height: 18px;
+    border: 1px solid #d2d2d2;
+    font-size: 0;
+    border-radius: 2px;
+    background-color: #fff;
+    -webkit-transition: .1s linear;
+    transition: .1s linear;
+    text-align: center;
+    color: transparent;
+}
+.diqu_checkbox:hover i {
+    border-color: #00a2e9;
+    color: transparent;
+}
+.diqu_checkbox input:checked + i {
+    border-color: #00a2e9;
+    background-color: #00a2e9;
+    color: #fff;
+    font-size: 12px;
 }

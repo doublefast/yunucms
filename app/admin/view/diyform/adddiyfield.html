@@ -14,7 +14,7 @@
 					<div class="layui-form-item">
 			            <label class="layui-form-label">字段类型</label>
 			            <div class="layui-input-inline">
-                            <select name="ftype" lay-filter="ftype">
+                            <select name="ftype" id="ftype" lay-filter="ftype" lay-verify="ftype">
                                 <option value="0">选择类型</option>
                                 {foreach name="ftypelist" id='v' }
                                 <option value="{$key}">{$v}</option>
@@ -95,6 +95,14 @@ layui.use(['form','common'], function(){
     var $ = layui.jquery;
     $form = $('form');
     var form = layui.form(),layer = layui.layer, common=layui.common;
+
+    form.verify({
+        ftype:function(value){
+            if(value == "0"){
+                return '字段类型必须选择';
+            }
+        }
+    });
 
     //监听提交
     form.on('submit(save)', function(data){

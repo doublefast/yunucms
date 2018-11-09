@@ -14,7 +14,7 @@
 		            <label class="layui-form-label">默认顶级</label>
 		            <div class="layui-input-inline w300">
 		                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required" lay-search="">
-		                    <option selected="selected" value="">默认顶级</option>
+		                    <option selected="selected" value="0">默认顶级</option>
 		                    {foreach name="admin_rule" item="v"}
 		                        <option value="{$v.id}">{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
 		                    {/foreach}

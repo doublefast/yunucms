@@ -25,28 +25,44 @@
 			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
 			            <label class="layui-form-label">AccessKey/AK</label>
 			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="qiniu_accesskey" value="{:config('sys.qiniu_accesskey')}" placeholder="AccessKey/AK">
+			                <input class="layui-input w700" type="text" name="qiniu_accesskey" value="{$qiniu_accesskey}" placeholder="AccessKey/AK">
 			            </div>
 			        </div>
 			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
 			            <label class="layui-form-label">SecretKey/SK</label>
 			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="qiniu_secretkey" value="{:config('sys.qiniu_secretkey')}" placeholder="SecretKey/SK">
+			                <input class="layui-input w700" type="text" name="qiniu_secretkey" value="{$qiniu_secretkey}" placeholder="SecretKey/SK">
 			            </div>
 			        </div>
 
 			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
 			            <label class="layui-form-label">BUCKET/空间名</label>
 			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="qiniu_bucket" value="{:config('sys.qiniu_bucket')}" placeholder="BUCKET/空间名">
+			                <input class="layui-input w350" type="text" name="qiniu_bucket" value="{:config('sys.qiniu_bucket')}" placeholder="BUCKET/空间名">
 			            </div>
 			        </div>
 
 			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
 			            <label class="layui-form-label">DOMAIN/域名</label>
 			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="qiniu_domain" value="{:config('sys.qiniu_domain')}" placeholder="DOMAIN/域名">
+			                <input class="layui-input w350" type="text" name="qiniu_domain" value="{:config('sys.qiniu_domain')}" placeholder="DOMAIN/域名">
 			            </div>
+			            <font class="font_tip">请填写完整URL，http(s)://开头，/结尾</font>
+			        </div>
+
+			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
+			            <label class="layui-form-label">存储上传URL</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w350" type="text" name="qiniu_upurl" value="{:config('sys.qiniu_upurl')}" placeholder="上传URL">
+			                <BR>
+			                <font class="font_tip">
+			                华东：http://up.qiniup.com<br>
+			                华北：http://up-z1.qiniup.com<br>
+			                华南：http://up-z2.qiniup.com<br>
+			                北美：http://up-na0.qiniup.com<br>
+			                东南亚：http://up-as0.qiniup.com<br>
+			            </div>
+			            <font class="font_tip"></font>
 			        </div>
 
 					<div class="layui-form-item">

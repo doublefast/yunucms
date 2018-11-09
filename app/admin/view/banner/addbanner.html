@@ -98,7 +98,7 @@ layui.use(['form','common','upload'], function(){
             ,title:'上传图片'
             ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
             ,method: 'post' //上传接口的http类型
-            ,ext: 'jpg|png|gif'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
             ,type:'images'
             ,success: function(data){ //上传成功后的回调
                 if(data.status == 1){
@@ -119,7 +119,7 @@ layui.use(['form','common','upload'], function(){
             ,title:'上传图片'
             ,elem: '#upload-image2' //指定原始元素，默认直接查找class="layui-upload-file"
             ,method: 'post' //上传接口的http类型
-            ,ext: 'jpg|png|gif'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
             ,type:'images'
             ,success: function(data){ //上传成功后的回调
                 if(data.status == 1){

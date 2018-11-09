@@ -37,6 +37,12 @@ class Category extends Common
         }
 
         $arr = $nav::rule($infolist);
+
+        //模版文件列表
+        $this->assign('listfile', getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'list_*'));
+        $this->assign('showfile', getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'show_*'));
+        $this->assign('coverfile', getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'cover_*'));
+        
         $this->assign('infolist', $arr);
         return $this->fetch();
     }
@@ -81,7 +87,6 @@ class Category extends Common
             foreach ($titlelist as $k => $v) {
                 if ($v) {
                     $param['title'] = $v;
-                    $param['status'] = 1;
                     $datalist[] = $param;
                 }
             }
@@ -182,12 +187,41 @@ class Category extends Common
         
     }
 
+    public function etitlecategory()
+    {
+        $id = input('param.id');
+        $etitle = input('param.etitle');
+        $db = Db::name('category');
+        $flag = $db->where(['id'=>$id])->setField(['etitle'=>$etitle]);
+        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+    }
+
     public function doisarea()
     {
         $ids = input('param.ids');
         $isarea = input('param.isarea');
         $db = Db::name('category');
         $flag = $db->where(['id'=>['IN', $ids]])->setField(['isarea'=>$isarea]);
+        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+    }
+
+    public function doisnav()
+    {
+        $ids = input('param.ids');
+        $isnav = input('param.isnav');
+        $db = Db::name('category');
+        $flag = $db->where(['id'=>['IN', $ids]])->setField(['nav'=>$isnav]);
+        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+    }
+
+    public function dotemplate()
+    {
+        $ids = input('param.ids');
+        $tpl_cover = input('param.tpl_cover') == '选择模板' ? '' : input('param.tpl_cover');
+        $tpl_list = input('param.tpl_list') == '选择模板' ? '' : input('param.tpl_list');
+        $tpl_show = input('param.tpl_show') == '选择模板' ? '' : input('param.tpl_show');
+        $db = Db::name('category');
+        $flag = $db->where(['id'=>['IN', $ids]])->setField(['tpl_cover'=>$tpl_cover,'tpl_list'=>$tpl_list,'tpl_show'=>$tpl_show]);
         return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
     }
 

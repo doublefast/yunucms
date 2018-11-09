@@ -46,19 +46,19 @@
                                     {{# if(item.number == 'default'){ }}
                                         无预览
                                     {{#  }else{ }}
-                                        <a href="{{ item.pc_href }}" target="_blank"><img src="http://{:config('yunucms.copyright')}{{ item.pc_img }}" height="150px"></a>
+                                        <a href="{{ item.pc_href }}" target="_blank"><img src="{{ item.pc_img }}" height="150px"></a>
                                     {{#  } }}
                                 </td>
                                 <td style="padding:10px 0;">
                                     {{# if(item.number == 'default'){ }}
                                         无预览
                                     {{#  }else{ }}
-                                        <a href="{{ item.wap_href }}" target="_blank"><img src="http://{:config('yunucms.copyright')}{{ item.wap_img }}" height="150px"></a>
+                                        <a href="{{ item.wap_href }}" target="_blank"><img src="{{ item.wap_img }}" height="150px"></a>
                                     {{#  } }}
                                 </td>
                                 <td>
                                     {{# if(item.data){ }}
-                                        <a href="http://{:config('yunucms.copyright')}{{ item.data }}" target="_blank">[ 点击下载 ]</a>
+                                        <a href="{{ item.data }}" target="_blank">[ 点击下载 ]</a>
                                     {{#  } }}
                                     </td>
 				                <td>

@@ -6,7 +6,6 @@ use app\index\model\DiyformModel;
 class Myform extends Common
 {
 	public function index(){
-
 		$param = input();
 		$returntype = isset($param['__returntype__']) && $param['__returntype__'] == 'json' ? 'json' : 'default';
 		if (!isset($param['__formid__']) || !isset($param['__token__'])) {
@@ -14,11 +13,11 @@ class Myform extends Common
 			return $this->onresponse($info, $returntype);
 			exit();
 		}
-		if ($param['__token__'] != session('__token__')) {
+		/*if ($param['__token__'] != session('__token__')) {
 			$info = ['status'=>'error','msg'=>'令牌验证验证失败!'];
 			return $this->onresponse($info, $returntype);
 			exit();
-		}
+		}*/
 		$diyform = new DiyformModel();
 		$info = $diyform->getOnediyform($param['__formid__']);
 		if (!$info) {

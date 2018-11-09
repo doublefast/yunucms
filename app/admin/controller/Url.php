@@ -11,9 +11,9 @@ class Url extends Common
             Config::load($coffile, '', 'sys');
             $conflist = Config::get('','sys');
             $param = input('post.');  
-            $param = add_slashes_recursive($param);
+
+            setConfigfile($coffile, add_slashes_recursive(array_merge($conflist, $param)));
             
-            setConfigfile($coffile, array_merge($conflist, $param));
             return json(['code' => 1, 'data' => '', 'msg' => '更新设置成功']);
             exit();
         }

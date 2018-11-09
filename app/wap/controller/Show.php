@@ -49,14 +49,30 @@ class Show extends Common
 
 		$content['ys_title'] = $content['title'];//记录原始title
 
+		$content = $conmodel->getContentArea($content);
+		
 		if ($cw !== '') {
-			$cwkey = explode(',', config('sys.seo_cwkeyword'));
-			$content['title'] = $content['title'].$cwkey[$cw];
+			if (is_numeric($cw)) {
+				$cwkey = explode(',', config('sys.seo_cwkeyword'));
+				$content['title'] = $content['title'].$cwkey[$cw];
+			}else{
+				$content['title'] = $cw;
+			}
 		}
 
-		$content = $conmodel->getContentArea($content);
-		$content['prev'] = $conmodel->getContentPrev($category['id'], $content['id']);
-		$content['next'] = $conmodel->getContentNext($category['id'], $content['id']);
+		
+		$prev = $conmodel->getContentPrev($category['id'], $content['id']);
+		$next = $conmodel->getContentNext($category['id'], $content['id']);
+
+		$content['prev'] = $prev['infostr'];
+		$content['prevurl'] = $prev['infourl'];
+		$content['prevtitle'] = $prev['infotitle'];
+
+		$content['next'] = $next['infostr'];
+		$content['nexturl'] = $next['infourl'];
+		$content['nexttitle'] = $next['infotitle'];
+
+		//$content['content'] = str_replace("img", 'mip-img', $content['content']);
 
 		$content = update_str_dq($content, config('sys.sys_area'));
 

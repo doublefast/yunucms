@@ -30,7 +30,7 @@
                             {{# for(var i=0;i<d.length;i++){  }}
                             <tr class="long-td">
                                 <td>
-                                    <div class="icheckbox_square-green diychk" style="position: relative;"><input type="checkbox" style="position: absolute; opacity: 0;" name="ck" ids="{{d[i].log_id}}" value="true"><ins class="iCheck-helper"></ins></div>  
+                                    <div class="icheckbox_square-green diychk" style="position: relative;"><input type="checkbox" style="position: absolute; opacity: 0;width:0px;height:0px;" name="ck" ids="{{d[i].log_id}}" value="true"><ins class="iCheck-helper"></ins></div>  
                                 </td>
                                 <td>{{d[i].log_id}}</td>
                                 <td>{{d[i].admin_id}}</td>
@@ -83,21 +83,21 @@
         //全选
         $(document).on('ifChanged','.selected-all', function (event) {
             var $input = $('.layuitable tbody tr td').find('input');
-            if ($('.selected-all').attr("checked")) {
+            if ($('.selected-all').prop("checked")) {
                 $("#article_list .diychk").addClass('checked');
-                $("#article_list .diychk").children('input:checkbox').attr("checked", true);
+                $("#article_list .diychk").children('input:checkbox').prop("checked", true);
             }else{
                 $("#article_list .diychk").removeClass('checked');
-                $("#article_list .diychk").children('input:checkbox').attr("checked", false);
+                $("#article_list .diychk").children('input:checkbox').prop("checked", false);
             }
         });
         $(document).on('click','.diychk', function () {
             if ($(this).hasClass('checked')) {
                 $(this).removeClass('checked');
-                $(this).children('input:checkbox').attr("checked", false);
+                $(this).children('input:checkbox').prop("checked", false);
             }else{
                 $(this).addClass('checked');
-                $(this).children('input:checkbox').attr("checked", true);
+                $(this).children('input:checkbox').prop("checked", true);
             }
         });
 

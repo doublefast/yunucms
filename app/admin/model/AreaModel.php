@@ -9,7 +9,8 @@ class AreaModel extends Model
 
     public function getAllAreaByPid($id)
     {
-        return $this->where(['pid'=>$id])->order('sort asc')->select();
+        $infolist = $this->where(['pid'=>$id])->order('sort,id asc')->select();
+        return $infolist;
     }
 
     public function getAllIdByPid($id)
@@ -22,24 +23,24 @@ class AreaModel extends Model
         return $ids;
     }
 
-    public function getAllArea()
+    public function getAllArea($where = [])
     {
-        return $this->order('sort asc')->select();
+        return $this->where($where)->order('sort asc')->column(['id','title','pid','iscon']);
     }
 
     public function getAreaCount($id)
     {
-        $list = $this->where(['pid'=>$id])->select();
+        $list = $this->where(['pid'=>$id])->column(['id','pid','istop']);
         $count = count($list);
         $top = 0;
-        foreach ($list as $k => $v) {
+        /*foreach ($list as $k => $v) {
             $top = $v['istop'] ? $top+1 : $top;
-            $list2 =  $this->where(['pid'=>$v['id']])->select();
+            $list2 =  $this->where(['pid'=>$v['id']])->column(['id','pid','istop']);
             if ($list2) {
                 $count = $count + count($list2);
                 foreach ($list2 as $k2 => $v2) {
                     $top = $v2['istop'] ? $top+1 : $top;
-                    $list3 =  $this->where(['pid'=>$v2['id']])->select();
+                    $list3 =  $this->where(['pid'=>$v2['id']])->column(['id','pid','istop']);
                     if ($list3) {
                         $count = $count + count($list3);
                         foreach ($list3 as $k3 => $v3) {
@@ -49,13 +50,14 @@ class AreaModel extends Model
                 }
 
             }
-        }
+        }*/
         return ['count'=>$count, 'top'=>$top];
     }
 
     public function insertArea($param)
     {
         try{
+            $param['isopen'] = array_key_exists("isopen", $param) ? 1 : 0;
             $param['istop'] = array_key_exists("istop", $param) ? 1 : 0;
             $param['iscon'] = array_key_exists("iscon", $param) ? 1 : 0;
             $param['isurl'] = array_key_exists("isurl", $param) ? 1 : 0;
@@ -74,6 +76,7 @@ class AreaModel extends Model
     public function editArea($param)
     {
         try{
+            $param['isopen'] = array_key_exists("isopen", $param) ? 1 : 0;
             $param['istop'] = array_key_exists("istop", $param) ? 1 : 0;
             $param['iscon'] = array_key_exists("iscon", $param) ? 1 : 0;
             $param['isurl'] = array_key_exists("isurl", $param) ? 1 : 0;

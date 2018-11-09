@@ -134,7 +134,7 @@ class Upgrade extends Common
         Config::load($coffile, '', 'sys');
         $conflist = Config::get('','sys');
         $param['theme_style'] = $number;
-        setConfigfile($coffile, array_merge($conflist, $param));
+        setConfigfile($coffile, add_slashes_recursive(array_merge($conflist, $param)));
         return json(['code' => 1]);
     }
 
@@ -244,7 +244,7 @@ class Upgrade extends Common
 
     public function install($file = '', $version = '')
     {
-        if (!request()->isPost()) {
+        if (!request()->isPost() || empty($version)) {
             return json(['code' => 2, 'msg' => '参数传递错误！']);
         }
         $file = $this->update_path.$file;
@@ -290,10 +290,17 @@ class Upgrade extends Common
             $this->error = '升级失败，请开启[backup/uppack]文件夹权限！';
             return false;
         }
-        // 备份需要升级的旧版本
-        $up_info = include_once $decom_path.DS.'upgrade.php';
-        //备份文件
-        $back_path = $this->update_back_path.config('yunucms.version');
+
+        try {
+        	// 备份需要升级的旧版本
+	    	$up_info = include_once $decom_path.DS.'upgrade.php';
+	    	//备份文件
+	    	$back_path = $this->update_back_path.config('yunucms.version');
+        } catch(\Exception $e) {
+            $this->error = '升级失败,更新包异常！';
+            return false;
+        }
+	    
 
         if (!is_dir($back_path)) {
             $dir->create($back_path, 0777, true);

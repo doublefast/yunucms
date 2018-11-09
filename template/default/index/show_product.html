@@ -23,7 +23,7 @@
                 <div class="content_tit">
                     <h3>{$content.title}</h3>
                     <p>
-                        <span>发布时间：{$content.create_time|date='Y-m-d',###}</span>
+                        <span>发布时间：{$content.create_time|date='Y-m-d',###}  <yunu:url name='host'/></span>
                     </p>
                 </div>
                 <div class="content_des">
@@ -45,6 +45,7 @@
                          <a href="{$tag.url}"><span>{$tag.title}</span></a>
                     </yunu:tag>
                 </div>
+
                 <div class="prve">
                     <p>上一篇： {$content.prev}</p>
                     <p>下一篇： {$content.next}</p>

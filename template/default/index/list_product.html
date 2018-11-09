@@ -23,9 +23,9 @@
                 <div class="content_des">
                     {$category.desc}
                 </div>
-	    		<div class="pro_list">
-					<ul>
-                        <yunu:list cid="$cid" orderby="sort asc" pagesize="8">
+                <div class="pro_list">
+                    <ul>
+                        <yunu:list cid="$cid" orderby="sort asc"  pagesize="2">
                         <li>
                             <a href="{$list.url}">
                                 <img src="{$list.pic}" alt="{$list.title}" width="180" height="190" img-Auto="true">
@@ -34,10 +34,10 @@
                         </li>
                         </yunu:list>
                     </ul>
-				</div>
-				<div class="pages">
-					{$page}
-				</div>
+                </div>
+                <div class="pages">
+                    {$page}
+                </div>
                 <div class="flink">
                     <div class="flink_tit mt30">
                         <p></p>

@@ -272,7 +272,7 @@ class TagLib
                 $result['expression'] = rtrim($result['expression'], '/');
                 $result['expression'] = trim($result['expression']);
             } elseif (empty($this->tags[$name]) || !empty($this->tags[$name]['attr'])) {
-                throw new Exception('tag error:' . $name);
+                //throw new Exception('tag error:' . $name);
             }
         }
         return $result;

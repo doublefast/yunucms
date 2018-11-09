@@ -1,9 +1,7 @@
 {include file="public/header" /}
 <style>
-.content_nav_list{
-	overflow:auto;
-	height: 100%;
-}
+.content_nav_list{overflow:auto;height: 100%;}
+.content_nav_list i { display: inline-block; width: 30px; text-align: center; color: #333; height: 35px; line-height: 35px; vertical-align: top; }
 </style>
 <link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
 <script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
@@ -21,32 +19,87 @@
 				<ul class="content_nav_list">
 					{notempty name="catlist"}
 		            {volist name="catlist" id="v"}
-		            <li><a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">{if $v.pid eq 0}<i class="fa fa-folder-open"></i>{else}<span style="display:inline-block;width:{$v.leftpin / 2}px;"></span>├ {/if}{$v['title']}</a></li>
+		            <li data-pid="{$v['pid']}">
+                        <a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
+                            {if $v.pid eq 0}
+                                <i data-id="{$v['id']}" ></i>
+                            {else}
+                                <span style="display:inline-block;width:{$v.leftpin / 2}px;"></span>├ 
+                            {/if}
+                            {$v['title']}
+                        </a>
+                    </li>
 		            {/volist}
 		            {/notempty}
 				</ul>
 			</div>
+			<script type="text/javascript">
+                ;(function () {
+                    var item = $('.content_nav_list>li');
+                    var localStorage = window.localStorage || {
+                        getItem: function () {return false},
+                        setItem: function () {return false},
+                        removeItem: function () {return false}
+                    }
+                    var active = localStorage.getItem('content_nav_list_active');
+                    var slideToggle = function (obj) {
+                        if (obj.attr('data-pid') > 0) {
+                            obj.slideToggle();
+                            slideToggle(obj.next());
+                        }
+                    }
+
+                    item.filter('[data-pid!=0]').hide();
+                    item.each(function (i, v) {
+                        var $this = $(v);
+                        var pid = $this.next().attr('data-pid');
+                        if (pid > 0) {
+                            $this.find('i').addClass('fa fa-folder');
+                        }
+                    }).find('i').on('click', function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        var $this = $(this);
+                        var id = $this.attr('data-id');
+
+                        if (!$this.hasClass('fa')) return;
+
+                        slideToggle($this.closest('li').next());
+                        // item.filter('[data-pid='+id+']').slideToggle();
+                        if ($this.hasClass('fa-folder')) {
+                            $this.removeClass('fa-folder').addClass('fa-folder-open');
+                            localStorage.setItem('content_nav_list_active', id);
+                        } else {
+                            $this.removeClass('fa-folder-open').addClass('fa-folder');
+                            localStorage.removeItem('content_nav_list_active');
+                        }
+                    });
+                    if (active) {
+                        item.find('i').filter('[data-id='+active+']').click();
+                    }
+                })();
+            </script>
 
 			<div class="content_box">
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
 					<!--area_start-->
                     <div class="layui-form check_diqu" id="diqu">
                         <ul>
+                        	{notempty name="arealist"}
+                            <li>&nbsp;&nbsp;<button type="button" class="btn diqu_select">全选</button></li>
                             {volist name="arealist" id="v"}
                             <li>
-                                <input type="checkbox" {if $v['ischk'] }checked{/if} name="diqu[]" value="{$v['id']}" lay-skin="primary" lay-filter="diqu" title="{$v['title']}">
-                                
+                                <label class="diqu_checkbox"><input {if $v['ischk'] }checked{/if} type="checkbox" value="{$v['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v['title']}</span></label>
                                 {notempty name="v.node"}
                                 <ul>
                                 {volist name="v.node" id="v1"}
                                 <li>
-                                    <input type="checkbox" {if $v1['ischk'] }checked{/if} name="diqu[]" value="{$v1['id']}" lay-skin="primary" lay-filter="diqu" title="{$v1['title']}">
+                                    <label class="diqu_checkbox"><input {if $v1['ischk'] }checked{/if} type="checkbox" value="{$v1['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v1['title']}</span></label>
                                     {notempty name="v1.node"}
                                     <ul>
                                     {volist name="v1.node" id="v2"}
-                                    <li>
-                                    <input type="checkbox" {if $v2['ischk'] }checked{/if} name="diqu[]" value="{$v2['id']}" lay-skin="primary" lay-filter="diqu" title="{$v2['title']}">
-                                    </li>
+                                    <label class="diqu_checkbox"><input {if $v2['ischk'] }checked{/if} type="checkbox" value="{$v2['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v2['title']}</span></label>
                                     {/volist}
                                     </ul>
                                     {/notempty}
@@ -56,7 +109,7 @@
                                 {/notempty}
                             </li>
                             {/volist}
-                           
+                           	{/notempty}
                         </ul>
                     </div>
                     <!--area_end-->
@@ -67,144 +120,156 @@
 						<span>编辑内容</span>
 					</div>
 					
-					<div class="title_bar mb20">
-						基本信息
-					</div>
-					
-					<div class="layui-form-item">
-			            <label class="layui-form-label">标题</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="title" placeholder="标题" value="{$info.title}" lay-verify="required">
-			            </div>
-			        </div>
+					<div class="layui-tab">
+					  	<ul class="layui-tab-title">
+						    <li class="layui-this">基本信息</li>
+						    <li>SEO设置</li>
+						    <li>附加设置</li>
+					  	</ul>
+					  	<div class="layui-tab-content">
+						    <div class="layui-tab-item layui-show">
+								<!--基本信息-->
+								<div class="layui-form-item">
+						            <label class="layui-form-label">标题</label>
+						            <div class="layui-input-inline w450">
+						                <input class="layui-input w300 fl" type="text" id="tiqutitle" name="title" placeholder="标题" value="{$info.title}" lay-verify="required">
+						                {if config('sys.api_bdqc') eq 1}<input type="button" id="tiqutag" value="切词" class="fl file_btn ml10" />{/if}
+						            </div>
+						        </div>
 
-			        <div class="layui-form-item">
-	                    <label class="layui-form-label">封面图片</label>
-	                    <div class="layui-input-inline">
-							<input id="path1" class="layui-input" type="text" name="pic" value="{$info.pic}" ><br>
-							<img id="img_path1" class="defimg" src="{$info.pic}" onerror="javascript:this.style.display='none';">
-	                    </div>
-	                    <div class="layui-input-inline w450">
-			            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
-			            	<div class="site-demo-upload upload-img fl ml5">
-				                <div class="site-demo-upbar">
-				                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+						        <div class="layui-form-item">
+				                    <label class="layui-form-label">封面图片</label>
+				                    <div class="layui-input-inline">
+										<input id="path1" class="layui-input" type="text" name="pic" value="{$info.pic}" ><br>
+										<img id="img_path1" class="defimg" src="{$info.pic}" onerror="javascript:this.style.display='none';">
+				                    </div>
+				                    <div class="layui-input-inline w450">
+						            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
+						            	<div class="site-demo-upload upload-img fl ml5">
+							                <div class="site-demo-upbar">
+							                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+							                </div>
+							        	</div>
+						            </div>
 				                </div>
-				        	</div>
-			            </div>
-	                </div>
-				
-					<div class="layui-form-item">
-			            <label class="layui-form-label">排序</label>
-			           	<div class="layui-input-inline">
-			                <input name="sort" lay-verify="number" autocomplete="off" value="{$info.sort}" placeholder="输入顺序" class="layui-input" type="text" style="width: 300px;">
-			            </div>
-			        </div>
-					
-					<div class="title_bar mb20">
-						SEO设置
+							
+								<div class="layui-form-item">
+						            <label class="layui-form-label">排序</label>
+						           	<div class="layui-input-inline">
+						                <input name="sort" lay-verify="number" autocomplete="off" value="{$info.sort}" placeholder="输入顺序" class="layui-input" type="text" style="width: 300px;">
+						            </div>
+						        </div>
+
+						        <!--内容设置-->
+								{$fieldhtml['html']}
+						    </div>
+
+						    <div class="layui-tab-item">
+								<!--SEO设置-->
+								<div class="layui-form-item">
+						            <label class="layui-form-label">自定义页面title</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input w700" type="text" value="{$info.seo_title}" name="seo_title" placeholder="SEO标题" >
+						            </div>
+						        </div>
+
+								<div class="layui-form-item">
+						            <label class="layui-form-label">关键词</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input  w700" type="text" value="{$info.seo_keywords}" name="seo_keywords" placeholder="SEO关键词" >
+						            </div>
+						        </div>
+
+								<div class="layui-form-item">
+						            <label class="layui-form-label">描述文字</label>
+						            <div class="layui-input-inline">
+						                <textarea name="seo_desc" placeholder="SEO描述" class="layui-textarea  w700">{$info.seo_desc}</textarea>
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">TAG标签</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input w700" type="text" name="tag" id="tag" value="{$info.tag}" placeholder="标签1，标签2，标签3(全角逗号间隔)" >
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">自定义页面名称</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input" type="text" name="etitle" value="{$info.etitle}" >
+						            </div>
+						        </div>
+						    </div>
+
+						    <div class="layui-tab-item">
+								<!--附加设置-->
+								<div class="layui-form-item">
+						            <label class="layui-form-label">是否推荐</label>
+						           	<div class="layui-input-inline">
+						                <input type="checkbox" {if $info.istop}checked{/if} name="istop" lay-skin="switch" lay-filter="switchTest">
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">链接同步主站</label>
+						           	<div class="layui-input-inline">
+						                <input type="checkbox" {if $info.mainurl}checked{/if} name="mainurl" lay-skin="switch" lay-filter="switchTest">
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">头条</label>
+						           	<div class="layui-input-inline">
+						                <select name="top" id="top">
+							                <option value="0" {if $info.top eq 0}selected{/if}>非头条</option>
+							                <option value="1" {if $info.top eq 1}selected{/if}>一级头条</option>
+							                <option value="2" {if $info.top eq 2}selected{/if}>二级头条</option>
+							                <option value="3" {if $info.top eq 3}selected{/if}>三级头条</option>
+							                <option value="4" {if $info.top eq 4}selected{/if}>四级头条</option>
+							                <option value="5" {if $info.top eq 5}selected{/if}>五级头条</option>
+							                <option value="6" {if $info.top eq 6}selected{/if}>六级头条</option>
+							                <option value="7" {if $info.top eq 7}selected{/if}>七级头条</option>
+							                <option value="8" {if $info.top eq 8}selected{/if}>八级头条</option>
+							                <option value="9" {if $info.top eq 9}selected{/if}>九级头条</option>
+							           	</select>
+						            </div>
+						        </div>
+
+								{if $cate.isarea eq 1}
+								{notempty name="arealist"}
+								<div class="layui-form-item">
+						            <label class="layui-form-label">所属地区</label>
+						           	<div class="layui-input-inline">
+						                <input id="area" type="hidden" name="area" value="{$info.area}">
+			    						<a class="btn" id="open_diqu">点击选择</a>&nbsp;&nbsp;&nbsp;<font class="font_tip">不选择，默认为所有地区</font>
+						            </div>
+						        </div>
+						        {/notempty}
+						        {/if}
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">外部链接</label>
+						           	<div class="layui-input-inline">
+						                <input class="layui-input" type="text" name="jumpurl" value="{$info.jumpurl}" placeholder="http://">
+						            </div>
+						        </div>
+
+								<div class="layui-form-item">
+						            <label class="layui-form-label">预约发布</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input" type="text" name="create_time" value="{$info.create_time}" placeholder="选择时间可进行预约发布" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+						            </div>
+						        </div>
+						    </div>
+						</div>
 					</div>
-					
-					<div class="layui-form-item">
-			            <label class="layui-form-label">自定义页面title</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" value="{$info.seo_title}" name="seo_title" placeholder="SEO标题" >
-			            </div>
-			        </div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">关键词</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input  w700" type="text" value="{$info.seo_keywords}" name="seo_keywords" placeholder="SEO关键词" >
-			            </div>
-			        </div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">描述文字</label>
-			            <div class="layui-input-inline">
-			                <textarea name="seo_desc" placeholder="SEO描述" class="layui-textarea  w700">{$info.seo_desc}</textarea>
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">TAG标签</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="tag" value="{$info.tag}" placeholder="标签1，标签2，标签3(全角逗号间隔)" >
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">自定义页面名称</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="etitle" value="{$info.etitle}" >
-			            </div>
-			        </div>
-
-			        <div class="title_bar mb20">
-						附加设置
-					</div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">是否推荐</label>
-			           	<div class="layui-input-inline">
-			                <input type="checkbox" {if $info.istop}checked{/if} name="istop" lay-skin="switch" lay-filter="switchTest">
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">头条</label>
-			           	<div class="layui-input-inline">
-			                <select name="top" id="top">
-				                <option value="0" {if $info.top eq 0}selected{/if}>非头条</option>
-				                <option value="1" {if $info.top eq 1}selected{/if}>一级头条</option>
-				                <option value="2" {if $info.top eq 2}selected{/if}>二级头条</option>
-				                <option value="3" {if $info.top eq 3}selected{/if}>三级头条</option>
-				                <option value="4" {if $info.top eq 4}selected{/if}>四级头条</option>
-				                <option value="5" {if $info.top eq 5}selected{/if}>五级头条</option>
-				                <option value="6" {if $info.top eq 6}selected{/if}>六级头条</option>
-				                <option value="7" {if $info.top eq 7}selected{/if}>七级头条</option>
-				                <option value="8" {if $info.top eq 8}selected{/if}>八级头条</option>
-				                <option value="9" {if $info.top eq 9}selected{/if}>九级头条</option>
-				           	</select>
-			            </div>
-			        </div>
-
-					{if $cate.isarea eq 1}
-					{notempty name="arealist"}
-					<div class="layui-form-item">
-			            <label class="layui-form-label">所属地区</label>
-			           	<div class="layui-input-inline">
-			                <input id="area" type="hidden" name="area" value="{$info.area}">
-    						<a class="btn" id="open_diqu">点击选择</a>&nbsp;&nbsp;&nbsp;<font class="font_tip">不选择，默认为所有地区</font>
-			            </div>
-			        </div>
-			        {/notempty}
-			        {/if}
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">外部链接</label>
-			           	<div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="jumpurl" value="{$info.jumpurl}" placeholder="http://">
-			            </div>
-			        </div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">预约发布</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="create_time" value="{$info.create_time}" placeholder="选择时间可进行预约发布" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
-			            </div>
-			        </div>
-
-			        <div class="title_bar mb20">
-						其他设置
-					</div>
-					
-					{$fieldhtml['html']}
 
 					<div class="layui-form-item">
 	                    <label class="layui-form-label"></label>
 	                    <div class="layui-input-inline">
 			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editcontent')}'>提交</button>
+			              
 	                    </div>
 			        </div>
 				
@@ -219,7 +284,7 @@
         'paragraph', 'fontfamily', 'fontsize', '|',
         'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
         'link', 'unlink',
-    ]]};
+    ]],initialFrameHeight:100};
     window.UEDITOR_HOME_URL = '__UEDITOR__/';
     window.onload = function() {
         window.UEDITOR_CONFIG.initialFrameWidth=700;
@@ -254,7 +319,7 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
             ,title:'上传图片'
             ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
             ,method: 'post' //上传接口的http类型
-            ,ext: 'jpg|png|gif'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
             ,type:'images'
             ,success: function(data){ //上传成功后的回调
                 if(data.status == 1){
@@ -278,9 +343,24 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
 			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
 			});
 		});
-
+      
         {$fieldhtml['script']}
 
+        $('[lay-submit]').click(function(event) {
+	        var submit = $(this);
+	        var editor_source_btn = $('.edui-for-source .edui-state-checked .edui-button-body');
+	        if (editor_source_btn.length) {
+	            if (event) {
+	                event.preventDefault();
+	                event.stopPropagation();
+	            }
+	            editor_source_btn.trigger('click');
+	            setTimeout(function(){
+	                submit.trigger('click')
+	            }, 500 * editor_source_btn.length);
+	        }
+	    });
+	    
         //监听提交
         form.on('submit(save)', function(data){
             var sub = true;
@@ -294,12 +374,14 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
                         data: data.field,
                         success: function (info) {
                             if (info.code == 1) {
-                                common.layerAlertSHref(info.msg, '提示', "{:url('content/index',['cid'=>$cate['id']])}");
-                            }
-                            else {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('content/index',['cid'=>$cate['id'],'gopage'=>$gopage])}");
+                            }else {
                                 common.layerAlertE(info.msg, '提示');
                                 $(data.elem).removeAttr("disabled").text("提交");
                             }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
                         },
                         error: function (XMLHttpRequest, textStatus, errorThrown) {
                             common.layerAlertE(textStatus, '提示');
@@ -312,22 +394,48 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
             return false;
         });
 
-        $('#open_diqu').on('click', function(){
-                layer.open({
-                	title: '选择地区',
-                    type: 1,
-                    content: $(box),
-                    skin: 'layer_diqu',
-                    area: ['60%','50%'],
-                    btn: '确定',
-                    yes: function(index, layero){
-                        var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
-                            return $(el).val();
-                        }).get().join(',');
-                        $('#area').val(value);
-                        layer.close(index);
+        $("#tiqutag").on('click',function(){
+        	$tiqutitle = $('#tiqutitle').val();
+        	if ($tiqutitle == '') {
+        		common.layerAlertE("请先填写标题再提取", '提示');
+        		return;
+        	}
+        	$.ajax({
+                url: "{:url('Content/baiduqc')}",
+                type: 'post',
+                dataType: 'json',
+                data: {'title':$tiqutitle},
+                success: function (info) {
+                    if (info.code == 1) {
+                        $('#tag').val(info.msg);
+                    }else {
+                        common.layerAlertE(info.msg, '提示');
                     }
-                });
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    common.layerAlertE(textStatus, '提示');
+                }
+            });
+        });
+
+
+        $('#open_diqu').on('click', function(){
+        	area_select($("#diqu input:checkbox"));
+            layer.open({
+               	title: '选择地区',
+                type: 1,
+                content: $(box),
+                skin: 'layer_diqu',
+                area: ['60%','50%'],
+                btn: '确定',
+                yes: function(index, layero){
+                   	var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
+                        return $(el).val();
+                    }).get().join(',');
+                    $('#area').val(value);
+                    layer.close(index);
+                }
+            });
        	});
        	
         diqu(layer, form, box);

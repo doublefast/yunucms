@@ -4,7 +4,15 @@ use think\Controller;
 use think\Request;
 use think\Config;
 
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Methods:POST');
+header('Access-Control-Allow-Headers:x-requested-with,content-type');
+header('Access-Control-Max-Age:1728000');
 header("Content-Type: text/html;charset=utf-8");
+
+$http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
+define('WEBSITE_HOST', $http_type . $_SERVER['HTTP_HOST']);
+
 class Master extends Controller {
     public function _initialize() {
         config('sys.sys_area', session('sys_area'));
@@ -226,7 +234,7 @@ class Master extends Controller {
         $textflag = empty($attr['textflag']) ? 0 : 1;
         $name = trim(htmlspecialchars($name));
 
-        $_block = db('block')->where("title='".$name."'")->find();
+        $_block = db('block')->where(['title' => $name])->find();
         $_block_content = '';
         if ($_block) {
             if ($_block['type'] == 2) {
@@ -390,7 +398,7 @@ class Master extends Controller {
             $_where['isurl'] = $_url;
         }
 
-        $_area = config('sys.sys_area') ? db('area')->where('etitle', config('sys.sys_area'))->find() : [];
+        $_area = config('sys.sys_area') ? db('area')->where(['etitle' => config('sys.sys_area')])->find() : [];
         if ($_area) {
             $_where['pid'] = $_area['id'];
         }else{
@@ -486,7 +494,7 @@ class Master extends Controller {
         $_keywordlist = explode(',', config('sys.seo_cwkeyword'));
         $_content = new \app\index\model\ContentModel();
         if (isset($content)) {
-            $_area = config('sys.sys_area') ? db('area')->where('etitle', config('sys.sys_area'))->find() : [];
+            $_area = config('sys.sys_area') ? db('area')->where(['etitle' => config('sys.sys_area')])->find() : [];
             $_areaname = $_area ? $_area['stitle'] : "";
 
             foreach($_keywordlist as $autoindex => $keyword) {
@@ -531,7 +539,7 @@ class Master extends Controller {
         //非正常独立内容链接不显示
 
         if ($content['area'] != '') {
-            $area = config('sys.sys_area') ? db('area')->where('etitle', config('sys.sys_area'))->find() : [];
+            $area = config('sys.sys_area') ? db('area')->where(['etitle' => config('sys.sys_area')])->find() : [];
             if ($area) {
                 if (!strstr($content['area'], ','.$area['id'].',')) {
                     return $this->error('非正常独立内容链接不显示');
@@ -547,7 +555,7 @@ class Master extends Controller {
             return $this->error('内容不存在');
             exit();
         }
-        db('content')->where('id', $content['id'])->setInc('click');//增加浏览
+        db('content')->where(['id' => $content['id']])->setInc('click');//增加浏览
 
         $catemodel = new \app\index\model\CategoryModel();
         $category = $catemodel->getOneCategory($content['cid']);
@@ -585,6 +593,25 @@ class Master extends Controller {
         $json = $this->info($content !== null);
         $json['data'] = $content;
         arr_pic_add_url($json);
+        return $attr['callback'] === null?$json:jsonp($json);
+    }
+    /**
+     * [form 表单]
+     * @param  [__formid__]  [表单ID]
+     * @param  [__captcha1__] [验证码]
+     */
+    public function api_form() {
+        $attr = input();
+        $diyform = new \app\index\model\DiyformModel();
+        $info = $diyform->getOnediyform($attr['__formid__']);
+        if (!$info) {
+            $json['state'] = 400;
+            $json['info'] = '表单类别不存在!';
+            return $attr['callback'] === null?$json:jsonp($json);
+        }
+        $info = $diyform->insertForm($attr,$info['id']);
+        $json['state'] = $info['status'] === 'success'?200:400;
+        $json['info'] = $info['msg']?$info['msg']:'请求失败，请参见API文档';
         return $attr['callback'] === null?$json:jsonp($json);
     }
 }

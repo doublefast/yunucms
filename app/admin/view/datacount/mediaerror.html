@@ -1,0 +1,36 @@
+{include file="public/header" /}
+</head>
+<body style="overflow: hidden;">
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+					<style type="text/css">
+					.main .main_content{margin: 0px;}
+					.main404{ width: 80%; margin: 150px auto; height: 400px;  }
+					.mainfl{float: left; width: 50%; padding-top: 10%; line-height: 30px;color: #666;}
+					.mainfr{float: right; width: 50%;}
+					</style>
+					<div class="main404">
+						<div class="mainfl">
+							<h3>您的媒体联盟API未开通，暂时无法访问</h3>
+							请前往云平台设置<br>并在后台 扩展管理 - API管理 - 开启媒体联盟API <br><br>
+						</div>
+						<div class="mainfr">
+							<img src="__ADM_PUBLIC__/img/404.jpg">
+						</div>
+					</div>
+
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+$(window.parent.document).find("#myiframe").load(function(){
+	var main = $(window.parent.document).find("#myiframe");
+	var thisheight = $(document).height();
+	main.height(thisheight);
+});
+</script>
+</html>

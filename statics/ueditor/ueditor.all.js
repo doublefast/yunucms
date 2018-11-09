@@ -20238,9 +20238,18 @@ UE.plugins['table'] = function () {
                     }
                 } else {
                     utils.each(tables, function (table) {
+                        //粘贴进来的表格td定义属性
+                        domUtils.setAttributes(table, {
+                            style:'border-left:1px solid #666; border-top:1px solid #666;',
+                        });
                         removeStyleSize(table, true);
-                        domUtils.removeAttributes(table, ['style', 'border']);
+                        domUtils.removeAttributes(table, ['style']);//['style', 'border']
                         utils.each(domUtils.getElementsByTagName(table, "td"), function (td) {
+                            //粘贴进来的表格td定义属性
+                            domUtils.setAttributes(td, {
+                                style:'border-bottom:1px solid #666; border-right:1px solid #666; padding:5px;',
+                            });  
+
                             if (isEmptyBlock(td)) {
                                 domUtils.fillNode(me.document, td);
                             }

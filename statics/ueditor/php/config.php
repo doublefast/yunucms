@@ -22,11 +22,12 @@ return array(
 	/* 七牛水印图片地址 */
 	'water_url'   => 'http://gitwiduu.u.qiniudn.com/ueditor-bg.png',
 
+	'uploadQiniuUrl' => isset($configsys['qiniu_upurl']) ? $configsys['qiniu_upurl'] : 'http://up.qiniu.com',
 	/* 水印显示设置 */ 
 	'dissolve'    => 50,  // 水印透明度
 	'gravity'	  => 'SouthEast',  // 水印位置具体见文档图片说明和选项
 	'dx'		  => 10,  //边距横向位置
-	'dy'		  => 10   //边距纵向位置
+	'dy'		  => 10,   //边距纵向位置
 );
 
 

@@ -87,7 +87,7 @@ class Node extends Model
         }
 
         $menu =  $db->where(["id"=>$chkid])->find();
-        $where = "pid='".$chkid."'";
+        $where = "pid='".$chkid."' AND status = 1 ";
         $where = $nodeStr ?  $where." AND id IN(".$nodeStr.")" : $where;
         $menu['child'] =  $db->where($where)->order('sort asc')->select();
         $ischk = 0;

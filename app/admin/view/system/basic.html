@@ -56,6 +56,20 @@
 			            </div>
 	                </div>
 
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">网站ICO</label>
+	                    <div class="layui-input-inline">
+							<input id="ico1" class="layui-input" type="text" name="site_ico" value="{:config('sys.site_ico')}"><br>
+	                    </div>
+	                    <div class="layui-input-inline w450">
+			            	<div class="site-demo-upload upload-img fl ml5">
+				                <div class="site-demo-upbar">
+				                    <input type="file" name="ico" class="layui-upload-file" id="upload-ico">
+				                </div>
+				        	</div>
+			            </div>
+	                </div>
+
 					<div class="layui-form-item">
 			            <label class="layui-form-label">版权信息</label>
 			            <div class="layui-input-inline">
@@ -118,14 +132,32 @@ layui.use(['form','common','upload'], function(){
                 //console.log('图片上传中');
             }
             ,title:'上传图片'
-            ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
-            ,method: 'post' //上传接口的http类型
-            ,ext: 'jpg|png|gif'
+            ,elem: '#upload-image'
+            ,method: 'post'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
             ,type:'images'
             ,success: function(data){ //上传成功后的回调
                 if(data.status == 1){
                     $("#path1").val(data.image_name);
                     $("#img_path1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+        //上传ico
+        layui.upload({
+            url: "{:url('Upload/uploadico',['file'=>'ico'])}" //上传接口
+            ,before: function(input){}
+            ,title:'上传图片'
+            ,elem: '#upload-ico'
+            ,method: 'post'
+            ,ext: 'ico'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#ico1").val(data.image_name);
                 }else{
                     alert(data.error_info);
                 }
@@ -180,15 +212,6 @@ layui.use(['form','common','upload'], function(){
         });
 
     });
-/*function updateimg(node,name){
-	var num = $('.'+node);
-	var valstr = "";
-	for(i=0;i<num.length;i++)
-	{
-		valstr = valstr+num.eq(i).val()+"***";
-	}
-	$("#"+name).val(valstr);
-}*/
 </script>
 </body>
 </html>

@@ -27,4 +27,20 @@ class Index extends Common
         $category = controller('Category','controller');
         echo $category->index();
     }
+    public function tag(){
+        $tag = controller('tag','controller');
+        echo $tag->index();
+    }
+
+    public function myform(){
+        $param = input();
+        $myform = controller('Myform','controller');
+        if (isset($param['id'])) {
+            return $myform->captcha();
+        }else{
+            return $myform->index();
+        }
+        
+    }
+
 }

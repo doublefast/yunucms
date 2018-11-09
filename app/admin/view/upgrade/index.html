@@ -46,7 +46,7 @@
                     <label class="layui-form-label">授权认证</label>
                     <div class="layui-form-label" style="width:500px; text-align:left;">
                         {if condition="config('cloud.grant')"}
-                            <span class="mcolor">已认证</span>
+                            <span class="mcolor">已认证</span> <a href="javascript:void(0);" class="mcolor copyright">&nbsp;&nbsp;[ 更改后台版权 ]</a>
                         {else /}
                             <span class="mcolor2">未认证 (官网授权后，需重新绑定云平台帐号)</span>
                         {/if}
@@ -107,6 +107,30 @@
         <div class="layui-form-item" id="resultTips"></div>
     </form>
 </script>
+<script type="text/html" id="popCopyright">
+    <form class="layui-form layui-form-pane page-form" action="" method="post" id="copyForm">
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="width:70px; line-height:40px;">系统名称</div>
+            <div class="layui-input-inline" style="width:100px; ">
+               <input type="text" class="layui-input" style="width:200px;" name="copy_sysname" lay-verify="required" autocomplete="off" value="{:config('sys.copy_sysname')}" placeholder="请输入系统名称">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="width:70px; line-height:40px;">版权名称</div>
+            <div class="layui-input-inline" style="width:100px; ">
+               <input type="text" class="layui-input" style="width:200px;" name="copy_name" lay-verify="required" autocomplete="off" value="{:config('sys.copy_name')}" placeholder="请输入版权名称">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="width:70px; line-height:40px;">官网地址</div>
+            <div class="layui-input-inline" style="width:100px; ">
+               <input type="text" class="layui-input" style="width:200px;" name="copy_url" lay-verify="required" autocomplete="off" value="{:config('sys.copy_url')}" placeholder="请输入官网地址">
+            </div>
+        </div>
+        <div class="layui-form-item"><font class="mcolor"> * 如果设置项为空，默认显示云优版权</font></div>
+        <div class="layui-form-item" id="resultTips"></div>
+    </form>
+</script>
 <script>
 layui.use(['form','common'], function(){
     var $ = layui.jquery;
@@ -123,7 +147,7 @@ layui.use(['form','common'], function(){
 
     $('.cloudBind').on('click', function() {
         layer.open({
-            title:'绑定云平台 / <a href="http://www.yunucms.com/Login/register.html?domain={$_SERVER["SERVER_NAME"]}" target="_blank" class="mcolor">注册云平台</a>',
+            title:'绑定云平台 / <a href="http://www.yunucms.com/index/index/is_register/1?domain={$_SERVER["SERVER_NAME"]}" target="_blank" class="mcolor">注册云平台</a>',
             id:'popLoginBox',
             area:'380px',
             content:$('#popCloudBind').html(),
@@ -134,6 +158,35 @@ layui.use(['form','common'], function(){
                 var tips = $('#resultTips');
                 tips.html('请稍后，云平台通信中...');
                 $.post('{:url('')}', $('#editForm').serialize(), function(res) {
+                    if (res.code == 1) {
+                        common.layerAlertS(res.msg, '提示');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    } else {
+                        tips.addClass('mcolor2').html(res.msg);
+                        setTimeout(function() {
+                            tips.removeClass('mcolor2').html('');
+                        }, 3000);
+                    }
+                });
+                return false;
+            }
+        });
+    });
+
+    $('.copyright').on('click', function() {
+        layer.open({
+            title:'更改后台版权',
+            id:'popCopyBox',
+            area:'380px',
+            content:$('#popCopyright').html(),
+            btn:['确认更改', '取消'],
+            btnAlign:'c',
+            move:false,
+            yes:function(index) {
+                var tips = $('#resultTips');
+                $.post('{:url('system/copy')}', $('#copyForm').serialize(), function(res) {
                     if (res.code == 1) {
                         common.layerAlertS(res.msg, '提示');
                         setTimeout(function() {

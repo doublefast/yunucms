@@ -1,0 +1,384 @@
+{include file="public/header" /}
+<script type="text/javascript" src="__ADM_PUBLIC__/js/area.js"></script>
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="ui_prompt">
+						{$context}
+					</div>
+					<br>
+					
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>公司全称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="cname" value="{$userinfo.cname ? $userinfo.cname : ''}" lay-verify="required">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>公司全称缩写</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="cname_ab" value="{$userinfo.cname_ab ? $userinfo.cname_ab : ''}" lay-verify="required">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+	                    <label class="layui-form-label">企业LOGO</label>
+	                    <div class="layui-input-inline">
+							<input id="pathlogo1" class="layui-input" type="text" name="logo" value="{$userinfo.logo ? $userinfo.logo : ''}" ><br>
+							<img id="img_logo1" class="defimg" src="{$userinfo.logo ? $userinfo.logo : ''}" onerror="javascript:this.style.display='none';">
+	                    </div>
+
+	                    <div class="layui-input-inline w450">
+			            	<div class="site-demo-upload upload-img fl ml5">
+				                <div class="site-demo-upbar">
+				                    <input type="file" name="filelogo" class="layui-upload-file" id="upload-image-logo">
+				                </div>
+				        	</div>
+				        	<font class="font_tip">&nbsp;尺寸 270 x 132</font>
+			            </div>
+			            
+	                </div>
+
+	                <div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>查询标识</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="ident" value="{$userinfo.ident ? $userinfo.ident : ''}" lay-verify="required">
+			            </div>
+			            <font class="font_tip">&nbsp;4个字母+1个数字</font>
+			        </div>
+					
+					<div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>联系人</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="contact" value="{$userinfo.contact ? $userinfo.contact : ''}" lay-verify="required">
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>手机</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="tel" value="{$userinfo.tel ? $userinfo.tel : ''}" lay-verify="required">
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>电话</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="phone" value="{$userinfo.phone ? $userinfo.phone : ''}"  lay-verify="required">
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">邮箱</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="email" value="{$userinfo.email ? $userinfo.email : ''}" >
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>公司地址</label>
+			            <div class="layui-input-inline area" style="width:150px;">
+                            <select name="province" lay-verify="required" lay-filter="linkage" data-placeholder="请选择省" data-selected="{$userinfo.province ? $userinfo.province : ''}">
+                            	<option></option>	
+                            </select>
+                        </div>
+                        <div class="layui-input-inline area" style="width:150px;">
+                            <select name="city" lay-verify="required" lay-filter="linkage" data-placeholder="请选择市" data-selected="{$userinfo.city ? $userinfo.city : ''}">
+                            	<option></option>	
+                            </select>
+                        </div>
+                        <div class="layui-input-inline area" style="width:150px;">
+                            <select name="area" lay-verify="required" lay-filter="linkage" data-placeholder="请选择县/区" data-selected="{$userinfo.area ? $userinfo.area : ''}">
+                            	<option></option>	
+                            </select>
+                        </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"></label>
+			            <div class="layui-input-inline w450">
+			                <input type="text" name="address" class="layui-input" placeholder="详细地址" value="{$userinfo.address ? $userinfo.address : ''}" lay-verify="required">
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">企业官网</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="website" value="{$userinfo.website ? $userinfo.website : ''}">
+			            </div>
+			        </div>
+			        <div class="layui-form-item">
+	                    <label class="layui-form-label">微信图片</label>
+	                    <div class="layui-input-inline">
+							<input id="pathwximg1" class="layui-input" type="text" name="wx_img" value="{$userinfo.wx_img ? $userinfo.wx_img : ''}"><br>
+							<img id="img_wximg1" class="defimg" src="{$userinfo.wx_img ? $userinfo.wx_img : ''}" onerror="javascript:this.style.display='none';">
+	                    </div>
+	                    <div class="layui-input-inline w450">
+			            	<div class="site-demo-upload upload-img fl ml5">
+				                <div class="site-demo-upbar">
+				                    <input type="file" name="filewximg" class="layui-upload-file" id="upload-image-wximg">
+				                </div>
+				        	</div>
+			            </div>
+	                </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"><font class="cred">*</font>公司介绍</label>
+			            <div class="layui-input-inline">
+			                <textarea name="introduce" class="layui-textarea w700" lay-verify="required">{$userinfo.introduce ? $userinfo.introduce : ''}</textarea>
+			            </div>
+			        </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"><font class="cred">*</font>banner1</label>
+	                    <div class="layui-input-inline">
+							<input id="pathbanner1" class="layui-input" type="text" name="banner1" value="{$userinfo.banner1 ? $userinfo.banner1 : ''}" lay-verify="required"><br>
+							<img id="img_banner1" class="defimg" src="{$userinfo.banner1 ? $userinfo.banner1 : ''}" onerror="javascript:this.style.display='none';">
+	                    </div>
+	                    <div class="layui-input-inline w450">
+			            	<div class="site-demo-upload upload-img fl ml5">
+				                <div class="site-demo-upbar">
+				                    <input type="file" name="filebanner1" class="layui-upload-file" id="upload-image-banner1">
+				                </div>
+				        	</div>
+			            </div>
+	                </div>
+	                
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">banner2</label>
+	                    <div class="layui-input-inline">
+							<input id="pathbanner2" class="layui-input" type="text" name="banner2" value="{$userinfo.banner2 ? $userinfo.banner2 : ''}"><br>
+							<img id="img_banner2" class="defimg" src="{$userinfo.banner2 ? $userinfo.banner2 : ''}" onerror="javascript:this.style.display='none';">
+	                    </div>
+	                    <div class="layui-input-inline w450">
+			            	<div class="site-demo-upload upload-img fl ml5">
+				                <div class="site-demo-upbar">
+				                    <input type="file" name="filebanner2" class="layui-upload-file" id="upload-image-banner2">
+				                </div>
+				        	</div>
+			            </div>
+	                </div>
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">banner3</label>
+	                    <div class="layui-input-inline">
+							<input id="pathbanner3" class="layui-input" type="text" name="banner3" value="{$userinfo.banner3 ? $userinfo.banner3 : ''}"><br>
+							<img id="img_banner3" class="defimg" src="{$userinfo.banner3 ? $userinfo.banner3 : ''}" onerror="javascript:this.style.display='none';">
+	                    </div>
+	                    <div class="layui-input-inline w450">
+			            	<div class="site-demo-upload upload-img fl ml5">
+				                <div class="site-demo-upbar">
+				                    <input type="file" name="filebanner3" class="layui-upload-file" id="upload-image-banner3">
+				                </div>
+				        	</div>
+			            </div>
+	                </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              	<button class="btn" lay-submit="" lay-filter="save" data-href='{:url('mediauser')}'>提交</button>
+	                    </div>
+			        </div>
+
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+<script>
+	layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+        var select = $('.area select');
+
+        //上传图片
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'filelogo'])}" //上传接口
+            ,before: function(input){}
+            ,title:'上传图片'
+            ,elem: '#upload-image-logo'
+            ,method: 'post'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#pathlogo1").val(data.image_name);
+                    $("#img_logo1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+        //微信图片
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'filewximg'])}" //上传接口
+            ,before: function(input){}
+            ,title:'上传图片'
+            ,elem: '#upload-image-wximg'
+            ,method: 'post'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#pathwximg1").val(data.image_name);
+                    $("#img_wximg1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+		//banner1
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'filebanner1'])}" //上传接口
+            ,before: function(input){}
+            ,title:'上传图片'
+            ,elem: '#upload-image-banner1'
+            ,method: 'post'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#pathbanner1").val(data.image_name);
+                    $("#img_banner1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+
+		//banner2
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'filebanner2'])}" //上传接口
+            ,before: function(input){}
+            ,title:'上传图片'
+            ,elem: '#upload-image-banner2'
+            ,method: 'post'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#pathbanner2").val(data.image_name);
+                    $("#img_banner2").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+
+		//banner3
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'filebanner3'])}" //上传接口
+            ,before: function(input){}
+            ,title:'上传图片'
+            ,elem: '#upload-image-banner3'
+            ,method: 'post'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#pathbanner3").val(data.image_name);
+                    $("#img_banner3").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.status == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('datacount/mediauser')}");
+                            }else {
+                                common.layerAlertE(info.msg, '提示');
+                            }
+                        },
+                        beforeSend: function () {
+                            //$(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+		// 地区
+		var init = function init() {
+			var data =  area;
+			select.each(function (i) {
+				var el = select.eq(i);
+				var placeholder = el.attr('data-placeholder');
+				var option = placeholder ? '<option value="">' + placeholder + '</option>' : '';
+				var selected = el.attr('data-selected');
+				if (selected) selected = selected.split('|')[0];
+				for (var k in data) {
+					var is_selected = k == selected ? 'selected="selected"' : '';
+					option += '<option ' + is_selected + ' value="' + k + '|' + data[k]['name'] + '">' + data[k]['name'] + '</option>';
+				}
+				data = selected ? data[selected]['child'] : null;
+				el.html(option);
+			});
+			form.render('select');
+		};
+		init();
+
+		var _get = function _get(data, code) {
+			for (var k in data) {
+				if (k == code) {
+					return data[k]['child'];
+				} else if (data[k].hasOwnProperty('child')) {
+					var child = _get(data[k]['child'], code);
+					if (child) {
+						return child;
+					}
+				}
+			}
+		};
+
+		form.on('select(linkage)', function (data) {
+			var index = select.index(data.elem);
+			data = _get(area, data.value.split('|')[0]);
+			select.each(function (i) {
+				if (i > index) {
+					var el = select.eq(i);
+					var placeholder = el.attr('data-placeholder');
+					var option = placeholder ? '<option value="">' + placeholder + '</option>' : '';
+					if (i == index + 1) {
+						for (var k in data) {
+							option += '<option value="' + k + '|' + data[k]['name'] + '">' + data[k]['name'] + '</option>';
+						}
+					}
+					el.html(option);
+				}
+			});
+			form.render('select');
+		});
+    });
+
+
+</script>
+</body>
+</html>

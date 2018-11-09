@@ -10,7 +10,40 @@ class CategoryModel extends Model
 
     public function getAllCategory()
     {
-        return $this->order('sort asc')->select();
+        $groupid = db('admin')->where(['id'=>session('admin_uid')])->value('groupid');
+        $role = new UserType();
+        $catlist = $role->getCatlistById($groupid);
+
+        $where = $catlist ? ['id'=>['IN',$catlist]] : 1;
+        return $this->where($where)->order('sort asc')->select();
+    }
+
+    public function getNodeInfo($id)
+    {
+        $groupid = db('admin')->where(['id'=>session('admin_uid')])->value('groupid');
+        $role = new UserType();
+        $catlist = $role->getCatlistById($groupid);
+
+        $where = $catlist ? ['id'=>['IN',$catlist]] : 1;
+        $result = $this->where($where)->field('id,title,pid')->select();
+        $str = "";
+        $role = new UserType();
+        $rule = $role->getCatlistById($id);
+
+        if(!empty($rule)){
+            $rule = explode(',', $rule);
+        }
+        foreach($result as $key=>$vo){
+            $str .= '{ "id": "' . $vo['id'] . '", "pId":"' . $vo['pid'] . '", "name":"' . $vo['title'].'"';
+
+            if(!empty($rule) && in_array($vo['id'], $rule)){
+                $str .= ' ,"checked":1';
+            }
+
+            $str .= '},';
+        }
+
+        return "[" . substr($str, 0, -1) . "]";
     }
 
     public function insertCategory($param)
@@ -23,6 +56,10 @@ class CategoryModel extends Model
             if (in_array($param['etitle'], $this->sysfield)) {
                 return ['code' => -1, 'data' => '', 'msg' => "分类别名不能为系统关键字,关键字列表：".implode(' , ', $this->sysfield)];
             }
+            $param['tpl_cover'] = $param['tpl_cover'] == "选择模板" ? '' : $param['tpl_cover'];
+            $param['tpl_list'] = $param['tpl_list'] == "选择模板" ? '' : $param['tpl_list'];
+            $param['tpl_show'] = $param['tpl_show'] == "选择模板" ? '' : $param['tpl_show'];
+
             $param['isarea'] = array_key_exists("isarea", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $param['target'] = array_key_exists("target", $param) ? 1 : 0;
@@ -55,7 +92,7 @@ class CategoryModel extends Model
                     continue;
                 }
                 $datalist[$k]['isarea'] = 0;
-                $datalist[$k]['status'] = 0;
+                $datalist[$k]['status'] = 1;
                 $datalist[$k]['target'] = 0;
             }
             $result = $this->saveAll($datalist);
@@ -80,6 +117,11 @@ class CategoryModel extends Model
             if (in_array($param['etitle'], $this->sysfield)) {
                 return ['code' => -1, 'data' => '', 'msg' => "分类别名不能为系统关键字,关键字列表：".implode(' , ', $this->sysfield)];
             }
+
+            $param['tpl_cover'] = $param['tpl_cover'] == "选择模板" ? '' : $param['tpl_cover'];
+            $param['tpl_list'] = $param['tpl_list'] == "选择模板" ? '' : $param['tpl_list'];
+            $param['tpl_show'] = $param['tpl_show'] == "选择模板" ? '' : $param['tpl_show'];
+
             $param['isarea'] = array_key_exists("isarea", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $param['target'] = array_key_exists("target", $param) ? 1 : 0;
@@ -123,4 +165,5 @@ class CategoryModel extends Model
         }
         return $arr;
     }
+
 }

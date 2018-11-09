@@ -29,15 +29,17 @@ class Show extends Common
 		//非正常独立内容链接不显示
 		
 	    if ($content['area'] != '') {
-	    	$area = config('sys.sys_area') ? db('area')->where('etitle', config('sys.sys_area'))->find() : [];
+	    	$area = session('sys_areainfo');
 	    	if ($area) {
 	    		if (!strstr($content['area'], ','.$area['id'].',')) {
 		    		$this->error('非正常独立内容链接不显示');
 					exit();
 		    	}
 	    	}else{
-	    		$this->error('非正常独立内容链接不显示');
-				exit();
+	    		if (!strstr($content['area'], ',88888888,')) {
+	    			$this->error('非正常独立内容链接不显示');
+					exit();
+	    		}
 	    	}
 	    }
 
@@ -64,12 +66,18 @@ class Show extends Common
 
 		$content['ys_title'] = $content['title'];//记录原始title
 
+		$content = $conmodel->getContentArea($content);
+		
 		if ($cw !== '') {
-			$cwkey = explode(',', config('sys.seo_cwkeyword'));
-			$content['title'] = $content['title'].$cwkey[$cw];
+			if (is_numeric($cw)) {
+				$cwkey = explode(',', config('sys.seo_cwkeyword'));
+				$content['title'] = $content['title'].$cwkey[$cw];
+			}else{
+				$content['title'] = $cw;
+			}
 		}
 
-		$content = $conmodel->getContentArea($content);
+		
 
 		$prev = $conmodel->getContentPrev($category['id'], $content['id']);
 		$next = $conmodel->getContentNext($category['id'], $content['id']);
@@ -82,8 +90,6 @@ class Show extends Common
 		$content['nexturl'] = $next['infourl'];
 		$content['nexttitle'] = $next['infotitle'];
 
-
-		
 		$content = update_str_dq($content, config('sys.sys_area'));
 		$this->assign([
 			'content' => $content,

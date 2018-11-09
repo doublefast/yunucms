@@ -1,0 +1,101 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <input name="type" type="hidden" value="manymanysitelink">
+					<div class="layui-form-item">
+			            <label class="layui-form-label">关键词名称</label>
+			            <div class="layui-input-inline w700">
+			                <textarea name="name" class="layui-input" style="height:300px;width:180px;display:inline;" placeholder="例如：百度" lay-verify="required"></textarea>
+                            <textarea name="url" class="layui-input" style="height:300px;width:180px;display:inline;" placeholder="PC链接地址" lay-verify="required"></textarea>
+                            <textarea name="wapurl" class="layui-input" style="height:300px;width:180px;display:inline;" placeholder="WAP链接地址" lay-verify="required"></textarea>
+                            <br>
+                            <font class="font_tip">* 一行一个，一一对应<br>内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
+			            </div>
+
+			        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">替换个数</label>
+                        <div class="layui-input-block">
+                            <input name="num" lay-verify="number" autocomplete="off" value="0" placeholder="输入数量" class="layui-input w300" type="text">
+                        </div>
+                    </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">打开方式</label>
+			            <div class="layui-input-inline">
+                            <input type="radio" name="otype" value="_blank" title="新开窗口" checked>
+                            <input type="radio" name="otype" value="" title="当前窗口">
+			            </div>
+			        </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否启用</label>
+                        <div class="layui-input-block">
+                            <input type="checkbox" checked="" name="status" lay-skin="switch" lay-filter="switchTest">
+                        </div>
+                    </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('addsitelink')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(), common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('sitelink/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

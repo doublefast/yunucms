@@ -15,7 +15,7 @@ class LinkModel extends Model
     public function insertLink($param)
     {
         try{
-            $param['area'] = isset($param['area']) ? ','.$param['area'].',' : '';
+            $param['area'] = $param['area'] ? ','.$param['area'].',' : '';
             $result = $this->allowField(true)->save($param);
             if(false === $result){            
                 return ['code' => -1, 'data' => '', 'msg' => $this->getError()];
@@ -30,7 +30,7 @@ class LinkModel extends Model
     public function editLink($param)
     {
         try{
-            $param['area'] = isset($param['area']) ? ','.$param['area'].',' : '';
+            $param['area'] = $param['area'] ? ','.$param['area'].',' : '';
             $result =  $this->allowField(true)->save($param, ['id' => $param['id']]);
             if(false === $result){            
                 return ['code' => 0, 'data' => '', 'msg' => $this->getError()];

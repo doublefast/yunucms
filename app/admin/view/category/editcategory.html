@@ -11,209 +11,219 @@
 				</div>
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
 					<input type="hidden" name="id" value="{$info.id}">
-					<div class="layui-form-item">
-			            <label class="layui-form-label">栏目名称</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="title" value="{$info.title}" placeholder="栏目名称" lay-verify="required">
-			            </div>
-			        </div>
+					<div class="layui-tab">
+					  	<ul class="layui-tab-title">
+						    <li class="layui-this">基本信息</li>
+						    <li>SEO设置</li>
+						    <li>附加设置</li>
+						    <li>其他设置</li>
+					  	</ul>
+					  	<div class="layui-tab-content">
+						    <div class="layui-tab-item layui-show">
+						    	<!--基本信息-->
+						    	<div class="layui-form-item">
+						            <label class="layui-form-label">栏目名称</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input" type="text" name="title" value="{$info.title}" placeholder="栏目名称" lay-verify="required">
+						            </div>
+						        </div>
 
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">副名称</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="subtitle" value="{$info.subtitle}" placeholder="副名称" >
-			            </div>
-			        </div>
-					
-					<div class="layui-form-item">
-			            <label class="layui-form-label">所属栏目</label>
-			            <div class="layui-input-inline w300">
-			                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required">
-			                    <option selected="selected" value="0">默认顶级</option>
-			                    {volist name="catelist" id="v"}
-			                    <option value="{$v.id}" {if $info.pid eq $v.id}selected{/if}{if $v.id eq $info['id']}disabled{/if}>{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
-			                    {/volist}
-			                </select>
-			            </div>
-			        </div>
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">副名称</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input" type="text" name="subtitle" value="{$info.subtitle}" placeholder="副名称" >
+						            </div>
+						        </div>
+								
+								<div class="layui-form-item">
+						            <label class="layui-form-label">所属栏目</label>
+						            <div class="layui-input-inline w300">
+						                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required">
+						                    <option selected="selected" value="0">默认顶级</option>
+						                    {volist name="catelist" id="v"}
+						                    <option value="{$v.id}" {if $info.pid eq $v.id}selected{/if}{if $v.id eq $info['id']}disabled{/if}>{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+						                    {/volist}
+						                </select>
+						            </div>
+						        </div>
 
-					<div class="layui-form-item">
-			            <label class="layui-form-label">排序</label>
-			            <div class="layui-input-inline">
-			                <input name="sort" lay-verify="number" autocomplete="off" value="{$info.sort}" placeholder="输入顺序" class="layui-input w300" type="text">
-			            </div>
-			        </div>
+								<div class="layui-form-item">
+						            <label class="layui-form-label">排序</label>
+						            <div class="layui-input-inline">
+						                <input name="sort" lay-verify="number" autocomplete="off" value="{$info.sort}" placeholder="输入顺序" class="layui-input w300" type="text">
+						            </div>
+						        </div>
 
-			        <div class="layui-form-item">
-	                    <label class="layui-form-label">栏目图片</label>
-	                    <div class="layui-input-inline">
-							<input id="path1" class="layui-input" type="text" name="pic" value="{$info.pic}"><br>
-							<img id="img_path1" class="defimg" src="{$info.pic}" onerror="javascript:this.style.display='none';">
-	                    </div>
-	                    <div class="layui-input-inline w450">
-			            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
-			            	<div class="site-demo-upload upload-img fl ml5">
-				                <div class="site-demo-upbar">
-				                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+						        <div class="layui-form-item">
+				                    <label class="layui-form-label">栏目图片</label>
+				                    <div class="layui-input-inline">
+										<input id="path1" class="layui-input" type="text" name="pic" value="{$info.pic}"><br>
+										<img id="img_path1" class="defimg" src="{$info.pic}" onerror="javascript:this.style.display='none';">
+				                    </div>
+				                    <div class="layui-input-inline w450">
+						            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
+						            	<div class="site-demo-upload upload-img fl ml5">
+							                <div class="site-demo-upbar">
+							                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+							                </div>
+							        	</div>
+						            </div>
 				                </div>
-				        	</div>
-			            </div>
-	                </div>
-					
-					<div class="title_bar mb20">
-						模板设置
+								
+								<div class="title_bar mb20">
+									模板设置
+								</div>
+								
+								<div class="layui-form-item">
+						            <label class="layui-form-label">内容模型</label>
+						            <div class="layui-input-inline w300">
+						                <select data-val="true" lay-filter="mid" name="mid" lay-verify="required">
+						                	<option selected="selected" value="">选择模型</option>
+						                    {volist name="modellist" id="v"}
+						                    <option value="{$v.id}" {if $info.mid eq $v.id}selected{/if}>{$v.title}</option>
+						                    {/volist}
+						                </select>
+						                <font class="font_tip">模型修改对该分类下的数据会产生影响,谨慎操作！</font>
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">封面页模版</label>
+						            <div class="layui-input-inline w300">
+						                <select data-val="true" lay-filter="tpl_cover" name="tpl_cover">
+						                	<option selected="selected" value="选择模板">选择模板</option>
+						                    {volist name="coverfile" id="v"}
+						                    <option value="{$v}" {if $info.tpl_cover eq $v}selected{/if}>{$v}</option>
+						                    {/volist}
+						                </select>
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">列表页模版</label>
+						            <div class="layui-input-inline w300" >
+						                <select data-val="true" lay-filter="tpl_list" name="tpl_list">
+						                	<option selected="selected" value="选择模板">选择模板</option>
+						                    {volist name="listfile" id="v"}
+						                    <option value="{$v}" {if $info.tpl_list eq $v}selected{/if}>{$v}</option>
+						                    {/volist}
+						                </select>
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">内容页模版</label>
+						            <div class="layui-input-inline w300" >
+						                <select data-val="true" lay-filter="tpl_show" name="tpl_show">
+						                	<option selected="selected" value="选择模板">选择模板</option>
+						                    {volist name="showfile" id="v"}
+						                    <option value="{$v}" {if $info.tpl_show eq $v}selected{/if}>{$v}</option>
+						                    {/volist}
+						                </select>
+						            </div>
+						        </div>
+						    </div>
+
+						    <div class="layui-tab-item">
+						    	<!--SEO设置-->
+						    	<div class="layui-form-item">
+						            <label class="layui-form-label">SEO标题</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input w700" type="text" name="seo_title" value="{$info.seo_title}" placeholder="SEO标题" >
+						            </div>
+						        </div>
+
+								<div class="layui-form-item">
+						            <label class="layui-form-label">SEO关键词</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input w700" type="text" name="seo_keywords" value="{$info.seo_keywords}" placeholder="SEO关键词" >
+						            </div>
+						        </div>
+
+								<div class="layui-form-item">
+						            <label class="layui-form-label">SEO描述</label>
+						            <div class="layui-input-inline">
+						                <textarea name="seo_desc" placeholder="SEO描述" class="layui-textarea w700">{$info.seo_desc}</textarea>
+						            </div>
+						        </div>
+						    </div>
+
+						    <div class="layui-tab-item">
+						    	<!--附加设置-->
+						    	<div class="layui-form-item">
+						            <label class="layui-form-label">栏目简介</label>
+						            <div class="layui-input-inline">
+						                <textarea name="desc" id="desc">{$info.desc}</textarea>
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+			                        <label class="layui-form-label">栏目内容</label>
+			                        <div class="layui-input-inline">
+			                            <textarea name="content" id="content">{$info.content}</textarea>
+			                        </div>
+			                    </div>
+						    </div>
+
+						    <div class="layui-tab-item">
+						    	<!--其他设置-->
+						    	<div class="layui-form-item">
+				                    <label class="layui-form-label">栏目属性</label>
+				                    <div class="layui-input-inline" style="width:450px;">
+				                        <input type="radio" name="cover" value="0" {if $info.cover eq 0}checked{/if} title="列表(允许发表文档)" checked>
+				                        <input type="radio" name="cover" value="1" {if $info.cover eq 1}checked{/if} title="频道(不允许发表文档)">
+				                    </div>
+				                </div>
+
+								<div class="layui-form-item">
+						            <label class="layui-form-label">外部链接</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input" type="text" name="jumpurl" value="{$info.jumpurl}" placeholder="外部链接">
+						            </div>
+						            <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
+						        </div>
+
+						        <div class="layui-form-item">
+						            <label class="layui-form-label">栏目别名</label>
+						            <div class="layui-input-inline">
+						                <input class="layui-input" type="text" name="etitle" value="{$info.etitle}" placeholder="不填写则自动生成">
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+			                        <label class="layui-form-label">地区分站</label>
+			                        <div class="layui-input-inline">
+			                            <input type="checkbox" {if $info.isarea eq 1}checked{/if} name="isarea" lay-skin="switch" lay-filter="switchTest" title="开关">
+			                            <div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
+			                        </div>
+			                    </div>
+
+								<div class="layui-form-item">
+				                    <label class="layui-form-label">是否显示</label>
+				                    <div class="layui-input-inline">
+				                        <input type="checkbox" {if $info.status eq 1}checked{/if} name="status" lay-skin="switch" lay-filter="switchTest">
+				                    </div>
+				                </div>
+
+				                <div class="layui-form-item">
+				                    <label class="layui-form-label">新窗口打开</label>
+				                    <div class="layui-input-inline">
+				                        <input type="checkbox" {if $info.target eq 1}checked{/if} name="target" lay-skin="switch" lay-filter="switchTest">
+				                    </div>
+				                </div>
+								
+								<div class="layui-form-item">
+				                    <label class="layui-form-label">导航栏显示</label>
+				                    <div class="layui-input-inline" style="width:450px;">
+				                        <input type="radio" name="nav" value="0" title="不显示" {if $info.nav eq 0}checked{/if}>
+				                        <input type="radio" name="nav" value="1" title="主导航" {if $info.nav eq 1}checked{/if}>
+				                        <input type="radio" name="nav" value="2" title="尾导航" {if $info.nav eq 2}checked{/if}>
+				                        <input type="radio" name="nav" value="3" title="都显示" {if $info.nav eq 3}checked{/if}>
+				                    </div>
+				                </div>
+						    </div>
+						</div>
 					</div>
-					
-					<div class="layui-form-item">
-			            <label class="layui-form-label">内容模型</label>
-			            <div class="layui-input-inline w300">
-			                <select data-val="true" lay-filter="mid" name="mid" lay-verify="required">
-			                	<option selected="selected" value="">选择模型</option>
-			                    {volist name="modellist" id="v"}
-			                    <option value="{$v.id}" {if $info.mid eq $v.id}selected{/if}>{$v.title}</option>
-			                    {/volist}
-			                </select>
-			                <font class="font_tip">模型修改对该分类下的数据会产生影响,谨慎操作！</font>
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">封面页模版</label>
-			            <div class="layui-input-inline w300">
-			                <select data-val="true" lay-filter="tpl_cover" name="tpl_cover">
-			                	<option selected="selected" value="">选择模版</option>
-			                    {volist name="coverfile" id="v"}
-			                    <option value="{$v}" {if $info.tpl_cover eq $v}selected{/if}>{$v}</option>
-			                    {/volist}
-			                </select>
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">列表页模版</label>
-			            <div class="layui-input-inline w300" >
-			                <select data-val="true" lay-filter="tpl_list" name="tpl_list">
-			                	<option selected="selected" value="">选择模版</option>
-			                    {volist name="listfile" id="v"}
-			                    <option value="{$v}" {if $info.tpl_list eq $v}selected{/if}>{$v}</option>
-			                    {/volist}
-			                </select>
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">内容页模版</label>
-			            <div class="layui-input-inline w300" >
-			                <select data-val="true" lay-filter="tpl_show" name="tpl_show">
-			                	<option selected="selected" value="">选择模版</option>
-			                    {volist name="showfile" id="v"}
-			                    <option value="{$v}" {if $info.tpl_show eq $v}selected{/if}>{$v}</option>
-			                    {/volist}
-			                </select>
-			            </div>
-			        </div>
-
-					<div class="title_bar mb20">
-						搜索引擎优化
-					</div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">SEO标题</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="seo_title" value="{$info.seo_title}" placeholder="SEO标题" >
-			            </div>
-			        </div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">SEO关键词</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="seo_keywords" value="{$info.seo_keywords}" placeholder="SEO关键词" >
-			            </div>
-			        </div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">SEO描述</label>
-			            <div class="layui-input-inline">
-			                <textarea name="seo_desc" placeholder="SEO描述" class="layui-textarea w700">{$info.seo_desc}</textarea>
-			            </div>
-			        </div>
-
-					<div class="title_bar mb20">
-						附加设置
-					</div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">栏目简介</label>
-			            <div class="layui-input-inline">
-			                <textarea name="desc" id="desc">{$info.desc}</textarea>
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-                        <label class="layui-form-label">栏目内容</label>
-                        <div class="layui-input-inline">
-                            <textarea name="content" id="content">{$info.content}</textarea>
-                        </div>
-                    </div>
-                    
-					<div class="title_bar mb20">
-						其他设置
-					</div>
-					
-					<div class="layui-form-item">
-	                    <label class="layui-form-label">栏目属性</label>
-	                    <div class="layui-input-inline" style="width:450px;">
-	                        <input type="radio" name="cover" value="0" {if $info.cover eq 0}checked{/if} title="列表(允许发表文档)" checked>
-	                        <input type="radio" name="cover" value="1" {if $info.cover eq 1}checked{/if} title="频道(不允许发表文档)">
-	                    </div>
-	                </div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">外部链接</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="jumpurl" value="{$info.jumpurl}" placeholder="外部链接">
-			            </div>
-			            <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
-			        </div>
-
-			        <div class="layui-form-item">
-			            <label class="layui-form-label">栏目别名</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" name="etitle" value="{$info.etitle}" placeholder="不填写则自动生成">
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item">
-                        <label class="layui-form-label">地区分站</label>
-                        <div class="layui-input-inline">
-                            <input type="checkbox" {if $info.isarea eq 1}checked{/if} name="isarea" lay-skin="switch" lay-filter="switchTest" title="开关">
-                            <div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
-                        </div>
-                    </div>
-
-					<div class="layui-form-item">
-	                    <label class="layui-form-label">是否显示</label>
-	                    <div class="layui-input-inline">
-	                        <input type="checkbox" {if $info.status eq 1}checked{/if} name="status" lay-skin="switch" lay-filter="switchTest">
-	                    </div>
-	                </div>
-
-	                <div class="layui-form-item">
-	                    <label class="layui-form-label">新窗口打开</label>
-	                    <div class="layui-input-inline">
-	                        <input type="checkbox" {if $info.target eq 1}checked{/if} name="target" lay-skin="switch" lay-filter="switchTest">
-	                    </div>
-	                </div>
-					
-					<div class="layui-form-item">
-	                    <label class="layui-form-label">导航栏显示</label>
-	                    <div class="layui-input-inline" style="width:450px;">
-	                        <input type="radio" name="nav" value="0" title="不显示" {if $info.nav eq 0}checked{/if}>
-	                        <input type="radio" name="nav" value="1" title="主导航" {if $info.nav eq 1}checked{/if}>
-	                        <input type="radio" name="nav" value="2" title="尾导航" {if $info.nav eq 2}checked{/if}>
-	                        <input type="radio" name="nav" value="3" title="都显示" {if $info.nav eq 3}checked{/if}>
-	                    </div>
-	                </div>
 
 					<div class="layui-form-item">
 	                    <label class="layui-form-label"></label>
@@ -260,7 +270,7 @@ layui.use(['form','common','upload'], function(){
             ,title:'上传图片'
             ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
             ,method: 'post' //上传接口的http类型
-            ,ext: 'jpg|png|gif'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
             ,type:'images'
             ,success: function(data){ //上传成功后的回调
                 if(data.status == 1){
@@ -284,6 +294,21 @@ layui.use(['form','common','upload'], function(){
 			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
 			});
 		});
+
+        $('[lay-submit]').click(function(event) {
+	        var submit = $(this);
+	        var editor_source_btn = $('.edui-for-source .edui-state-checked .edui-button-body');
+	        if (editor_source_btn.length) {
+	            if (event) {
+	                event.preventDefault();
+	                event.stopPropagation();
+	            }
+	            editor_source_btn.trigger('click');
+	            setTimeout(function(){
+	                submit.trigger('click')
+	            }, 500 * editor_source_btn.length);
+	        }
+	    });
 
         //监听提交
         form.on('submit(save)', function(data){

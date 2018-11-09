@@ -9,19 +9,72 @@
 				<div class="title">
 					<span>{$position.name}</span>
 				</div>
-				<a class="btn mr10" href="{:url('addcategory')}">新增</a><a class="btn mr10" href="{:url('batchaddcategory')}">批量新增</a><a class="btn do-action mr10" id="doDelete">批量删除</a><a class="btn do-action mr10" id="doOpen">一键开启地区</a><a class="btn do-action mr10" id="doClose">一键关闭地区</a>
+				<a class="btn mr10" href="{:url('addcategory')}">新增栏目</a>
+                <div class="btn-group">
+                    <button type="button" class="btn dropdown-toggle colorfff" data-toggle="dropdown">批量操作&nbsp;&nbsp;<span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{:url('batchaddcategory')}">新增</a></li>
+                        <li><a class="do-action" id="doDelete">删除</a></li>
+                        <li><a class="do-action doTemplate">设置模板</a></li>
+                        <li><a class="do-action doArea" rel="1">开启地区</a></li>
+                        <li><a class="do-action doArea" rel="0">关闭地区</a></li>
+                        <li><a class="do-action doNav" rel="1">开启主导航</a></li>
+                        <li><a class="do-action doNav" rel="0">关闭主导航</a></li>
+                    </ul>
+                </div>
+            
+                <div class="none" id="template" style="padding:20px;">
+                    <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">封面页模版</label>
+                            <div class="layui-input-inline w300">
+                                <select data-val="true" lay-filter="tpl_cover" name="tpl_cover" id="tpl_cover" >
+                                    <option selected="selected" value="选择模板">选择模板</option>
+                                    {volist name="coverfile" id="v"}
+                                    <option value="{$v}">{$v}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">列表页模版</label>
+                            <div class="layui-input-inline w300">
+                                <select data-val="true" lay-filter="tpl_list" name="tpl_list" id="tpl_list" >
+                                    <option selected="selected" value="选择模板">选择模板</option>
+                                    {volist name="listfile" id="v"}
+                                    <option value="{$v}">{$v}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">内容页模版</label>
+                            <div class="layui-input-inline w300">
+                                <select data-val="true" lay-filter="tpl_show" name="tpl_show" id="tpl_show">
+                                    <option selected="selected" value="选择模板">选择模板</option>
+                                    {volist name="showfile" id="v"}
+                                    <option value="{$v}">{$v}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
 				<div class="table">
 					<table>
 						<thead>
 							<tr>
                                 <th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
-								<th class="sort" width="80"><span>ID</span></th>
+								<th class="sort" width="50"><span>ID</span></th>
 								<th class="sort"><span>栏目名称</span></th>
-								<th class="sort" width="150"><span>所属模型</span></th>
-								<th class="sort" width="80"><span>显示</span></th>
-								<th class="sort" width="150"><span>导航栏显示</span></th>
-								<th class="sort" width="80"><span>排序</span></th>
-								<th width="250"><span>操作</span></th>
+                                <th class="sort" width="120"><span>别名</span></th>
+								<th class="sort" width="80"><span>所属模型</span></th>
+								<th class="sort" width="80"><span>导航栏</span></th>
+								<th class="sort" width="60"><span>排序</span></th>
+								<th width="200"><span>操作</span></th>
 							</tr>
 						</thead>
 						<tbody class="layuitable">
@@ -33,16 +86,19 @@
 									<td align="left">
 										{if $v.pid neq 0}
 				                    		<span style="display:inline-block;width:{$v.leftpin}px;"></span>├  
-				                    	{/if} {$v.title}
+				                    	{/if} <a href="{$v['preview']}" target="_blank">{$v.title}</a>
 									</td>
+                                    <td>
+                                        <input class="etitle" type="text" data-id="{$v.id}" value="{$v.etitle}"/>
+                                    </td>
+                                    <!-- 
+                                    <td>
+                                        <a href="javascript:;" class="change_status" data-id="{$v.id}"> <div class="layui-unselect layui-form-switch {if condition="$v.status eq 1"}layui-form-onswitch{/if}"><i></i></div> </a>
+                                    </td> -->
 									<td>{$v.mname}</td>
-									<td>
-			                        	<a href="javascript:;" class="change_status" data-id="{$v.id}"> <div class="layui-unselect layui-form-switch {if condition="$v.status eq 1"}layui-form-onswitch{/if}"><i></i></div> </a>
-			                        </td>
 									<td>{$v.tname}</td>
 									<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td>
 									<td>
-										<a class="btn" href="{$v['preview']}" target="_blank">预览</a>
                                         <a class="btn" href="{if $v.cover eq 1}javascript:void(){else}{:url('content/index', ['cid'=>$v['id']])}{/if}" {if $v.cover eq 1}disabled{/if}>内容</a>
                                         <a class="btn do-action" data-type="doEdit" data-href="{:url('editcategory')}" data-id="{$v.id}">编辑</a>
 		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delcategory',['ids'=>$v['id']])}">删除</a>
@@ -56,12 +112,15 @@
 					</table>
 				</div>
 			</div>
+
+           
+
 		</div>
 	</div>
 <script>
     var laytpl,laypage;
-    layui.use(['layer', 'common', 'icheck'], function () {
-        var $ = layui.jquery, layer = layui.layer, common = layui.common;
+    layui.use(['form','layer', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common,$form = $('form');;
         laypage = layui.laypage;
         //加载单选框样式
         $(("[type='checkbox']")).iCheck({
@@ -120,8 +179,8 @@
         }
     });
 
-    //一键开启地区
-    $(document).on('click','#doOpen', function () {
+    //一键开启地区/一键关闭地区
+    $(document).on('click','.doArea', function () {
         if (1 > $(".layuitable input:checked").size()){
             layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
         }else{
@@ -129,7 +188,7 @@
             $.ajax({
                 url: '{:url("doisarea")}',
                 dataType: "json",
-                data:{'ids':c,'isarea':1},
+                data:{'ids':c,'isarea':$(this).attr('rel')},
                 type: "POST",
                 success: function(data){
                     if(data.code == 1){
@@ -143,16 +202,16 @@
             });
         }
     });
-    //一键关闭地区
-    $(document).on('click','#doClose', function () {
+    //一键开启主导航/一键关闭主导航
+    $(document).on('click','.doNav', function () {
         if (1 > $(".layuitable input:checked").size()){
             layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
         }else{
             for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
             $.ajax({
-                url: '{:url("doisarea")}',
+                url: '{:url("doisnav")}',
                 dataType: "json",
-                data:{'ids':c,'isarea':0},
+                data:{'ids':c,'isnav':$(this).attr('rel')},
                 type: "POST",
                 success: function(data){
                     if(data.code == 1){
@@ -167,6 +226,42 @@
         }
     });
 
+    //批量设置模板
+    $(document).on('click','.doTemplate', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            var diqulay = layer.open({
+                title: '批量设置模板',
+                type: 1,
+                content: $("#template"),
+                skin: 'layer_diqu',
+                area: ['500px','300px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                    var tpl_cover = $('#tpl_cover').val();
+                    var tpl_list = $('#tpl_list').val();
+                    var tpl_show = $('#tpl_show').val();
+
+                    $.ajax({
+                        url: '{:url("dotemplate")}',
+                        dataType: "json",
+                        data:{'ids':c, 'tpl_cover':tpl_cover, 'tpl_list':tpl_list, 'tpl_show':tpl_show},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                });
+                                layer.close(diqulay);
+                            }
+                        }
+                    }); 
+                }
+            });
+        }
+    });
 
     $(document).on('blur','.sort', function () {
         var id = $(this).attr('data-id');
@@ -175,6 +270,25 @@
             url: '{:url("sortcategory")}',
             dataType: "json",
             data:{'id':id,'sort':obs.val()},
+            type: "POST",
+            success: function(data){
+                //window.location = window.location;
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
+            }
+        });
+    });
+
+    $(document).on('blur','.etitle', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+            url: '{:url("etitlecategory")}',
+            dataType: "json",
+            data:{'id':id,'etitle':obs.val()},
             type: "POST",
             success: function(data){
                 //window.location = window.location;

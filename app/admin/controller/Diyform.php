@@ -5,6 +5,7 @@ use app\admin\model\DiyfieldModel;
 use app\admin\model\FormconModel;
 use think\Config;
 use think\Db;
+use PHPMailer\PHPMailer;
 
 class Diyform extends Common
 {
@@ -69,7 +70,12 @@ class Diyform extends Common
             }
             return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
         }
+
+        $diyfield = new diyfieldModel();
+        $fieldlist = $diyfield->getAllDiyfield($id, 3);
+
         $this->assign('info', $info);
+        $this->assign('fieldlist', $fieldlist);
         return $this->fetch();
     }
 
@@ -121,32 +127,73 @@ class Diyform extends Common
     {
         $id = input('param.fid');
         $map = ['fid'=>$id];
-
-        $Nowpage = input('get.page') ? input('get.page'):1;
-        $limits = config("paginate.list_rows");
-        $count = Db::name('formcon')->where($map)->count();// 获取总条数
-        $allpage = intval(ceil($count / $limits));//计算总页面
-        $lists = Db::name('formcon')->where($map)->page($Nowpage, $limits)->order('create_time desc')->select();       
-
         $formcon = new formconModel();
-        foreach($lists as $k=>$v){
-            $lists[$k] = $formcon->getOneFormcon($v['id']);
-            $lists[$k]['create_time']=date('Y-m-d H:i:s',$v['create_time']);
-        }
-        $this->assign('Nowpage', $Nowpage); //当前页
-        $this->assign('allpage', $allpage); //总页数 
-        $this->assign('count', $count);
-        $this->assign('fid', $id);
-        if(input('get.page')){
-            return json($lists);
-        }
+        //是否导出
+        if (input('param.type') == 'daochu') {
+            $infolist = Db::name('formcon')->where($map)->select();
+            foreach($infolist as $k=>$v){
+                $infolist[$k] = $formcon->getOneFormcon($v['id']);
+                $infolist[$k]['create_time']=date('Y-m-d H:i:s',$v['create_time']);
+            }
 
-        //显示抬头
-        $fieldlist = Db::name('diyfield')->where(['mid'=>$id,'remark'=>1])->select();
-        $this->assign([
-            'fieldlist' => $fieldlist,
-        ]);
-        return $this->fetch();
+            //显示抬头
+            $fieldlist = Db::name('diyfield')->where(['mid'=>$id,'type'=>3])->select();
+
+            $filesname = iconv("utf-8", "gb2312", "data".time());
+            header("Content-type:application/vnd.ms-excel");
+            header("Content-Disposition:attachment;filename="."data".time().".xls");
+
+            echo "ID\t";
+            echo "提交时间\t";
+            echo "IP\t";
+            echo "已读\t";
+            foreach ($fieldlist as $k => $v) {
+                echo $v['title']."\t";
+            }
+            echo "\n";
+            if (!empty($infolist)){
+                foreach($infolist as $k=>$v){
+                    echo $v['id']."\t";
+                    echo $v['create_time']."\t";
+                    echo $v['ip']."\t";
+                    if ($v['look']) {
+                        echo "已读\t";
+                    }else{
+                        echo "未读\t";
+                    }
+
+                    foreach ($fieldlist as $k1 => $v1) {
+                        echo $v[$v1['field']]."\t";
+                    }
+                    echo "\n";
+                }
+            }
+            exit();
+        }else{
+            $Nowpage = input('get.page') ? input('get.page'):1;
+            $limits = config("paginate.list_rows");
+            $count = Db::name('formcon')->where($map)->count();// 获取总条数
+            $allpage = intval(ceil($count / $limits));//计算总页面
+            $lists = Db::name('formcon')->where($map)->page($Nowpage, $limits)->order('create_time desc')->select();       
+            foreach($lists as $k=>$v){
+                $lists[$k] = $formcon->getOneFormcon($v['id']);
+                $lists[$k]['create_time']=date('Y-m-d H:i:s',$v['create_time']);
+            }
+            $this->assign('Nowpage', $Nowpage); //当前页
+            $this->assign('allpage', $allpage); //总页数 
+            $this->assign('count', $count);
+            $this->assign('fid', $id);
+            if(input('get.page')){
+                return json($lists);
+            }
+
+            //显示抬头
+            $fieldlist = Db::name('diyfield')->where(['mid'=>$id,'remark'=>1,'type'=>3])->order('sort asc')->select();
+            $this->assign([
+                'fieldlist' => $fieldlist,
+            ]);
+            return $this->fetch();
+        }
     }
     public function delformcon(){
         $ids = input('param.ids');
@@ -538,4 +585,48 @@ class Diyform extends Common
         Db::execute("ALTER TABLE `{$tablename}` DROP `{$field}`;");
     }
 
+    public function remind()
+    {
+        $coffile = CONF_PATH.DS.'extra'.DS.'sys.php';
+        if(request()->isAjax()){
+            Config::load($coffile, '', 'sys');
+            $conflist = Config::get('','sys');
+            $param = input('post.');  
+            unset($param['mail_demo']);
+            $param = add_slashes_recursive($param);
+
+            setConfigfile($coffile, add_slashes_recursive(array_merge($conflist, $param)));
+            return json(['code' => 1, 'data' => '', 'msg' => '更新设置成功']);
+            exit();
+        }
+
+        return $this->fetch();
+    }
+    public function demomail(){
+        
+            $param = input('param.');
+
+            $mail = new PHPMailer(true);
+            $mail->CharSet = 'UTF-8';           //设定邮件编码，默认ISO-8859-1，如果发中文此项必须设置，否则乱码
+            $mail->IsSMTP();                    // 设定使用SMTP服务
+            $mail->SMTPDebug = 0;               // SMTP调试功能 0=关闭 1 = 错误和消息 2 = 消息
+            $mail->SMTPAuth = true;             // 启用 SMTP 验证功能
+            $mail->SMTPSecure = 'ssl';          // 使用安全协议
+            $mail->Host = $param['mail_smtp']; // SMTP 服务器
+            $mail->Port = $param['mail_smtpport'];                  // SMTP服务器的端口号
+            $mail->Username = $param['mail_username'];    // SMTP服务器用户名
+            $mail->Password = $param['mail_password'];     // SMTP服务器密码
+            $mail->SetFrom($param['mail_username'], $param['mail_setname']);
+
+            $mail->Subject = "云优CMS_测试邮件";
+            $mail->MsgHTML("当您看到此封邮件时，说明邮件提醒配置参数已经配置成功，感谢您的使用！");
+            $mail->AddAddress($param['mail_demo'], '');
+            $jg =  $mail->Send() ? true : $mail->ErrorInfo;
+            if ($jg != true) {
+                return json(['code' => 2, 'data' => '', 'msg' => '测试邮件发送失败：'.$jg]);
+            }else{
+                return json(['code' => 1, 'data' => '', 'msg' => '测试邮件发送成功']);
+            }
+        
+    }
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>云优CMS-后台登陆</title>
+    <title>{$copy_sysname}-后台登陆</title>
     <link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/layui/css/layui.css">
     <link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/jquery.slider.css">
     <link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/login.css">
@@ -15,7 +15,7 @@
 <body class="login_bg">
     <div class="login_from">
         <div class="login_title">
-            <h1>欢迎登录云优CMS</h1>
+            <h1>欢迎登录{$copy_sysname}</h1>
         </div>
         <form class="layui-form" id="doLogin" action="" method="post">
             <div class="form_group">
@@ -32,7 +32,7 @@
             {/if}
             <button class="layui-btn" lay-submit lay-filter="form">登 录</button>
         </form>
-        <p class="copyright">Powered by <a href="http://www.yunucms.com" target="_blank">YUNUCMS</a> v{$version}</p>
+        <p class="copyright">Powered by <a href="http://{$copy_url}" target="_blank">{$copy_name}</a> v{$version}</p>
     </div>
 
     <script>

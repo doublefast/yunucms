@@ -65,27 +65,52 @@ class Install extends Controller
 	        	return $showstr;
 	        }
 
+	        $mysqli = !version_compare("6.9", PHP_VERSION, ">");
 	        //检查数据库
-	        $link = @mysql_connect($data['DB_HOST'] . ':' . $data['DB_PORT'], $data['DB_USER'], $data['DB_PWD']);
+	        if ($mysqli) {
+		        $link = @mysqli_connect($data['DB_HOST'] . ':' . $data['DB_PORT'], $data['DB_USER'], $data['DB_PWD']);
+		    }else{
+		        $link = @mysql_connect($data['DB_HOST'] . ':' . $data['DB_PORT'], $data['DB_USER'], $data['DB_PWD']);
+		    }
+	        
 	        if(!$link) {
 	            $showstr .= show_msg('数据库连接失败，请检查连接信息是否正确！',false);
 	            return $showstr;
 	        }
-
-	        $mysqlInfo = mysql_get_server_info($link);
+	        if ($mysqli) {
+	        	$mysqlInfo = mysqli_get_server_info($link);
+	        }else{
+	        	$mysqlInfo = mysql_get_server_info($link);
+	        }
+	        
 	        if($mysqlInfo < '5.1.0') {
 	            $showstr .= show_msg('mysql版本低于5.1，无法继续安装！',false);
 	            return $showstr;
 	        }
-	        $status = @mysql_select_db($data['DB_NAME'], $link);
+	        if ($mysqli) {
+	        	$status = @mysqli_select_db($link, $data['DB_NAME']);
+	        }else{
+	        	$status = @mysql_select_db($data['DB_NAME'], $link);
+	        }
+	        
 	        if(!$status) {
 	            //尝试创建数据库
 	            $sql = "CREATE DATABASE IF NOT EXISTS `".$data['DB_NAME']."` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
-	            if(!mysql_query($sql)){
+	            if ($mysqli) {
+		        	$result = !mysqli_query($link, $sql);
+		        }else{
+		        	$result = !mysql_query($sql);
+		        }
+	            if($result){
 	                $showstr .= show_msg('数据库'. $data['DB_NAME'].'自动创建失败，请手动建立数据库！',false);
 	                return $showstr;
 	            }
-	            mysql_select_db($data['DB_NAME'], $link);
+	            if ($mysqli) {
+		        	mysqli_select_db($data['DB_NAME'], $link);
+		        }else{
+		        	mysql_select_db($data['DB_NAME'], $link);
+		        }
+	            
 	        }
 	        $showstr .= show_msg('数据库检查创建完成...');
 	        
@@ -108,13 +133,32 @@ class Install extends Controller
 
 	        //安装数据库
 	        $file = 'data/install.sql';
-	        mysql_query("set names utf8");
+	        if ($mysqli) {
+		        mysqli_query($link, "set names utf8");
+		    }else{
+		       	mysql_query("set names utf8");
+		    }
+	        
 	        $sqlData = mysqlupdate($file, 'yunu_', $data['DB_PREFIX']);
 	        foreach ($sqlData as $sql) {
-	            $rst = mysql_query($sql);
+	        	if ($mysqli) {
+			        $rst = mysqli_query($link, $sql);
+			    }else{
+			       	$rst = mysql_query($sql);
+			    }
 	            if($rst === false){
-	                $showstr .= show_msg(mysql_error(),false);
+	            	if ($mysqli) {
+				        $showstr .= show_msg(mysqli_error(),false);
+				    }else{
+				       	$showstr .= show_msg(mysql_error(),false);
+				    }
 	            }
+	        }
+
+	        $http_host = $_SERVER['HTTP_HOST'];
+	        if (!filter_var($http_host, FILTER_VALIDATE_IP) && !filter_var('http://'.$http_host, FILTER_VALIDATE_URL)) {
+	        	$showstr .= show_msg('HTTP_HOST 不是合法信息！',false);
+	            return $showstr;
 	        }
 	        //创建文件锁
 	        file_put_contents($this->lock, time());
@@ -129,8 +173,8 @@ class Install extends Controller
             setConfigfile($coffile, array_merge($conflist, $param));
 	       	$showstr .= show_msg('安装程序执行完毕！后台默认帐号密码均为：admin');
 
-	        $homeUrl = '//'.$_SERVER['HTTP_HOST'];
-	        $adminUrl = '//'.$_SERVER['HTTP_HOST'].'/yunu.php';
+	        $homeUrl = '//'.$http_host;
+	        $adminUrl = '//'.$http_host.'/yunu.php';
 	        $showstr .=  "<script type=\"text/javascript\">insok(\"{$homeUrl}\",\"{$adminUrl}\")</script>";
 
 	        return $showstr;

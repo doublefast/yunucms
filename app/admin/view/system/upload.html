@@ -1,0 +1,280 @@
+{include file="public/header" /}
+<script type="text/javascript" src="__ADM_PUBLIC__/js/jscolor.js"></script>
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="title_bar mb20">
+						上传设置
+					</div>
+					<div class="layui-form-item">
+			            <label class="layui-form-label">文件上传大小</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="upload_file_size" value="{:config('sys.upload_file_size')}" >
+			            </div>
+			            <font class="font_tip">单位：KB</font>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">文件上传格式</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="upload_file_ext" value="{:config('sys.upload_file_ext')}">
+			            </div>
+			            <font class="font_tip">多个格式请用英文逗号","隔开</font>
+			        </div>
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">图片上传大小</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="upload_image_size" value="{:config('sys.upload_image_size')}">
+			            </div>
+			            <font class="font_tip">单位：KB</font>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">图片上传格式</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="upload_image_ext" value="{:config('sys.upload_image_ext')}" >
+			            </div>
+			            <font class="font_tip">多个格式请用英文逗号","隔开</font>
+			        </div>
+					<div class="title_bar mb20">
+						水印设置
+					</div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">水印类型</label>
+			            <div class="layui-input-inline">
+			               	<select name="image_watermark" id="image_watermark" lay-filter="image_watermark_sel">
+				            	<option value="0" {if config('sys.image_watermark') eq 0}selected{/if}>不使用水印</option>
+				                <option value="1" {if config('sys.image_watermark') eq 1}selected{/if}>文字水印</option>
+				                <option value="2" {if config('sys.image_watermark') eq 2}selected{/if}>图片水印</option>
+				            </select>
+			            </div>
+			        </div>
+			        
+					<div class="layui-form-item image_watermark_pos {if config('sys.image_watermark') eq 0}none{/if}">
+			            <label class="layui-form-label">水印位置</label>
+			            <div class="layui-input-inline w700" >
+			               	<input type="radio" name="image_watermark_pos" value="1" title="左上" {if config('sys.image_watermark_pos') eq 1}checked{/if}>
+	                        <input type="radio" name="image_watermark_pos" value="2" title="中上" {if config('sys.image_watermark_pos') eq 2}checked{/if}>
+	                        <input type="radio" name="image_watermark_pos" value="3" title="右上" {if config('sys.image_watermark_pos') eq 3}checked{/if}>
+			            </div>
+			        </div>
+			        <div class="layui-form-item image_watermark_pos {if config('sys.image_watermark') eq 0}none{/if}">
+			            <label class="layui-form-label">&nbsp;</label>
+			            <div class="layui-input-inline w700" >
+			               	<input type="radio" name="image_watermark_pos" value="4" title="左中" {if config('sys.image_watermark_pos') eq 4}checked{/if}>
+	                        <input type="radio" name="image_watermark_pos" value="5" title="中间" {if config('sys.image_watermark_pos') eq 5}checked{/if}>
+	                        <input type="radio" name="image_watermark_pos" value="6" title="右中" {if config('sys.image_watermark_pos') eq 6}checked{/if}>
+			            </div>
+			        </div>
+			        <div class="layui-form-item image_watermark_pos {if config('sys.image_watermark') eq 0}none{/if}">
+			            <label class="layui-form-label">&nbsp;</label>
+			            <div class="layui-input-inline w700" >
+			               	<input type="radio" name="image_watermark_pos" value="7" title="左下" {if config('sys.image_watermark_pos') eq 7}checked{/if}>
+	                        <input type="radio" name="image_watermark_pos" value="8" title="中下" {if config('sys.image_watermark_pos') eq 8}checked{/if}>
+	                        <input type="radio" name="image_watermark_pos" value="9" title="右下" {if config('sys.image_watermark_pos') eq 9}checked{/if}>
+			            </div>
+			        </div>
+
+			        <!--文字水印-->
+					<div class="layui-form-item image_watermark_text {if config('sys.image_watermark') neq 1}none{/if}">
+			            <label class="layui-form-label">水印文字</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="image_watermark_text" value="{:config('sys.image_watermark_text')}" >
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item image_watermark_text {if config('sys.image_watermark') neq 1}none{/if}">
+			            <label class="layui-form-label">水印字体文件</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" id="filefont" name="image_watermark_text_font" value="{:config('sys.image_watermark_text_font')}" placeholder="上传字体文件">
+			            </div>
+			            <input type="file" name="filefont" lay-type="file" class="layui-upload-file" id="upload-filefont">
+			        </div>
+
+			        <div class="layui-form-item image_watermark_text {if config('sys.image_watermark') neq 1}none{/if}">
+			            <label class="layui-form-label">水印文字大小</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="image_watermark_text_size" value="{:config('sys.image_watermark_text_size')}" >
+			            </div>
+			            <font class="font_tip">像素</font>
+			        </div>
+
+			        <div class="layui-form-item image_watermark_text {if config('sys.image_watermark') neq 1}none{/if}">
+			            <label class="layui-form-label">水印文字角度</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="image_watermark_text_angle" value="{:config('sys.image_watermark_text_angle')}" >
+			            </div>
+			            <font class="font_tip">水平为0</font>
+			        </div>
+
+			        <div class="layui-form-item image_watermark_text {if config('sys.image_watermark') neq 1}none{/if}">
+			            <label class="layui-form-label">水印文字颜色</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input jscolor" type="text" name="image_watermark_text_color" value="{:config('sys.image_watermark_text_color')}" >
+			            </div>
+			        </div>
+
+			        <!--图片水印-->
+					<div class="layui-form-item image_watermark_pic {if config('sys.image_watermark') neq 2}none{/if}">
+			            <label class="layui-form-label">水印图片</label>
+			            <div class="layui-input-inline">
+							<input id="path1" class="layui-input" type="text" name="image_watermark_pic" value="{:config('sys.image_watermark_pic')}"><br>
+							<img id="img_path1" class="defimg" src="{:config('sys.image_watermark_pic')}" onerror="javascript:this.style.display='none';">
+			            </div>
+			            <div class="layui-input-inline w450">
+			            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
+			            	<div class="site-demo-upload upload-img fl ml5">
+				                <div class="site-demo-upbar">
+				                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+				                </div>
+				        	</div>
+			            </div>
+			        </div>
+			        <div class="layui-form-item image_watermark_pic {if config('sys.image_watermark') neq 2}none{/if}">
+			            <label class="layui-form-label">图片透明度</label>
+			            <div class="layui-input-inline" style="width:100px;">
+			                <input class="layui-input" type="number" name="image_watermark_pic_opacity" oninput="if(value>100)value=100;if(value<0)value=0" value="{:config('sys.image_watermark_pic_opacity')}" >
+			            </div>
+			            <font class="font_tip">0 ~ 100，越小越透明</font>
+			        </div>
+					
+					
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              	<button class="btn" lay-submit="" lay-filter="save" data-href='{:url('upload')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+<script>
+layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+
+        //上传图片
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'file'])}" //上传接口
+            ,before: function(input){
+                //console.log('图片上传中');
+            }
+            ,title:'上传图片'
+            ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
+            ,method: 'post' //上传接口的http类型
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#path1").val(data.image_name);
+                    $("#img_path1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+        //上传字体文件
+        layui.upload({
+			url: "{:url('Upload/uploadfile',['file'=>'filefont'])}"
+			,title:'上传文件'
+			,elem: '#upload-filefont'
+			,method: "post"
+			,ext: '{:str_replace(',','|',config('sys.upload_file_ext'))}'
+			,success: function(data){
+				if(data.status == 1){
+					$("#filefont").val(data.file_path);
+				}else{
+					alert(data.error_info);
+				}
+			}
+		});
+
+        $('.BrowerPicture').click(function(){
+            var path = $(this).attr('rel');
+            layer.open({
+                type: 2,
+                title: '选择站内图片',
+                shadeClose: true,
+                shade: false,
+                anim: 2,
+                area: ['750px', '350px'],
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+            });
+        });
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('system/upload')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+        form.on('select(image_watermark_sel)', function(data) {
+        	if (data.value == 0) {
+        		$(".image_watermark_pos").hide();
+        		$(".image_watermark_text").hide();
+        		$(".image_watermark_pic").hide();
+        	}else{
+        		$(".image_watermark_pos").show();
+        		if (data.value == 1) {
+        			$(".image_watermark_text").show();
+        			$(".image_watermark_pic").hide();
+        		}
+        		if (data.value == 2) {
+        			$(".image_watermark_text").hide();
+        			$(".image_watermark_pic").show();
+        		}
+        	}
+        });
+    });
+/*function updateimg(node,name){
+	var num = $('.'+node);
+	var valstr = "";
+	for(i=0;i<num.length;i++)
+	{
+		valstr = valstr+num.eq(i).val()+"***";
+	}
+	$("#"+name).val(valstr);
+}*/
+</script>
+</body>
+</html>

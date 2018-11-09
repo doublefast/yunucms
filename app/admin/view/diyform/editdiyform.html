@@ -48,6 +48,41 @@
                         </div>
                     </div>
 
+                    <div class="title_bar mb20">
+                        邮件提醒&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">表单有新消息，接收到邮件提醒，请先：表单管理->提醒设置->邮件提醒 设置正确信息</font>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否开启</label>
+                        <div class="layui-input-inline">
+                            <input type="checkbox" {if $info.mailwarn eq 1}checked{/if} name="mailwarn" lay-skin="switch" lay-filter="mailswitch">
+                        </div>
+                    </div>
+                    <div class="layui-form-item mail {if $info.mailwarn eq 0}none{/if}">
+                        <label class="layui-form-label">接收邮件地址</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input w700" type="text" name="mailadd" value="{$info.mailadd}" placeholder="接收邮件地址">
+                        </div>
+                    </div>
+                    <div class="layui-form-item mail {if $info.mailwarn eq 0}none{/if}">
+                        <label class="layui-form-label">接收邮件标题</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input w700" type="text" name="mailtitle" value="{$info.mailtitle}" placeholder="接收邮件标题">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item mail {if $info.mailwarn eq 0}none{/if}">
+                        <label class="layui-form-label">接收邮件内容</label>
+                        <div class="layui-input-inline w700">
+                            <font class="font_tip">
+                            {notempty name="fieldlist"}注意：在邮件内容中需要显示对应变量的位置插入对应变量名：包含 % 的开头与结尾<br/>{/notempty}
+                            {volist name="fieldlist" id="v"}
+                                {$v.title}&nbsp;&nbsp;：&nbsp;&nbsp;<span class="getfilename">%{$v.field}%</span><br/>
+                            {/volist}
+                            </font>
+                            <textarea name="mailcontent" id="content">{$info.mailcontent}</textarea>
+                        </div>
+                    </div>
+
                     <div class="layui-form-item">
                         <label class="layui-form-label"></label>
                         <div class="layui-input-inline">
@@ -59,6 +94,23 @@
             </div>
         </div>
     </div>
+<script type="text/javascript">
+    var option= {toolbars: [[
+            'fullscreen', 'source', '|',
+            'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor',
+            'paragraph', 'fontfamily', 'fontsize', '|',
+            'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+            'link', 'unlink',
+    ]]};
+    window.UEDITOR_HOME_URL = '__UEDITOR__/';
+    window.onload = function() {
+        window.UEDITOR_CONFIG.initialFrameWidth=700;
+        window.UEDITOR_CONFIG.initialFrameHeight=300;
+        UE.getEditor('content', option);
+    }
+</script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>  
 <script>
 layui.use(['form','common'], function(){
         var $ = layui.jquery;
@@ -98,7 +150,16 @@ layui.use(['form','common'], function(){
             }
             return false;
         });
-    });
+
+        form.on('switch(mailswitch)', function(data) {
+            if (this.checked) {
+                $(".mail").show();
+            }else{
+                $(".mail").hide();
+            }
+        });
+
+});
 </script>
 </body>
 </html>

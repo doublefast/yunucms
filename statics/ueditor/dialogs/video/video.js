@@ -59,7 +59,7 @@
         isDirect   = editor.getOpt('qiniuUploadType');
         if( (uploadType == 'local' || isDirect == 'php')  && !isChunked ){
             var params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
-                actionUrl = editor.getActionUrl(editor.getOpt('imageActionName')),
+                actionUrl = editor.getActionUrl(editor.getOpt('videoActionName')),
                 url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + 'encode=utf-8&' + params);
             uploadUrl = url;
         }else{

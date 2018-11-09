@@ -1,12 +1,11 @@
 <?php
-// 应用公共文件
 /**
  *  获取拼音信息
  *
  * @access    public
  * @param     string  $str  字符串
  * @param     int  $ishead  是否为首字母
- * @param     int  $isclose  解析后是否释放资源
+ * @param     int  $isclose  解析后是否释放资源T
  * @return    string
  */
  ////英文全称
@@ -38,8 +37,6 @@ function get_pinyin($str, $ishead=0, $isclose=1)
         fclose($fp);
     }
 
-
-    
     for($i=0; $i<$slen; $i++)
     {
         if(ord($str[$i])>0x80)
@@ -75,6 +72,7 @@ function get_pinyin($str, $ishead=0, $isclose=1)
     }
     return $restr;
 }
+
 //写入配置文件
 function setConfigfile($file, $arr){
     $str="<?php \nreturn [\n";
@@ -87,6 +85,7 @@ function setConfigfile($file, $arr){
     $str.="];\n";
     file_put_contents($file, $str);
 }
+
 //获取菜单列表
 function getMenuList($param){
     $parent = []; //父类
@@ -147,17 +146,6 @@ function subTree($param, $pid = 0)
     return $res;
 }
 
-//记录日志
-function writelog($uid,$username,$description,$status)
-{
-    $data['admin_id'] = $uid;
-    $data['admin_name'] = $username;
-    $data['description'] = $description;
-    $data['status'] = $status;
-    $data['ip'] = request()->ip();
-    $data['add_time'] = time();
-    $log = db('Log')->insert($data);
-}
 /**
  * 整理菜单树方法
  * @param $param
@@ -204,6 +192,7 @@ function format_bytes($size, $delimiter = '') {
     }
     return $size . $delimiter . $units[$i];
 }
+
 //获取随机字符串
 function rand_str( $length = 5 ) { 
     // 密码字符集，可任意添加你需要的字符 
@@ -215,31 +204,6 @@ function rand_str( $length = 5 ) {
     } 
     return $str; 
 } 
-//删除根据目录删除子文件
-function dir_del($dirpath){
-    $dh=opendir($dirpath);
-    while (($file=readdir($dh))!==false) {
-        if($file!="." && $file!="..") {
-            $fullpath=$dirpath."/".$file;
-            if(!is_dir($fullpath)) {
-                unlink($fullpath);
-            } else {
-                dir_del($fullpath);
-                @rmdir($fullpath);
-            }
-        }
-    }    
-    closedir($dh);
-    $isEmpty = true;
-    $dh=opendir($dirpath);
-    while (($file=readdir($dh))!== false) {
-        if($file!="." && $file!="..") {
-            $isEmpty = false;
-            break;
-        }
-    }
-    return $isEmpty;
-}
 
 /**
  * getFileFolderList
@@ -381,15 +345,16 @@ function get_byte($bytes) {
     return round($bytes / pow(1024, ($i = floor(log($bytes, 1024)))), 2) . $sizetext[$i];
 }
 
-function add_slashes_recursive( $variable )
+function add_slashes_recursive($variable )
 {
-    if ( is_string( $variable ) )
-        return addslashes( $variable ) ;
-
-    elseif ( is_array( $variable ) )
-        foreach( $variable as $i => $value )
-            $variable[ $i ] = add_slashes_recursive( $value ) ;
-
+    if (is_string($variable)){
+        $str = stripslashes($variable);
+        return addslashes($str);
+    }elseif(is_array($variable)){
+        foreach( $variable as $i => $value ){
+            $variable[ add_slashes_recursive( $i ) ] = add_slashes_recursive( $value ) ;
+        }
+    }
     return $variable ;
 }
 
@@ -403,19 +368,116 @@ function strip_slashes_recursive( $variable )
     
     return $variable ; 
 }
-/**
- * 功能：字符串转义
- * @param int $bytes
- * @return string 转换后的字符串
- */
-/*function str_escape($str, $zhuan = false) {
-    $arrcode = array(
-        '\''
-    );
-    if ($zhuan) {
-        $str = stripslashesaddslashes
-    }else{
-        $str = addslashes($str);
+
+function mysqlupdate($sql_path, $old_prefix="", $new_prefix="", $separator=";\n") 
+{
+    $commenter = array('#','--');
+    //判断文件是否存在
+    if(!file_exists($sql_path))
+        return false;
+        
+    $content = file_get_contents($sql_path);   //读取sql文件
+    $content = str_replace(array($old_prefix, "\r"), array($new_prefix, "\n"), $content);//替换前缀
+        
+    //通过sql语法的语句分割符进行分割
+    $segment = explode($separator,trim($content)); 
+
+    //去掉注释和多余的空行
+    $data=array();
+    foreach($segment as  $statement)
+    {
+        $sentence = explode("\n",$statement);         
+        $newStatement = array();
+        foreach($sentence as $subSentence)
+        {
+            if('' != trim($subSentence))
+            {
+                //判断是会否是注释
+                $isComment = false;
+                foreach($commenter as $comer)
+                {
+                    if(preg_match("/^(".$comer.")/is",trim($subSentence)))
+                    {
+                        $isComment = true;
+                        break;
+                    }
+                }
+                //如果不是注释，则认为是sql语句
+                if(!$isComment)
+                    $newStatement[] = $subSentence;                    
+            }
+        }           
+        $data[] = $newStatement;            
     }
-    return $str;
-}*/
+
+    //组合sql语句
+    foreach($data as  $statement)
+    {
+        $newStmt = '';
+        foreach($statement as $sentence)
+        {
+            $newStmt = $newStmt.trim($sentence)."\n";
+        }    
+        if(!empty($newStmt))            
+        { 
+            $result[] = $newStmt;
+        }
+    }   
+    return $result;
+}
+
+function send_post($url, $post_data, $header = 'x-www-form-urlencoded') {    
+    $postdata = http_build_query($post_data);    
+    $options = array(    
+        'http' => array(    
+            'method' => 'POST',    
+            'header' => 'Content-type:application/'.$header,    
+            'content' => $postdata,    
+            'timeout' => 15 * 60 // 超时时间（单位:s）    
+        )    
+    );    
+    $context = stream_context_create($options);    
+    $result = file_get_contents($url, false, $context);             
+    return $result;
+}
+//伪原创
+function create_appsecret($appid, $apikey) {
+    return md5($appid.$apikey);
+}
+
+
+//获取首页URL
+function getHomeurl($area){
+    $url = "";
+    switch (config('sys.url_model')) {
+         case '1'://动态
+            $url = config('sys.site_guide') ? "/index.php/index/index/index" : '/';
+            if ($area) {
+                if ($area['isurl']) {
+                    $url = $area['etitle'].'.'.config('sys.site_levelurl').$url;
+                }else{
+                    $url = config('sys.site_url').$url.'?area='.$area['etitle'];
+                }
+            }else{
+                $url = config('sys.site_url').$url;
+            }
+            break;
+        case '2'://静态
+             # code...
+            break;
+        case '3'://伪静态
+            $url = config('sys.site_guide') ? "index/" : '';
+            if ($area) {
+                if ($area['isurl']) {
+                    $url = $area['etitle'].'.'.config('sys.site_levelurl')."/".$url;
+                }else{
+                    $url = config('sys.site_url')."/".$area['etitle'].".html";
+                }
+            }else{
+                $url = config('sys.site_url')."/".$url;
+            }
+            break;
+    }
+    $url = config('sys.site_protocol').'://'.$url;
+    return $url;
+}

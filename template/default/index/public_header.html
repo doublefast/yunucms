@@ -1,4 +1,4 @@
-    <?php error_reporting(0); ?>
+ <?php error_reporting(0); ?>
     <div class="header">
         <div class="center">
             <div class="head_top_content">
@@ -19,6 +19,7 @@
             </div>
             <div class="head_nav">
                 <ul>
+                	<?php $cid = isset($cid) ? $cid : 0;  ?>
                     <li><a href="<yunu:url name='home'/>" <if condition="!isset($cid)">class="active"</if>>网站首页</a></li>
                     <yunu:nav typeid='1'>
                     <li><a href="{$nav.url}" <eq name="$nav['id']" value="$cid">class="active"</eq> target="{$nav.target}">{$nav.title}</a></li>
@@ -28,7 +29,7 @@
         </div>
     </div>
 
-    <if condition="!is_array([index])">
+<if condition="!is_array([index])">
     <div class="banner">
         <div class="banner_img" id="wowslider-container">
             <div class="ws_images" id="banner">
@@ -79,8 +80,8 @@
             </div>
         </div>
     </div>
-    <else/>
+<else/>
     <div class="page_banner">
         <yunu:block name='page_banner' />
     </div>
-    </if>
+</if>

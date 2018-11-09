@@ -78,6 +78,14 @@
                             <textarea name="content3" id="content">{if $info.type eq 3}{$info.content}{/if}</textarea>
                         </div>
                     </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">链接</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="url" value="{$info.url}" placeholder="链接">
+                        </div>
+                        <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
+                    </div>
 
                     <div class="layui-form-item">
                         <label class="layui-form-label"></label>
@@ -116,7 +124,7 @@ layui.use(['form','layedit','common','upload'], function(){
             ,title:'上传图片'
             ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
             ,method: 'post' //上传接口的http类型
-            ,ext: 'jpg|png|gif'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
             ,type:'images'
             ,success: function(data){ //上传成功后的回调
                 if(data.status == 1){
@@ -128,6 +136,21 @@ layui.use(['form','layedit','common','upload'], function(){
             }
         });
 
+        $('[lay-submit]').click(function(event) {
+            var submit = $(this);
+            var editor_source_btn = $('.edui-for-source .edui-state-checked .edui-button-body');
+            if (editor_source_btn.length) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                editor_source_btn.trigger('click');
+                setTimeout(function(){
+                    submit.trigger('click')
+                }, 500 * editor_source_btn.length);
+            }
+        });
+        
         $('.BrowerPicture').click(function(){
             var path = $(this).attr('rel');
             layer.open({

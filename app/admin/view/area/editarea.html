@@ -52,6 +52,13 @@
 		        </div>
 
 		        <div class="layui-form-item">
+		            <label class="layui-form-label">是否开通</label>
+		            <div class="layui-input-inline">
+		            	<input type="checkbox" name="isopen" {if $info.isopen}checked{/if} lay-skin="switch" lay-filter="switchTest">
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
 		            <label class="layui-form-label">是否推荐</label>
 		            <div class="layui-input-block">
 		            	<input type="checkbox"  name="istop" {if $info.istop}checked{/if} lay-skin="switch" lay-filter="switchTest">

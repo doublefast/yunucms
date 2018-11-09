@@ -47,6 +47,35 @@
                         </div>
                     </div>
 
+                    <div class="title_bar mb20">
+                        邮件提醒&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">表单有新消息，接收到邮件提醒，请先：表单管理->提醒设置->邮件提醒 设置正确信息</font>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否开启</label>
+                        <div class="layui-input-inline">
+                            <input type="checkbox" name="mailwarn" lay-skin="switch" lay-filter="mailswitch">
+                        </div>
+                    </div>
+                    <div class="layui-form-item mail none">
+                        <label class="layui-form-label">接收邮件地址</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input w700" type="text" name="mailadd" value="" placeholder="接收邮件地址">
+                        </div>
+                    </div>
+                    <div class="layui-form-item mail none">
+                        <label class="layui-form-label">接收邮件标题</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input w700" type="text" name="mailtitle" value="" placeholder="接收邮件标题">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item mail none">
+                        <label class="layui-form-label">接收邮件内容</label>
+                        <div class="layui-input-inline">
+                            <textarea name="mailcontent" id="content"></textarea>
+                        </div>
+                    </div>
+
 					<div class="layui-form-item">
 	                    <label class="layui-form-label"></label>
 	                    <div class="layui-input-inline">
@@ -58,6 +87,23 @@
 			</div>
 		</div>
 	</div>
+<script type="text/javascript">
+    var option= {toolbars: [[
+            'fullscreen', 'source', '|',
+            'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor',
+            'paragraph', 'fontfamily', 'fontsize', '|',
+            'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+            'link', 'unlink',
+    ]]};
+    window.UEDITOR_HOME_URL = '__UEDITOR__/';
+    window.onload = function() {
+        window.UEDITOR_CONFIG.initialFrameWidth=700;
+        window.UEDITOR_CONFIG.initialFrameHeight=300;
+        UE.getEditor('content', option);
+    }
+</script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>  
 <script>
 layui.use(['form','common'], function(){
         var $ = layui.jquery;
@@ -96,6 +142,14 @@ layui.use(['form','common'], function(){
                 common.layerAlertE('链接错误！', '提示');
             }
             return false;
+        });
+
+        form.on('switch(mailswitch)', function(data) {
+            if (this.checked) {
+                $(".mail").show();
+            }else{
+                $(".mail").hide();
+            }
         });
     });
 </script>

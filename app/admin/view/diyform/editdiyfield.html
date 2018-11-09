@@ -15,7 +15,7 @@
 					<div class="layui-form-item">
 			            <label class="layui-form-label">字段类型</label>
 			            <div class="layui-input-inline">
-                            <select name="ftype" lay-filter="ftype">
+                            <select name="ftype" lay-filter="ftype" lay-verify="ftype">
                                 <option value="0">选择类型</option>
                                 {foreach name="ftypelist" id='v' }
                                 <option value="{$key}" {if $key eq $info.ftype}selected{/if}>{$v}</option>
@@ -97,7 +97,7 @@ layui.use(['form','common'], function(){
 
     form.verify({
         ftype:function(value){
-            if(value == ""){
+            if(value == "0"){
                 return '字段类型必须选择';
             }
         }

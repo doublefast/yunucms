@@ -22,30 +22,52 @@ class Index extends Common
         $sys_mysql = db()->query('SELECT VERSION();');
         $sys_mysql = is_array($sys_mysql) ? $sys_mysql[0]['VERSION()'] : '';
 
+       
         //验证授权
         $this->update_path = ROOT_PATH.'data'.DS.'uppack'.DS;
-        $this->cloud = new \com\Cloud(config('cloud.identifier'), $this->update_path);
-        $html_status = file_get_contents($this->cloud->apiUrl()."/main.html");
+	    $this->cloud = new \com\Cloud(config('cloud.identifier'), $this->update_path);
+	    
+	    $heads = get_headers($this->cloud->apiUrl()."/main.html", 1);
+	    $html_status = "";
+        if (stristr($heads[0], "200") && stristr($heads[0], "OK")) {
+            $html_status = file_get_contents($this->cloud->apiUrl()."/main.html");
+        }
+      
         $html_status = $html_status == 'SUCCESS' ? 1 : 0;
-        $cloudstr = "通信异常";
+        $cloudstr = "<font style='color:#000;'>通信异常</font>";
         if ($html_status) {
+        	$issq = false;
             if (config('cloud.identifier')) {
-                $cloudstr = config('cloud.grant') ? "已认证" : "未认证请先购买授权";
+                $issq = config('cloud.grant') ? true : false;
+            }
+            if (!$issq) {
+            	$cloudstr = "<br>温馨提示：您当前域名 <font style='color:#000;'>未认证</font> ，如果已购买授权，请前往 <a href='".url('upgrade/index')."' style='color:#000'>绑定</a>，如果未购买授权，请前往 <a href='http://www.yunucms.com/buy/index.html' target='_blank' style='color:#000'>购买</a>";
             }else{
-                $cloudstr = "绑定云平台帐号";
+            	$cloudstr = "<font style='color:#000;'>已认证</font>";
             }
         }
-        $cloudstr = "<a href='".url('upgrade/index')."' style='color:red;'>".$cloudstr."</a>";
+
+        //主词排名监控获取
+        $mainkeywords = null;
+        if (config('sys.api_pmjkhq')) {
+            $mainkeywords = send_post($this->cloud->yunapiUrl().'/getMainKeywords', ['domain'=>config('sys.site_levelurl')]);
+            $mainkeywords = $mainkeywords ? json_decode($mainkeywords, true) : null;
+            if ($mainkeywords) {
+                $mainkeywords = $mainkeywords['state'] == 1 ? $mainkeywords['data'][0] : null;
+            }
+        }
+        
         $this->assign([
             'content_count' => DB::name('content')->count(),
             'category_count' => DB::name('category')->count(),
-            'admin_count' => DB::name('admin')->count(),
+            'diyform_count' => DB::name('formcon')->where(['look'=>0])->count() .' / '. DB::name('formcon')->count(),
             'daycount' => implode(',', $daycount),
             'sys_os' => PHP_OS,//操作系统
             'sys_ser' => $_SERVER["SERVER_SOFTWARE"],//服务器软件
             'sys_mysql' => $sys_mysql,//mysql版本
             'sys_upfile' => ini_get('file_uploads') ? ini_get('upload_max_filesize') : '不支持',//上传文件大小
             'cloudstr' => $cloudstr,
+            'mainkeywords' => $mainkeywords,
         ]);
         return $this->fetch();
     }

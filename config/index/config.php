@@ -28,6 +28,5 @@ return [
         'taglib_end'   => '>',
         // 预先加载的标签库
         'taglib_pre_load'   =>  'app\index\taglib\Yunu', 
-        
     ],
 ];

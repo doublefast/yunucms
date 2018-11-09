@@ -9,7 +9,7 @@
 				<div class="title">
 					<span>{$position.name}</span>
 				</div>
-				<a class="btn mr10" href="{:url('addsitelink')}">添加</a><a class="btn do-action" data-type="doDelete" data-href="{:url('delsitelink')}">删除</a>
+				<a class="btn mr10" href="{:url('addsitelink',['type'=>''])}">单个添加</a><a class="btn mr10" href="{:url('addsitelink',['type'=>'manymanysitelink'])}">多对多添加</a><a class="btn mr10" href="{:url('addsitelink',['type'=>'manyonesitelink'])}">多对一添加</a><a class="btn do-action" data-type="doDelete" data-href="{:url('delsitelink')}">删除</a>
 				<div class="table" v-el:table>
 					<form id="export-form" method="post" action="{:url('index')}">
 					<table class="layuitable">

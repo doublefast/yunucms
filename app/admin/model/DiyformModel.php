@@ -14,6 +14,7 @@ class DiyformModel extends Model
     public function insertDiyform($param)
     {
         try{
+            $param['mailwarn'] = array_key_exists("mailwarn", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $result = $this->validate('DiyformValidate')->save($param);
             if(false === $result){            
@@ -31,6 +32,7 @@ class DiyformModel extends Model
     public function editDiyform($param)
     {
         try{
+            $param['mailwarn'] = array_key_exists("mailwarn", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $result =  $this->validate('DiyformValidate')->save($param, ['id' => $param['id']]);
             if(false === $result){ 

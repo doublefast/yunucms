@@ -1,0 +1,148 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="title_bar mb20">
+						邮件提醒&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">设置填写后请进行测试收件验证配置是否正确</font>
+					</div>
+					<div class="layui-form-item">
+			            <label class="layui-form-label">SMTP地址</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="mail_smtp" value="{:config('sys.mail_smtp')}" placeholder="">
+			            </div>
+			            <font class="font_tip">示例：smtp.exmail.qq.com</font>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">SMTP端口</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="mail_smtpport" value="{:config('sys.mail_smtpport')}" placeholder="" >
+			            </div>
+			            <font class="font_tip">示例：465</font>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">邮箱用户名</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="mail_username" value="{:config('sys.mail_username')}" placeholder="" >
+			            </div>
+			            <font class="font_tip">示例：admin@xxx.com</font>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">邮箱密码</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="mail_password" value="{:config('sys.mail_password')}" placeholder="" >
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">发件人名称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="mail_setname" value="{:config('sys.mail_setname')}" placeholder="" >
+			            </div>
+			            <font class="font_tip">示例：某某公司</font>
+			        </div>
+
+			        {if config('sys.mail_smtp') neq ''}
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">发送测试邮件</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="mail_demo" id="mail_demo" value="" placeholder="填写测试接收地址" >
+			            </div>
+			            <font class="font_tip demomail" style="color:red;">[ 点击发送 ]</font>
+			        </div>
+			        {/if}
+
+					
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              	<button class="btn" lay-submit="" lay-filter="save" data-href='{:url('remind')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+<!-- <link rel="stylesheet" href="__ADM_PUBLIC__/css/webuploader.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/webuploader.js"></script> -->
+
+<script>
+layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('diyform/remind')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+        $('.demomail').click(function(){
+			if($("#mail_demo").val()) {
+				$.ajax({
+                        url: "{:url('diyform/demomail')}",
+                        type: 'post',
+                        dataType: 'json',
+                        data: $('#formrec').serialize(),
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('diyform/remind')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+               	});
+			}else{
+				common.layerAlertE('填写正确的邮箱地址进行测试！', '提示');
+			}
+		});
+    });
+
+</script>
+</body>
+</html>

@@ -20,6 +20,9 @@ class Cloud {
 
     //服务器地址
     const api_url = 'http://www.yunucms.com/Api';
+
+    //平台校验API地址
+    const yunapi_url = 'http://www.yunucms.com/yunuapi';
     
     public function __construct($identifier = '', $path = './') {
         $this->identifier = $identifier;
@@ -29,6 +32,10 @@ class Cloud {
 
     public function apiUrl() {
         return self::api_url;
+    }
+
+    public function yunapiUrl() {
+        return self::yunapi_url;
     }
 
     public function getError() {

@@ -1,0 +1,112 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    {if isset($infodata)}
+                    <input type="hidden" name="id" value="{$infodata.id}">
+                    {if $infodata['opinion']}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">审核说明</label>
+                        <div class="layui-input-inline">
+                            <font class="font_tip red">&nbsp;{$infodata.opinion}</font>
+                        </div>
+                    </div>
+                    {/if}
+					<div class="layui-form-item">
+			            <label class="layui-form-label">标题</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="title" placeholder="标题" lay-verify="required" value="{$infodata.title}">
+			            </div>
+			        </div>
+
+<!--                     <div class="layui-form-item">
+    <label class="layui-form-label">附加字段</label>
+    <div class="layui-input-inline">
+        
+    </div>
+</div> -->
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-inline">
+                             <textarea name="content" id="content">{$infodata.content}</textarea>
+                        </div>
+                    </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editmediacon')}'>提交</button>
+	                    </div>
+			        </div>
+                    {else/}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"><font class="cred"></font>获取信息失败！</label>
+                        </div>
+                    {/if}
+				</form>
+
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+    window.UEDITOR_HOME_URL = '__UEDITOR__/';
+    window.onload = function() {
+        window.UEDITOR_CONFIG.initialFrameWidth=700;
+        window.UEDITOR_CONFIG.initialFrameHeight=300;
+        UE.getEditor('content');
+    }
+</script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>
+<script>
+layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.status == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('medialm')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            //$(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

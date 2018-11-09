@@ -14,13 +14,54 @@ class Sitelink extends Common
 
     public function addsitelink()
     {
+        $linktype = input('param.type');
         if(request()->isAjax()){
             $param = input('post.');
-           	$Sitelink = new SitelinkModel();
-            $flag = $Sitelink->insertSitelink($param);
-            return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
+            $Sitelink = new SitelinkModel();
+            if ($linktype == "") {
+                $flag = $Sitelink->insertSitelink($param);
+                return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
+            }
+            if ($linktype == 'manyonesitelink') {
+                $names = explode("\n", $param['name']);
+                $success = 0;
+                $error = 0;
+                foreach ($names as $k => $v) {
+                    $param['name'] = $v;
+                    $flag = $Sitelink->insertSitelink($param);
+                    if ($flag) {
+                        $success ++;
+                    }else{
+                        $error ++;
+                    }
+                }
+                return json(['code' => 1, 'data' => '', 'msg' => "多对一添加结果：成功：$success 失败：$error"]);
+            }
+           	if ($linktype == 'manymanysitelink') {
+                $names = explode("\n", $param['name']);
+                $urls = explode("\n", $param['url']);
+                $wapurls = explode("\n", $param['wapurl']);
+                if (count($names) != count($urls) || count($urls) != count($wapurls)) {
+                    return json(['code' => -1, 'data' => '', 'msg' => "请检查关键词名称和链接地址对应关系"]);
+                    exit();
+                }
+                $success = 0;
+                $error = 0;
+                foreach ($names as $k => $v) {
+                    $param['name'] = $v;
+                    $param['url'] = $urls[$k];
+                    $param['wapurl'] = $wapurls[$k];
+                    $flag = $Sitelink->insertSitelink($param);
+                    if ($flag) {
+                        $success ++;
+                    }else{
+                        $error ++;
+                    }
+                }
+                return json(['code' => 1, 'data' => '', 'msg' => "多对多添加结果：成功：$success 失败：$error"]);
+            }
         }
-        return $this->fetch();
+        return $this->fetch($linktype);
     }
 
     public function editsitelink()

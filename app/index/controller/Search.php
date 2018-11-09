@@ -8,7 +8,7 @@ class Search extends Common
 		$input = input();
 
 		$this->assign([
-			'keyword' => $input['key']
+			'keyword' => htmlspecialchars($input['key'])
 		]);
 		return $this->fetch();
 	}

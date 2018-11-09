@@ -29,7 +29,7 @@
         if( uploadType == 'local' || isDirect == 'php' ){
 
             var params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
-                actionUrl = editor.getActionUrl(editor.getOpt('imageActionName')),
+                actionUrl = editor.getActionUrl(editor.getOpt('fileActionName')),
                 url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + 'encode=utf-8&' + params);
             uploadUrl = url;
         }else{
@@ -860,7 +860,7 @@
         },
         // widuu 删除图片的方法
         removeImage:function(key,obj){
-            var url = editor.getActionUrl(editor.getOpt('removeImageActionName')),
+            var url = editor.getActionUrl(editor.getOpt('removefileActionName')),
                     isJsonp = utils.isCrossDomainUrl(url);
             ajax.request(url, {
                 'timeout': 100000,

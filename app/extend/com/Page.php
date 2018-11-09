@@ -67,6 +67,30 @@ class Page extends Paginator
      */
     protected function getLinks()
     {
+        if ($this->simple)
+            return '';
+        $block = null;
+        //生成指定数量的按钮 
+        $rows   = $this->options['var_link_rows'] ? $this->options['var_link_rows'] : 5;        
+        if ($this->lastPage <  $rows ) {
+            $block = $this->getUrlRange(1, $this->lastPage);
+        } else{          
+             $side = intval($rows/2);
+             $str  = $this->currentPage - $side;
+             $str  = $str < 1? 1 : $str ;
+             
+             $end  = $str + $rows - 1;
+             if($end > $this->lastPage){                 
+                 $end = $this->lastPage;
+                 $str = $end - $rows +1;
+                 $str  = $str < 1? 1 : $str ;
+             }
+             $block= $this->getUrlRange($str,$end);            
+        } 
+        return  $this->getUrlLinks($block);
+    }
+   /* protected function getLinks()
+    {
         $block = [
             'first'  => null,
             'slider' => null,
@@ -100,7 +124,8 @@ class Page extends Paginator
             $html .= $this->getUrlLinks($block['last']);
         }
         return $html;
-    }
+    }*/
+
     /**
      * 渲染分页html
      * @return mixed

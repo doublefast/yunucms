@@ -8,18 +8,34 @@ class CategoryModel extends Model
     protected $name='category';
     
     public function getCategory($status = 0,$nav = 0, $isarea = true) {
-	    $where = [];
-	    if ($status) {
-	        $where['status'] = $status;
-	    }
+	    if (!cache('catlist')) {
+			$catlist = $this->order('sort asc')->select();
+			cache('catlist', $catlist, 3600);
+		}else{
+			$catlist = cache('catlist');
+		}
+    	
 	    if ($nav) {
-		    $where['nav'] = ($nav == 1 || $nav == 2) ? array('IN', [$nav, 3]) : array('IN', [1, 2, 3]); 
+		    $navlist = ($nav == 1 || $nav == 2) ? [$nav, 3] : [1, 2, 3]; 
 	    }
-	    $cate_arr = $this->where($where)->order('sort asc')->select();
-	    foreach ($cate_arr as $k => $v) {
-	    	$cate_arr[$k] = $this->getCategoryArea($v, [], $isarea);
+	    
+	    foreach ($catlist as $k => $v) {
+	    	if ($status) {
+		        if ($v['status'] != $status) {
+		        	unset($catlist[$k]);
+		        	continue;
+		        }
+		    }
+		    if ($nav) {
+		        if (!in_array($v['nav'], $navlist)) {
+		        	unset($catlist[$k]);
+		        	continue;
+		        }
+		    }
+
+	    	$catlist[$k] = $this->getCategoryArea($v, [], $isarea);
 	    }
-	    return $cate_arr;
+	    return $catlist;
 	}
 
 	public function clearLink($cate) {
@@ -92,7 +108,7 @@ class CategoryModel extends Model
 	    }
 	    $cname = $cate['etitle'] ? $cate['etitle'] : $cate['id'];
 	    if (!$area) {
-            $area = config('sys.sys_area')  ? db('area')->where(['etitle'=>config('sys.sys_area')])->find() : [];
+            $area = session('sys_areainfo');
         }
 
 	    switch (config('sys.url_model')) {
@@ -124,7 +140,7 @@ class CategoryModel extends Model
     public function getCategoryArea($cate, $area = [], $isarea = true)
     {
     	if (!$area) {
-    		$area = config('sys.sys_area') ? db('area')->where(['etitle'=>config('sys.sys_area')])->find() : [];
+    		$area = session('sys_areainfo');
     	}
         if ($area && $isarea) {
 			$cate['title'] = $cate['isarea'] ? $area['stitle'].$cate['title'] : $cate['title'];

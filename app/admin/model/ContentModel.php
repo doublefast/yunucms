@@ -17,9 +17,13 @@ class ContentModel extends Model
         return $this->where(['cid'=>['IN', $cid]])->column('id');
     }
 
-    public function getContentByCid($cid)
+    public function getContentByCid($cid, $daytime = false)
     {
-        return $this->where(['cid'=>['IN', $cid]])->select();
+        $where['cid'] = ['IN', $cid];
+        if ($daytime) {
+            $where['create_time'] = ['LT', time()];
+        }
+        return $this->where($where)->select();
     }
 
     public function getContentCount($where)
@@ -60,6 +64,7 @@ class ContentModel extends Model
                 }
             }
             $param['istop'] = array_key_exists("istop", $param) ? 1 : 0;
+            $param['mainurl'] = array_key_exists("mainurl", $param) ? 1 : 0;
             if (array_key_exists("area", $param)) {
                 $param['area'] = $param['area'] ? ','.$param['area'].',' : '';
             }
@@ -90,6 +95,7 @@ class ContentModel extends Model
                 }
             }
             $param['istop'] = array_key_exists("istop", $param) ? 1 : 0;
+            $param['mainurl'] = array_key_exists("mainurl", $param) ? 1 : 0;
             if (array_key_exists("area", $param)) {
                 $param['area'] = $param['area'] ? ','.$param['area'].',' : '';
             }
@@ -117,7 +123,11 @@ class ContentModel extends Model
         $tabname = DB::name('diymodel')->where(['id'=>$mid])->value('tabname');
         $info1 = $this->where('id', $id)->find()->toArray();
         $info2 = DB::name('diy_'.$tabname)->where(['conid'=>$info1['vid']])->find();
-        return array_merge($info1, $info2);
+        if ($info2) {
+            return array_merge($info1, $info2);
+        }else{
+            return $info1;
+        }
     }
 
     public function delContent($id)

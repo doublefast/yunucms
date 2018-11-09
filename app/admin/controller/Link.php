@@ -38,7 +38,15 @@ class Link extends Common
         }
         $area = new AreaModel();
         //获取开启独立内容地区列表
-        $arealist = $area->getAllArea();
+        $arealist = $area->getAllArea(['isopen'=>1]);
+
+        $v['pid'] = '0';
+        $v['iscon'] = '1';
+        $v['id'] = '88888888';
+        $v['title'] = '主站';
+        $v['stitle'] = '主站';
+        array_unshift($arealist, $v);
+        
         $arealist = $area->getAreaByCon($arealist);
         $this->assign('arealist', $arealist);
         return $this->fetch();
@@ -56,7 +64,15 @@ class Link extends Common
         $info = $link->getOneLink($id);
         $area = new AreaModel();
         //获取开启独立内容地区列表
-        $arealist = $area->getAllArea();
+        $arealist = $area->getAllArea(['isopen'=>1]);
+
+        $v['pid'] = '0';
+        $v['iscon'] = '1';
+        $v['id'] = '88888888';
+        $v['title'] = '主站';
+        $v['stitle'] = '主站';
+        array_unshift($arealist, $v);
+
         $arealist = $area->getAreaByCon($arealist, 0, $info['area']);
         $this->assign('arealist', $arealist);
         $this->assign('info', $info);

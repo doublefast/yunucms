@@ -1,0 +1,117 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn mr10" href="{:url('mediauser')}">基础信息编辑</a>
+				<div class="btn-group">
+                    <button type="button" class="btn dropdown-toggle colorfff" data-toggle="dropdown">批量操作&nbsp;&nbsp;<span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a class="do-action" data-type="doDelete" data-href="{:url('delmediacon')}">删除</a></li>
+						<li class="divider"></li>
+                        <li><a href="{:url('medialm',['type'=>0])}">显示全部</a></li>
+                        <li><a href="{:url('medialm',['type'=>1])}">显示审核通过</a></li>
+                        <li><a href="{:url('medialm',['type'=>2])}">显示未审核</a></li>
+						<li><a href="{:url('medialm',['type'=>3])}">显示审核退回</a></li>
+                    </ul>
+                </div>
+				<div class="table" v-el:table>
+					<form id="export-form" method="post" action="{:url('index')}">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input type="checkbox" class="selected-all"></th>
+								<th width="60"><span>ID</span></th>
+								<th width="250"><span>标题</span></th>
+								<th width="130"><span>时间</span></th>
+								<th width="100"><span>状态</span></th>
+								<th><span>备注</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<script id="arlist" type="text/html">
+                            {{# for(var i=0;i<d.length;i++){  }}
+                            <tr class="long-td">
+                                <td>
+                                	{{# if(d[i].state == 2){}}
+                                    <div class="icheckbox_square-green diychk" style="position: relative;"><input type="checkbox" style="position: absolute; opacity: 0;width:0;height:0px;" name="ck" ids="{{d[i].id}}" value="true" lay-filter="chk111"><ins class="iCheck-helper"></ins></div> 
+                                    {{#  } }}
+                                </td>
+                                <td>{{d[i].id}}</td>
+                                <td>{{d[i].title}}</td>
+                                <td>{{d[i].time}}</td>
+                                <td>{{d[i].stateval}}</td>
+                                <td>{{d[i].opinion}}</td>
+                                <td>
+                                	{{# if(d[i].state == 2){}}
+                                    <a class="btn do-action" data-type="doEdit" data-href="{:url('editmediacon')}" data-id="{{d[i].id}}">编辑</a>
+                                    <a class="btn do-action" data-type="doDelOne" data-href="{:url('delmediacon')}" data-id="{{d[i].id}}">删除</a>
+                                    {{#  } }}
+                                    
+                                    {{# if(d[i].state == 1){}}
+                                    <a class="btn" href="{{d[i].url}}" target="_blank">查看</a>
+                                    {{#  } }}
+
+                                </td>
+                            </tr>
+                            {{# } }}
+                        </script>
+                        <tbody id="article_list" class="article_list"></tbody>
+
+					</table>
+				</div>
+				<div id="AjaxPage" style="float: right;margin-top:-10px; "></div>
+                <div class="CountPage" style="float: right;clear:both; margin-right:15px; margin-top:-5px;">
+                    共 {$count} 条 <span id="allpage"></span>
+                </div>
+                <div style="clear:both;"></div>
+			</div>
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    var url='{:url("datacount/medialm",["type"=>$type])}';
+    var allpages='{$allpage}';
+
+    layui.use(['layer', 'form', 'laypage','common', 'icheck','laytpl'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common,form = layui.form();
+        $form = $('form');
+        laytpl =layui.laytpl;
+        laypage = layui.laypage;
+
+        common.Ajaxpage({$gopage});
+
+        //加载单选框样式
+        $((".table [type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+
+        //全选
+        $(document).on('ifChanged','.selected-all', function (event) {
+            if ($(this).prop("checked")) {
+                $("#article_list .diychk").addClass('checked');
+                $("#article_list .diychk").children('input:checkbox').prop("checked", true);
+            }else{
+                $("#article_list .diychk").removeClass('checked');
+                $("#article_list .diychk").children('input:checkbox').prop("checked", false);
+            }
+        });
+        $(document).on('click','.diychk', function () {
+            if ($(this).hasClass('checked')) {
+                $(this).removeClass('checked');
+                $(this).children('input:checkbox').prop("checked", false);
+            }else{
+                $(this).addClass('checked');
+                $(this).children('input:checkbox').prop("checked", true);
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -15,11 +15,11 @@
 						<thead>
 							<tr>
 								<th width="100"><span>ID</span></th>
-								<th width="200"><span>角色名称</span></th>
+								<th ><span>角色名称</span></th>
 								<th class="sort"><span>状态</span></th>
 								<th class="sort" width="150"><span>添加时间</span></th>
 								<th class="sort" width="150"><span>更新时间</span></th>
-								<th width="230"><span>操作</span></th>
+								<th width="300"><span>操作</span></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -33,7 +33,8 @@
 			                    <td align="center">{$v.create_time}</td>
 			                    <td align="center">{$v.update_time}</td>
 			                    <td align="center">
-			                        <a class="btn do-action" onclick="giveQx({$v.id})">分配权限</a>
+			                        <a class="btn do-action" onclick="giveCat({$v.id})">栏目权限</a>
+                                    <a class="btn do-action" onclick="giveQx({$v.id})">分配权限</a>
 		                            <a class="btn do-action" data-type="doEdit" data-href="{:url('editrole')}" data-id="{$v.id}">编辑</a>
 		                            <a class="btn do-action" data-type="doDelOne" data-href="{:url('delrole')}" data-id="{$v.id}">删除</a>
 			                    </td>
@@ -56,6 +57,20 @@
     <div class="form-group">
         <div class="col-sm-4 col-sm-offset-4" style="margin-bottom: 15px;margin-left: 15px;">
             <input type="button" value="确认分配" class="btn btn-primary" id="postform"/>
+        </div>
+    </div>
+</div>
+<!-- 栏目权限 -->
+<div class="zTreeDemoBackground left" style="display: none" id="catlist">
+    <input type="hidden" id="nodeid" value="">
+    <div class="form-group">
+        <div class="col-sm-5 col-sm-offset-2">
+            <ul id="treeTypecatlist" class="ztree"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4 col-sm-offset-4" style="margin-bottom: 15px;margin-left: 15px;">
+            <input type="button" value="确认分配" class="btn btn-primary" id="postcatlistform"/>
         </div>
     </div>
 </div>
@@ -111,6 +126,48 @@
             }
         });
     }
+    //栏目权限
+    function giveCat(id){
+        $("#nodeid").val(id);
+        //加载层
+        index2 = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+        //获取权限信息
+        $.getJSON('./giveAccessCat', {'type' : 'get', 'id' : id}, function(res){
+            layer.close(index2);
+            if(res.code == 1){
+                zNodes = JSON.parse(res.data);  //将字符串转换成obj
+                //页面层
+                index = layer.open({
+                    type: 1,
+                    area:['550px', '600px'],
+                    title:'栏目权限',
+                    skin: 'layui-layer-demo', //加上边框
+                    content: $('#catlist')
+                });
+                //设置位置
+                layer.style(index, {
+                    top: '150px'
+                });
+                //设置zetree
+                var setting = {
+                    check:{
+                        enable:true
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    }
+                };
+
+                $.fn.zTree.init($("#treeTypecatlist"), setting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("treeTypecatlist");
+                zTree.expandAll(true);
+            }else{
+                layer.alert(res.msg);
+            }
+        });
+    }
 
     //确认分配权限
     $("#postform").click(function(){
@@ -127,6 +184,31 @@
         var id = $("#nodeid").val();
         //写入库
         $.post('{:url('giveAccess')}', {'type' : 'give', 'id' : id, 'rule' : NodeString}, function(res){
+            layer.close(index);
+            if(res.code == 1){
+                layer.msg(res.msg,{icon:1,time:1500,shade: 0.1}, function(){});
+            }else{
+                layer.msg(res.msg);
+            }
+
+        }, 'json')
+    })
+
+    //确认分配权限
+    $("#postcatlistform").click(function(){
+        var zTree = $.fn.zTree.getZTreeObj("treeTypecatlist");
+        var nodes = zTree.getCheckedNodes(true);
+        var NodeString = '';
+        $.each(nodes, function (n, value) {
+            if(n>0){
+                NodeString += ',';
+            }
+            NodeString += value.id;
+        });
+
+        var id = $("#nodeid").val();
+        //写入库
+        $.post('{:url('giveAccessCat')}', {'type' : 'give', 'id' : id, 'rule' : NodeString}, function(res){
             layer.close(index);
             if(res.code == 1){
                 layer.msg(res.msg,{icon:1,time:1500,shade: 0.1}, function(){});

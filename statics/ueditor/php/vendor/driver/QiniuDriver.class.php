@@ -65,6 +65,11 @@ class QiniuDriver{
 	 */
 
 	public function fetchFile( $image_url,$ue_config ){
+		//重组第三方拉取URL
+		$io_host = $this->uploadQiniuUrl;
+		$io_host = str_replace("qiniu.com", "qbox.me", $io_host);
+		$io_host = str_replace("up", "iovip", $io_host);
+
 		// 要抓取的URL
 		$image_url   = trim($image_url);
 		// 解析Url中的Path然后根据Path获取文件名称
@@ -80,15 +85,18 @@ class QiniuDriver{
 		// 七牛POST的PATH地址
 		$post_path   = "/fetch/". $encoded_uri ."/to/". $encoded_entry_uri;
 		// POST URL
-		$url   = $this->qiniu_io_host . $post_path;
+		$url   = $io_host . $post_path;
 		// 抓取Token
 		$token = $this->getSign($post_path."\n");
+
 		// 返回数据
 		$response = $this->request($url, 'POST', array('Authorization'=>"QBox $token"));
+
 		// 如果有错误信息
-		if( !empty($result['error']) ){
+		if( !empty($response['error']) ){
 			return array(
-				'state' => $result['error']
+				'state' => $response['error'], 
+				"url"  	=> $image_url,
 			);
 		}
 		// 拼接上传到七牛的地址
@@ -148,7 +156,7 @@ class QiniuDriver{
 
 	public function getFileInfo( $config ,$ue_config ){
 		$file_info  = $this->setUploadInfo($config, $ue_config );
-		$result     =  $this->uploadFile($file_info);
+		$result     =  $this->uploadFile($file_info,$ue_config);
 		// 如果有错误信息
 		if( !empty($result['error']) ){
 			return array(
@@ -194,7 +202,7 @@ class QiniuDriver{
 	 * @author  widuu <admin@widuu.com>
 	 */
 
-	private function setUploadInfo( $config, $ue_config ){
+	public function setUploadInfo( $config, $ue_config ){
 		$field_name  = $config['fieldName'];
 		$file_name   = $this->getFileName($field_name,$ue_config); 
 		$upload_info = array(
@@ -207,9 +215,7 @@ class QiniuDriver{
 		    $upload_info['file_name'] = $file_name.'png';
 		    $upload_info['file_body'] = base64_decode( $_POST[$field_name] );
 		}
-
 		return $upload_info;
-		
 	}
 
 	/**
@@ -222,7 +228,7 @@ class QiniuDriver{
 	 * @author  widuu <admin@widuu.com>
 	 */
 
-	private function getFileName( $field_name ,$ue_config , $flag = false ){
+	public function getFileName( $field_name ,$ue_config , $flag = false ){
 		$prefix = trim($ue_config['qiniuUploadPath'] , "/" ) . "/" ;
 		$format = $ue_config['qiniuDatePath'];
 		$time   = explode('-', date("Y-y-m-d",time()));
@@ -265,7 +271,7 @@ class QiniuDriver{
 	 * @author  widuu <admin@widuu.com>
 	 */
 
-	private function uploadFile( $upload_info ){
+	public function uploadFile( $upload_info,$ue_config ){
 		$token  = $this->getUploadToken($upload_info['file_name']);
 		$mimeBoundary = md5(microtime());
 		$header = 	array('Content-Type'=>'multipart/form-data;boundary='.$mimeBoundary);
@@ -299,7 +305,9 @@ class QiniuDriver{
 		array_push($data, '');
 
 		$body 		= 	implode("\r\n", $data);
-		$response 	= 	$this->request($this->qiniu_up_host, 'POST', $header, $body);
+
+		$qiniuuphost = isset($this->uploadQiniuUrl) ? $this->uploadQiniuUrl : $this->qiniu_up_host;
+		$response 	= 	$this->request($qiniuuphost, 'POST', $header, $body);
 		return $response;
 	}
 

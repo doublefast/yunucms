@@ -42,9 +42,31 @@ class Qiniu extends Base{
 	 */
 
 	public function upload($method){
-		$upload_config = $this->setUploadConfig($method);
-		$ue_config	   = $this->getUeConfig();
-		return $this->qiniu->getFileInfo( $upload_config ,$ue_config );
+		if($method == 'uploadimage'){
+			//上传图片走本地保存再上传到七牛云方案
+			$ue_config	   = $this->getUeConfig();
+			$upload_config = $this->setUploadConfig($method);
+			$fieldName = $upload_config['fieldName'];
+			$base64    = $upload_config['base64'];
+			unset($upload_config['fieldName']);
+			unset($upload_config['base64']);
+			$File = new LocalDriver($fieldName, $upload_config, $base64);
+			$fileinfo = $File->getFileInfo();
+
+			if ($fileinfo['url']) {
+				$upload_info['name'] = 'file';
+				$upload_info['file_name'] = substr($fileinfo['url'], 1);
+				$upload_info['file_body'] = file_get_contents('../../../'.$fileinfo['url']);;
+
+				$res = $this->qiniu->uploadFile($upload_info, $ue_config);
+				$fileinfo = $res;
+			}
+			return $fileinfo;
+		}else{
+			$upload_config = $this->setUploadConfig($method);
+			$ue_config	   = $this->getUeConfig();
+			return $this->qiniu->getFileInfo( $upload_config ,$ue_config );
+		}
 	}
 
 	/**
@@ -169,7 +191,7 @@ class Qiniu extends Base{
 		}
 
 		foreach ( $source as $img_url ) {
-		    $info = $this->qiniu->fetchFile( $img_url ,$ue_config );
+		    $info = $this->qiniu->fetchFile($img_url ,$ue_config );
 		    array_push($list, array(
 		        "state"    => $info["state"],
 		        "url"      => $info["url"],

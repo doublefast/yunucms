@@ -9,7 +9,37 @@ class CategoryModel extends Model
     
     //状态，导航类型，标题是否带地区
     public function getCategory($status = 0, $nav = 0, $isarea = true) {
-	    $where = [];
+		if (!cache('catlist')) {
+			$catlist = $this->order('sort asc')->select();
+			cache('catlist', $catlist, 3600);
+		}else{
+			$catlist = cache('catlist');
+		}
+    	
+	    if ($nav) {
+		    $navlist = ($nav == 1 || $nav == 2) ? [$nav, 3] : [1, 2, 3]; 
+	    }
+	    
+	    foreach ($catlist as $k => $v) {
+	    	if ($status) {
+		        if ($v['status'] != $status) {
+		        	unset($catlist[$k]);
+		        	continue;
+		        }
+		    }
+		    if ($nav) {
+		        if (!in_array($v['nav'], $navlist)) {
+		        	unset($catlist[$k]);
+		        	continue;
+		        }
+		    }
+
+	    	$catlist[$k] = $this->getCategoryArea($v, [], $isarea);
+	    }
+	    return $catlist;
+
+
+	    /*$where = [];
 	    if ($status) {
 	        $where['status'] = $status;
 	    }
@@ -20,7 +50,7 @@ class CategoryModel extends Model
 	    foreach ($cate_arr as $k => $v) {
 	    	$cate_arr[$k] = $this->getCategoryArea($v, [], $isarea);
 	    }
-	    return $cate_arr;
+	    return $cate_arr;*/
 	}
 
 	public function clearLink($cate) {
@@ -93,7 +123,7 @@ class CategoryModel extends Model
 	    }
 	    $cname = $cate['etitle'] ? $cate['etitle'] : $cate['id'];
 	    if (!$area) {
-            $area = config('sys.sys_area')? db('area')->where(['etitle'=>config('sys.sys_area')])->find() : [];
+            $area = session('sys_areainfo');
         }
 	    switch (config('sys.url_model')) {
 	    	case '1'://动态
@@ -136,7 +166,7 @@ class CategoryModel extends Model
     public function getCategoryArea($cate, $area = [], $isarea = true)
     {
     	if (!$area) {
-    		$area = config('sys.sys_area') ? db('area')->where(['etitle'=>config('sys.sys_area')])->find() : [];
+    		$area = session('sys_areainfo');
     	}
         if ($area && $isarea) {
 			$cate['title'] = $cate['isarea'] ? $area['stitle'].$cate['title'] : $cate['title'];

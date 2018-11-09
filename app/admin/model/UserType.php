@@ -74,6 +74,12 @@ class UserType extends Model
         return $res['rules'];
     }
 
+    public function getCatlistById($id)
+    {
+        $res = $this->field('catlist')->where(['id'=>$id])->find();
+        return $res['catlist'];
+    }
+
     public function editAccess($param)
     {
         try{

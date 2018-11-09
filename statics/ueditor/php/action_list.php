@@ -88,7 +88,7 @@ function getfiles($path, $allowFiles, &$files = array())
             }
         }
     }
-    $files = list_sort_by($files, 'mtime'); //按照时间排序
+    $files = list_sort_by($files, 'mtime', 'desc'); //按照时间排序
     return $files;
 }
 

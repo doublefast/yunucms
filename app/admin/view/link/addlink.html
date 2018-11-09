@@ -16,21 +16,19 @@
                     <div class="layui-form check_diqu" id="diqu">
                         <ul>
                             {notempty name="arealist"}
+                            <li>&nbsp;&nbsp;<button type="button" class="btn diqu_select">全选</button></li>
                             {volist name="arealist" id="v"}
                             <li>
-                                <input type="checkbox" name="diqu[]" value="{$v['id']}" lay-skin="primary" lay-filter="diqu" title="{$v['title']}">
-                                
+                                <label class="diqu_checkbox"><input {if $v['ischk'] }checked{/if} type="checkbox" value="{$v['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v['title']}</span></label>
                                 {notempty name="v.node"}
                                 <ul>
                                 {volist name="v.node" id="v1"}
                                 <li>
-                                    <input type="checkbox" name="diqu[]" value="{$v1['id']}" lay-skin="primary" lay-filter="diqu" title="{$v1['title']}">
+                                    <label class="diqu_checkbox"><input {if $v1['ischk'] }checked{/if} type="checkbox" value="{$v1['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v1['title']}</span></label>
                                     {notempty name="v1.node"}
                                     <ul>
                                     {volist name="v1.node" id="v2"}
-                                    <li>
-                                    <input type="checkbox" name="diqu[]" value="{$v2['id']}" lay-skin="primary" lay-filter="diqu" title="{$v2['title']}">
-                                    </li>
+                                    <label class="diqu_checkbox"><input {if $v2['ischk'] }checked{/if} type="checkbox" value="{$v2['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v2['title']}</span></label>
                                     {/volist}
                                     </ul>
                                     {/notempty}
@@ -90,7 +88,7 @@
                         <label class="layui-form-label">所属地区</label>
                         <div class="layui-input-inline">
                             <input id="area" type="hidden" name="area">
-                            <a class="btn" id="open_diqu">点击选择</a>&nbsp;&nbsp;&nbsp;<font class="font_tip">不选择，默认为只在主站显示</font>
+                            <a class="btn" id="open_diqu">点击选择</a>&nbsp;&nbsp;&nbsp;<font class="font_tip">不选择，默认为所有地区</font>
                         </div>
                     </div>
                     {/notempty}
@@ -128,7 +126,7 @@ layui.use(['form','common','upload'], function(){
             ,title:'上传图片'
             ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
             ,method: 'post' //上传接口的http类型
-            ,ext: 'jpg|png|gif'
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
             ,type:'images'
             ,success: function(data){ //上传成功后的回调
                 if(data.status == 1){
@@ -189,21 +187,22 @@ layui.use(['form','common','upload'], function(){
         });
 
          $('#open_diqu').on('click', function(){
-                layer.open({
-                    title: '选择地区',
-                    type: 1,
-                    content: $(box),
-                    skin: 'layer_diqu',
-                    area: ['60%','50%'],
-                    btn: '确定',
-                    yes: function(index, layero){
-                        var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
-                            return $(el).val();
-                        }).get().join(',');
-                        $('#area').val(value);
-                        layer.close(index);
-                    }
-                });
+            area_select($("#diqu input:checkbox"));
+            layer.open({
+                title: '选择地区',
+                type: 1,
+                content: $(box),
+                skin: 'layer_diqu',
+                area: ['60%','50%'],
+                btn: '确定',
+                yes: function(index, layero){
+                    var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
+                        return $(el).val();
+                    }).get().join(',');
+                    $('#area').val(value);
+                    layer.close(index);
+                }
+            });
         });
         
         diqu(layer, form, box);
