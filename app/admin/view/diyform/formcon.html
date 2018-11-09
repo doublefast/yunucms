@@ -1,0 +1,113 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+
+				<a class="btn do-action" data-type="doDelete" data-href="{:url('delformcon')}">批量删除</a>
+				<div class="table">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input type="checkbox" class="selected-all" id="selected-all"></th>
+								<th width="60"><span>ID</span></th>
+                                {volist name="fieldlist" id="v"}
+                                <th ><span>{$v.title}</span></th>
+                                {/volist}
+								<th width="150"><span>提交时间</span></th>
+                                <th width="100"><span>IP</span></th>
+                                <th width="100"><span>推荐</span></th>
+                                <th width="100"><span>状态</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<script id="arlist" type="text/html">
+                            {{# for(var i=0;i<d.length;i++){  }}
+			                <tr class="long-td">
+			                	<td>
+                                    <div class="icheckbox_square-green diychk" style="position: relative;"><input type="checkbox" style="position: absolute; opacity: 0;" name="ck" ids="{{d[i].id}}" value="true"><ins class="iCheck-helper"></ins></div>  
+                                </td>
+			                    <td>{{d[i].id}}</td>
+                                {volist name="fieldlist" id="v"}
+                                <td>{{d[i].{$v.field}}}</td>
+                                {/volist}
+			                    <td>{{d[i].create_time}}</td>
+                                <td>{{d[i].ip}}</td>
+                                <td>
+                                	{{# if(d[i].istop==1){ }}
+                                		推荐
+                                    {{# } }}
+                               	</td>
+			                    <td>
+			                    	{{# if(d[i].look==1){ }}
+                                        已读
+                                    {{# }else{ }}
+                                        <font color="red">未读</font>
+                                    {{# } }}
+			                    </td>
+
+			                    <td>
+		                            <a class="btn do-action" data-type="doEdit" data-href="{:url('editformcon')}" data-id="{{d[i].id}}">编辑</a>
+		                            <a class="btn do-action" data-type="doDelOne" data-href="{:url('delformcon')}" data-id="{{d[i].id}}">删除</a>
+			                    </td>
+			                </tr>
+							{{# } }}
+                        </script>
+                        <tbody id="article_list"></tbody>
+					</table>
+				</div>
+				<div id="AjaxPage" style="float: right;margin-top:-10px; "></div>
+                <div class="CountPage" style="float: right;clear:both; margin-right:15px; margin-top:-5px;">
+                    共 {$count} 条 <span id="allpage"></span>
+                </div>
+                <div style="clear:both;"></div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+var laytpl,laypage;
+    var url='{:url("diyform/formcon",['fid'=>$fid])}';
+    var allpages='{$allpage}';
+    layui.use(['layer', 'form','laypage','common', 'icheck','laytpl'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common, form = layui.form();
+        $form = $('form');
+        laytpl =layui.laytpl;
+        laypage = layui.laypage;
+        
+        common.Ajaxpage();
+
+        //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+
+        //全选
+        $(document).on('ifChanged','.selected-all', function (event) {
+            var $input = $('.layuitable tbody tr td').find('input');
+            if ($('.selected-all').attr("checked")) {
+                $("#article_list .diychk").addClass('checked');
+                $("#article_list .diychk").children('input:checkbox').attr("checked", true);
+            }else{
+                $("#article_list .diychk").removeClass('checked');
+                $("#article_list .diychk").children('input:checkbox').attr("checked", false);
+            }
+        });
+        $(document).on('click','.diychk', function () {
+            if ($(this).hasClass('checked')) {
+                $(this).removeClass('checked');
+                $(this).children('input:checkbox').attr("checked", false);
+            }else{
+                $(this).addClass('checked');
+                $(this).children('input:checkbox').attr("checked", true);
+            }
+        });
+    });
+</script>
+</body>
+</html>

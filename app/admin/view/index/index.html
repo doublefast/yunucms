@@ -1,0 +1,129 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice"></div>
+			<div class="main_content">
+				<div class="ui_prompt">提示：尊敬的 {:session('admin_username')}（{:session('rolename')}），欢迎您的使用，您的上次登录时间为 {:session('last_login_time')}，登录IP为 {:session('last_login_ip')}&nbsp;&nbsp;{$cloudstr}</div>
+				<div class="clearfix">
+					<div class="index_block index_block_info">
+						<i class="icon-信息"></i>
+						<div class="fr">
+							<p>信息总数</p>
+							<strong>{$content_count}</strong>
+						</div>
+					</div>
+					<div class="index_block index_block_column">
+						<i class="icon-栏目"></i>
+						<div class="fr">
+							<p>栏目总数</p>
+							<strong>{$category_count}</strong>
+						</div>
+					</div>
+					<div class="index_block index_block_admin">
+						<i class="icon-管理员"></i>
+						<div class="fr">
+							<p>管理员数</p>
+							<strong>{$admin_count}</strong>
+						</div>
+					</div>
+					<div class="index_block index_block_visit">
+						<i class="icon-统计"></i>
+						<div class="fr">
+							<p>访问总数</p>
+							<strong>3</strong>
+						</div>
+					</div>
+				</div>
+				<div class="index_box">
+					<div class="index_box_tit">网站访问统计</div>
+					<div class="index_box_content">
+						<div class="index_highcharts"></div>
+						<script type="text/javascript" src="__ADM_PUBLIC__/js/highcharts.js"></script>
+						<script type="text/javascript">
+							var data = [{$daycount}];
+							var today = new Date();
+							today.setHours(8 - 24*(data.length-1));
+							today.setMinutes(0);
+							today.setSeconds(0);
+							today.setMilliseconds(0);
+							$('.index_highcharts').highcharts({
+						        chart: {
+						            type: 'areaspline'
+						        },
+						        title: {
+						            text: ''
+						        },
+						        legend: {
+						            layout: 'vertical',
+						            align: 'left',
+						            verticalAlign: 'top',
+						            x: 150,
+						            y: 100,
+						            floating: true,
+						            borderWidth: 1,
+						            backgroundColor: '#FFFFFF'
+						        },
+						        xAxis: {
+						            allowDecimals: false,
+						            type: 'datetime',
+						            dateTimeLabelFormats: {
+						                day: '%b-%e'
+						            },
+						            labels:{
+						            	maxStaggerLines :3
+						            }
+						        },
+						        yAxis: {
+						            allowDecimals: false,
+						            //tickPixelInterval: 200,
+						            labels:{
+						            	maxStaggerLines :3
+						            },
+						            title: {
+						                text: ''
+						            }
+						        },
+						        tooltip: {
+						            pointFormat: '访问量: {point.y}次'
+						        },
+						        credits: {
+						            enabled: false //禁用版权信息
+						        },
+						        plotOptions: {
+						            areaspline: {
+						                fillOpacity: 0.5
+						            }
+						        },
+						        series: [{
+						            name: '',
+						            showInLegend: false,
+						            data: data,
+						            pointStart: Date.parse(today),
+						            pointInterval: 24 * 3600 * 1000
+						        }]
+						    });
+						</script>
+					</div>
+				</div>
+				<div class="index_box">
+					<div class="index_box_tit">网站信息</div>
+					<div class="index_box_content" style="min-height:auto;">
+						<ul class="purple_list">
+							<li>操作系统：{$sys_os}</li>
+							<li>服务器软件：{$sys_ser}</li>
+							<li>MySQL 版本：{$sys_mysql}</li>
+							<li>上传文件： {$sys_upfile}</li>
+						</ul>
+					</div>
+				</div>
+				<div class="copy">
+					Powered By <a href="http://www.yunucms.com" target="_blank">www.yunucms.com</a> @ 2017 YUNUCMS Inc.
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

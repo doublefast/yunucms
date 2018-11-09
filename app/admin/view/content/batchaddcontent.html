@@ -1,0 +1,313 @@
+{include file="public/header" /}
+<style>
+.content_nav_list{
+	overflow:auto;
+	height: 100%;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
+<link rel="stylesheet" href="__ADM_PUBLIC__/css/webuploader.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/webuploader.js"></script>
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="sidebar2" >
+				<a class="btn_expand" href="javascript:;"></a>
+				<a class="btn_contract" href="javascript:;"></a>
+				
+				<ul class="content_nav_list">
+					{notempty name="catlist"}
+		            {volist name="catlist" id="v"}
+		            <li><a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">{if $v.pid eq 0}<i class="fa fa-folder-open"></i>{else}<span style="display:inline-block;width:{$v.leftpin / 2}px;"></span>├ {/if}{$v['title']}</a></li>
+		            {/volist}
+		            {/notempty}
+				</ul>
+			</div>
+			<div class="content_box">
+				<form class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    
+                    <!--area_start-->
+                    <div class="layui-form check_diqu" id="diqu">
+                        <ul>
+                            {volist name="arealist" id="v"}
+                            <li>
+                                <input type="checkbox" name="diqu[]" value="{$v['id']}" lay-skin="primary" lay-filter="diqu" title="{$v['title']}">
+                                
+                                {notempty name="v.node"}
+                                <ul>
+                                {volist name="v.node" id="v1"}
+                                <li>
+                                    <input type="checkbox" name="diqu[]" value="{$v1['id']}" lay-skin="primary" lay-filter="diqu" title="{$v1['title']}">
+                                    {notempty name="v1.node"}
+                                    <ul>
+                                    {volist name="v1.node" id="v2"}
+                                    <li>
+                                    <input type="checkbox" name="diqu[]" value="{$v2['id']}" lay-skin="primary" lay-filter="diqu" title="{$v2['title']}">
+                                    </li>
+                                    {/volist}
+                                    </ul>
+                                    {/notempty}
+                                </li>
+                                {/volist}
+                                </ul>
+                                {/notempty}
+                            </li>
+                            {/volist}
+                           
+                        </ul>
+                    </div>
+                    <!--area_end-->
+					<input type="hidden" name="cid" value="{$cate.id}">
+					<input type="hidden" name="mid" value="{$cate.mid}">
+					<div class="title">
+						<span>批量添加内容</span>
+					</div>
+
+					<div class="title_bar mb20">
+						通用设置
+					</div>
+					
+					<div class="layui-form-item">
+			            <label class="layui-form-label">当前分类</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" value="{$cate.title}" readonly="readonly">
+			            </div>
+			        </div>
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">图片匹配字段</label>
+			           	<div class="layui-input-inline">
+			                <select name="field" id="field">
+				                <option value="pic">封面图片 [ pic ]</option>
+				                {volist name="imgfield" id="v"}
+				                <option value="{$v.field}">{$v.title} [ {$v.field} ]</option>
+					            {/volist}
+				           	</select>
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">是否推荐</label>
+			           	<div class="layui-input-inline">
+			                <input type="checkbox" checked="" name="istop" lay-skin="switch" lay-filter="switchTest">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">头条</label>
+			           	<div class="layui-input-inline">
+			                <select name="top" id="top">
+				                <option value="0">非头条</option>
+				                <option value="1">一级头条</option>
+				                <option value="2">二级头条</option>
+				                <option value="3">三级头条</option>
+				                <option value="4">四级头条</option>
+				                <option value="5">五级头条</option>
+				                <option value="6">六级头条</option>
+				                <option value="7">七级头条</option>
+				                <option value="8">八级头条</option>
+				                <option value="9">九级头条</option>
+				           	</select>
+			            </div>
+			        </div>
+
+					{if $cate.isarea eq 1}
+					{notempty name="arealist"}
+					<div class="layui-form-item">
+			            <label class="layui-form-label">所属地区</label>
+			           	<div class="layui-input-inline">
+			                <input id="area" type="hidden" name="area">
+    						<a class="btn" id="open_diqu">点击选择</a>&nbsp;&nbsp;&nbsp;<font class="font_tip">不选择，默认为所有地区</font>
+			            </div>
+			        </div>
+                    {/notempty}
+			        {/if}
+					
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">预约发布</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="create_time" value="{:date('Y-m-d H:i:s')}" placeholder="选择时间可进行预约发布" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+			            </div>
+			        </div>
+
+			        <div class="title_bar mb20">
+						批量添加
+					</div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label">&nbsp;</label>
+	                    <div class="layui-input-inline w700">
+	                    	<input type="hidden" name="imglist" id="imglist">
+	                    	<input type="hidden" name="titlelist" id="titlelist">
+	                    	<input type="hidden" name="sortlist" id="sortlist">
+	                		<div id="upload_imagelist" >批量选择图片上传</div>
+	                		<div class="picture_tip"></div>
+	                		<div id="picture_show"></div>
+	                    </div>
+	                </div>
+					
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('batchaddcontent')}'>提交</button>
+	                    </div>
+			        </div>
+				
+				</form>
+			</div>
+		</div>
+	</div>
+
+<script>
+function updateimg(node,name){
+	var num = $('.'+node);
+	var valstr = "";
+	for(i=0;i<num.length;i++)
+	{
+		valstr = valstr+num.eq(i).val()+"***";
+	}
+	$("#"+name).val(valstr);
+}
+function inputchange(){
+	updateimg('imgval', 'imglist');
+	updateimg('titleval', 'titlelist');
+	updateimg('sortval', 'sortlist');
+}
+layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common, laydate = layui.laydate, laytpl =layui.laytpl,box = '#diqu';
+
+        var picture_show = $('#picture_show');
+		var picture_tip = $(".picture_tip");
+
+		var uploader = WebUploader.create({
+			auto: true,
+			swf:  '__ADM_PUBLIC__/js/Uploader.swf',
+			server: '{:url('Upload/upload',['file'=>'file'])}',
+			pick: '#upload_imagelist',
+			accept:{
+				title: 'Images',
+				extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/'
+			},
+			duplicate :true 
+		});
+											
+		uploader.on( 'uploadSuccess', function(file,data){
+			if(data.status == 1){
+
+				picture_tip.html("上传成功");				
+				var img = data.image_name;
+				var picture_html="";
+				picture_html += '<div class="picture">';
+		       	picture_html += '<div class="picture_batch">';
+		        picture_html += '<img src="'+img+'" width="114" height="114">';
+		        picture_html += '<div class="picture_del">删除</div>';
+		        picture_html += '<div class="picture_go_up">上移</div>';
+		        picture_html += '<input type="hidden" class="imgval" value="'+img+'" />';
+		        picture_html += '</div>';
+		        picture_html += '<div class="input_batch">';
+		        picture_html += '<div class="item"><label class="layui-form-label">标题：</label><input class="layui-input w450 titleval" onchange="inputchange()" type="text" value="'+data.name+'"></div>';
+				picture_html += '<div class="item"><label class="layui-form-label">排序：</label><input class="layui-input w450 sortval" onchange="inputchange()" type="text" value="1"></div>';
+		        picture_html += '</div>';
+				picture_html += '<div class="clear"></div>';
+				picture_html += '</div>';
+
+				picture_show.append(picture_html);
+				inputchange()
+			}else{
+				picture_tip.html(data.state);
+			}
+		});
+
+        //监听提交
+        form.on('submit(save)', function(data){
+        	if (!$('#imglist').val()) {
+        		common.layerAlertE("请添加需要上传的图片", '提示');
+        		return false;
+        	};
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('content/batchaddcontent',['cid'=>$cate['id']])}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+        $('#open_diqu').on('click', function(){
+                layer.open({
+                	title: '选择地区',
+                    type: 1,
+                    content: $(box),
+                    skin: 'layer_diqu',
+                    area: ['60%','50%'],
+                    btn: '确定',
+                    yes: function(index, layero){
+                        var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
+                            return $(el).val();
+                        }).get().join(',');
+                        $('#area').val(value);
+                        layer.close(index);
+                    }
+                });
+       	});
+       	
+        diqu(layer, form, box);
+
+        $('#picture_show').on('mouseenter','.picture_batch',function(){
+				$(this).find('.picture_go_up').show();
+				$(this).find('.picture_del').show();
+			}).on('mouseleave','.picture_batch',function(){
+				$(this).find('.picture_go_up').hide();
+				$(this).find('.picture_del').hide();
+			}
+		); 
+
+	    $('#picture_show').on('click','.picture_go_up',function () {
+	        var parent = $(this).parent().parent();
+	        if (parent.index() == 0){
+	        }else{
+	        	parent.prev().before(parent);
+	        	$(this).hide();
+	        	parent.find('.picture_del').hide();
+	        }
+	        inputchange()
+	    });
+
+	    $('#picture_show').on('click','.picture_del',function () {
+	        var img = $(this).next().val();//下个元素input的值 
+	        $(this).parent().next().remove();////移除父元素同级
+			$(this).parent().remove();////移除父元素
+			inputchange()
+			return;     
+	    });
+    });
+</script>
+</body>
+</html>

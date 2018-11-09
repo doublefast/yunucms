@@ -1,0 +1,94 @@
+{include file="public/header" /}
+<style>
+.content_nav_list{
+	overflow:auto;
+	height: 100%;
+}
+</style>
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+
+					<input type="hidden" name="id" value="{$info.id}">
+					<input type="hidden" name="vid" value="{$info.vid}">
+					
+					<div class="title_bar mb20">
+						基本信息
+					</div>
+					
+					<div class="layui-form-item">
+			            <label class="layui-form-label">是否推荐</label>
+			           	<div class="layui-input-inline">
+			                <input type="checkbox" {if $info.istop}checked{/if} name="istop" lay-skin="switch" lay-filter="switchTest">
+			            </div>
+			        </div>
+
+			        <div class="title_bar mb20">
+						附加信息
+					</div>
+					
+					{$fieldhtml['html']}
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editformcon')}'>提交</button>
+	                    </div>
+			        </div>
+				
+				</form>
+			</div>
+		</div>
+	</div>
+
+<script>
+
+layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common, laydate = layui.laydate, laytpl =layui.laytpl,box = '#diqu';
+
+        {$fieldhtml['script']}
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('diyform/formcon',['fid'=>$info['fid']])}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

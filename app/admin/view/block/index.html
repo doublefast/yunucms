@@ -1,0 +1,86 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn" href="{:url('addblock',['cid'=>$cid])}">添加自定义块</a>
+				<div class="table" v-el:table>
+					<form id="export-form" method="post" >
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th class="sort" width="80"><span>ID</span></th>
+								<th ><span>名称[说明]</span></th>
+								<th width="100"><span>分类</span></th>
+								<th width="150"><span>类型</span></th>
+								<th width="300"><span>模版调用代码</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+						<script id="arlist" type="text/html">
+							{{# for(var i=0;i<d.length;i++){  }}
+								<tr class="long-td">
+									<td>{{d[i].id}}</td>
+									<td>{{d[i].title}} [ {{d[i].remark}} ]</td>
+									<td>{{d[i].cname}}</td>
+									<td>{{d[i].tname}}</td>
+									<td>&lt;yunu:block name='{{d[i].title}}' /&gt;</td>
+									<td>
+										<a class="btn do-action" data-type="doEdit" data-href="{:url('editblock')}" data-id="{{d[i].id}}">编辑</a>
+		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delblock')}" data-id="{{d[i].id}}">删除</a>
+									</td>
+								</tr>
+							{{# } }}
+		                </script>
+                        <tbody id="article_list"></tbody>
+						</tbody>
+					</table>
+				</div>
+				<div id="AjaxPage" style="float: right;margin-top:-10px; "></div>
+                <div class="CountPage" style="float: right;clear:both; margin-right:15px; margin-top:-5px;">
+                    共 {$count} 条 <span id="allpage"></span>
+                </div>
+                <div style="clear:both;"></div>
+			</div>
+		</div>
+	</div>
+<script>
+    $(document).on('blur','.sort', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+            url: '{:url("sortcategory")}',
+           	dataType: "json",
+            data:{'id':id,'sort':obs.val()},
+            type: "POST",
+            success: function(data){
+                //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
+            }
+        });
+    });
+
+    var laytpl,laypage;
+    var url='{:url("block/index",['cid'=>$cid])}';
+    var allpages='{$allpage}';
+    layui.use(['layer', 'laypage','common', 'icheck','laytpl'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common;
+        laytpl =layui.laytpl;
+        laypage = layui.laypage;
+        common.Ajaxpage();
+
+    });
+</script>
+</body>
+</html>

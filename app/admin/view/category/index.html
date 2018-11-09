@@ -1,0 +1,191 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn mr10" href="{:url('addcategory')}">新增</a><a class="btn mr10" href="{:url('batchaddcategory')}">批量新增</a><a class="btn do-action mr10" id="doDelete">批量删除</a><a class="btn do-action mr10" id="doOpen">一键开启地区</a><a class="btn do-action mr10" id="doClose">一键关闭地区</a>
+				<div class="table">
+					<table>
+						<thead>
+							<tr>
+                                <th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
+								<th class="sort" width="80"><span>ID</span></th>
+								<th class="sort"><span>栏目名称</span></th>
+								<th class="sort" width="150"><span>所属模型</span></th>
+								<th class="sort" width="80"><span>显示</span></th>
+								<th class="sort" width="150"><span>导航栏显示</span></th>
+								<th class="sort" width="80"><span>排序</span></th>
+								<th width="250"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody class="layuitable">
+							{notempty name="infolist"}
+		                    	{volist name="infolist" id="v"}
+								<tr>
+                                    <td><input class="ids i-checks" type="checkbox" name="ids[]" ids="{$v.id}"></td>
+									<td>{$v.id}</td>
+									<td align="left">
+										{if $v.pid neq 0}
+				                    		<span style="display:inline-block;width:{$v.leftpin}px;"></span>├  
+				                    	{/if} {$v.title}
+									</td>
+									<td>{$v.mname}</td>
+									<td>
+			                        	<a href="javascript:;" class="change_status" data-id="{$v.id}"> <div class="layui-unselect layui-form-switch {if condition="$v.status eq 1"}layui-form-onswitch{/if}"><i></i></div> </a>
+			                        </td>
+									<td>{$v.tname}</td>
+									<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td>
+									<td>
+										<a class="btn" href="{$v['preview']}" target="_blank">预览</a>
+                                        <a class="btn" href="{if $v.cover eq 1}javascript:void(){else}{:url('content/index', ['cid'=>$v['id']])}{/if}" {if $v.cover eq 1}disabled{/if}>内容</a>
+                                        <a class="btn do-action" data-type="doEdit" data-href="{:url('editcategory')}" data-id="{$v.id}">编辑</a>
+		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delcategory',['ids'=>$v['id']])}">删除</a>
+									</td>
+								</tr>
+								{/volist}
+		                    {else /}
+		                        <td colspan="8" class="text-center"> 暂未发现数据! </td>
+		                    {/notempty}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    layui.use(['layer', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common;
+        laypage = layui.laypage;
+        //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+        //全选的实现
+        $('.check-all').on('ifChecked', function (event) {
+            $('input[name="ids[]"]').iCheck('check');
+        });
+        $('.check-all').on('ifUnchecked', function (event) {
+            $('input[name="ids[]"]').iCheck('uncheck');
+        });
+    });
+
+    $(document).on('click','.change_status', function () {
+        var id=$(this).attr('data-id');
+        var obs=$(this);
+        $.ajax({
+            url: '{:url("statecategory")}',
+            dataType: "json",
+            data:{'id':id},
+            type: "POST",
+            success: function(data){
+                if(data.code == 1){
+                    obs.find('div').removeClass('layui-form-onswitch');
+                    layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                }else{
+                    obs.find('div').addClass('layui-form-onswitch');
+                    layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                }
+            }
+        });
+    });
+
+    //删除分类
+    $(document).on('click','#doDelete', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+            $.ajax({
+                url: '{:url("delcategory")}',
+                dataType: "json",
+                data:{'ids':c},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        parent.layer.alert(data.msg, {
+                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                        }, function () {
+                            location.href = location.href;
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    //一键开启地区
+    $(document).on('click','#doOpen', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+            $.ajax({
+                url: '{:url("doisarea")}',
+                dataType: "json",
+                data:{'ids':c,'isarea':1},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        parent.layer.alert(data.msg, {
+                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                        }, function () {
+                            location.href = location.href;
+                        });
+                    }
+                }
+            });
+        }
+    });
+    //一键关闭地区
+    $(document).on('click','#doClose', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+            $.ajax({
+                url: '{:url("doisarea")}',
+                dataType: "json",
+                data:{'ids':c,'isarea':0},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        parent.layer.alert(data.msg, {
+                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                        }, function () {
+                            location.href = location.href;
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+
+    $(document).on('blur','.sort', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+            url: '{:url("sortcategory")}',
+            dataType: "json",
+            data:{'id':id,'sort':obs.val()},
+            type: "POST",
+            success: function(data){
+                //window.location = window.location;
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
+            }
+        });
+    });
+</script>
+</body>
+</html>

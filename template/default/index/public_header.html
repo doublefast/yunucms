@@ -1,0 +1,86 @@
+    <?php error_reporting(0); ?>
+    <div class="header">
+        <div class="center">
+            <div class="head_top_content">
+                <div class="head_logo fl">
+                    <img src="<yunu:config name='site_logo'/>" alt="">
+                    <div class="head_tit fl">
+                        <h4><yunu:config name="site_title"/></h4>
+<yunu:block name='head_text1' />
+                    </div>
+                    <div class="head_text fl">
+<yunu:block name='head_text2' />
+                    </div>
+                </div>
+                <div class="fr">
+                    <img src="__PUBLIC__/img/ren.png" alt="">
+                    <yunu:block name='head_text3' />
+                </div>
+            </div>
+            <div class="head_nav">
+                <ul>
+                    <li><a href="<yunu:url name='home'/>" <if condition="!isset($cid)">class="active"</if>>网站首页</a></li>
+                    <yunu:nav typeid='1'>
+                    <li><a href="{$nav.url}" <eq name="$nav['id']" value="$cid">class="active"</eq> target="{$nav.target}">{$nav.title}</a></li>
+                    </yunu:nav>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <if condition="!is_array([index])">
+    <div class="banner">
+        <div class="banner_img" id="wowslider-container">
+            <div class="ws_images" id="banner">
+                <ul>
+                    <yunu:banner type="1" limit="10" orderby="sort desc">
+                    <li>
+                    <a href="{$banner.url}"><img src="{$banner.pic}" alt="{$banner.title}" width="1920" height="550"></a>
+                    </li>
+                    </yunu:banner>
+                </ul>
+            </div>
+            <!-- <div class="ws_bullets">
+                <div>
+                    <a href="javascript:;">
+                        <span>1</span>
+                    </a>
+                    <a href="javascript:;">
+                        <span>2</span>
+                    </a>
+                </div>
+            </div>
+            <div class="ws_shadow"></div> -->
+        </div>
+        <!-- <script type="text/javascript" src="__PUBLIC__/js/wowslider.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/js/script.js"></script> -->
+        <div class="banner_text">
+            <div class=" center">
+                <div class="banner_text_content">
+                    <img class="imgleft" id="imgleft" src="__PUBLIC__/img/jb.png" alt="">
+                    <div class="banner_text_bg">
+                        <yunu:block name='banner_text' />
+                    </div>
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            $('#banner').roll({
+                                height: 550,
+                                banner: true,
+                                btn: true,
+                                center: false
+                            });
+                            $('#imgleft').animate({left: "0"},1000);
+                            $('#pbottom').animate({top: "0"},1000);
+                            $('#fonts').animate({fontSize: "43px"},1000);
+                            $('#fonts').animate({opacity: "1"},2000);
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <else/>
+    <div class="page_banner">
+        <yunu:block name='page_banner' />
+    </div>
+    </if>

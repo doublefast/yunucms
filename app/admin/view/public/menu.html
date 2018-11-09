@@ -1,0 +1,69 @@
+<div class="header">
+	<div class="logo fl"><a href="javascript:;"><i class="icon icon-yun"></i></a></div>
+	<div class="head_name fl"><a href="{:url('index/index')}">管理控制台</a></div>
+	<div class="nav fl">
+		<ul class="clearfix">
+			{foreach name="menu" item="v"}
+			<li><a href="{$v.tophref}" {if $menu_child.id eq $v.id}class="v-link-active"{/if}><i class="{$v.icon}"></i>{$v.title}</a></li>
+			{/foreach}
+            <li><a href="http://www.yunucms.com/handbook/" target="_blank"><i class="fa fa-book"></i>标签手册</a></li>
+            <li><a href="http://www.yunucms.com/Help/index.html" target="_blank"><i class="fa fa-book"></i>帮助手册</a></li>
+		</ul>
+	</div>
+	<div class="head_tool fr">
+		<a href="/" target="_blank" title="站点首页"><i class="icon-home"></i></a>
+		<a class="doCache" href="javascript:;" title="更新缓存"><i class="icon-cache"></i></a>
+		<a class="doLoginOut" title="安全退出" data-type="doLoginOut" data-href="{:url('index/loginout')}" data-rturl="/{:config('sys.login_url')}"><i class="icon-out"></i></a>
+	</div>
+</div>
+<div class="sidebar">
+	<div class="sidebar_tool"><i class="icon-dedent"></i></div>
+	<div class="nav_left">
+		<ul>
+			{foreach name="menu_child.child" item="v"}
+			<li><a href="{$v.href}" {if $v.ischk eq 1}class="v-link-active"{/if}><i class="{$v.css}"></i>{$v.title}</a></li>
+			{/foreach}
+		</ul>
+	</div>
+</div>
+<script>
+layui.use(['layer', 'common'], function () {
+    var $ = layui.jquery , common = layui.common;
+
+    //退出系统
+    var adminActive = {
+        doLoginOut: function () {
+            var url = $(this).data('href');
+            var rturl = $(this).data('rturl');
+            if (url) {
+                common.signOut('确认退出系统？', '请再次确认是否要退出系统！', url, rturl, 'post', 'json', {});
+            }
+            else {
+                common.layerAlertE('链接错误！', '提示');
+            }
+        }
+    };
+
+    $('.doLoginOut').on('click', function (event) {
+        var type = $(this).data('type');
+        adminActive[type] ? adminActive[type].call(this) : '';
+        return false;
+    });
+
+    $(document).on('click','.doCache', function () {
+        $.ajax({
+            	url: '{:url("index/cache")}',
+                dataType: "json",
+                type: "POST",
+                success: function(data){
+                    layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+       	});
+  	});
+ });
+</script>

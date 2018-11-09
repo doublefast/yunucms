@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
+    <meta name="description" content="<yunu:config name='seo_description'/>">
+    <title>{$content.title}-{$category.title}-<yunu:config name="site_title"/></title>
+	<link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+</head>
+<body>
+<include file="public:header" />
+    <div class="main container">
+    	<div class="center">
+<include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+                <div class="content_tit">
+                    <h3>{$content.title}</h3>
+                    <p>
+                        <span>来源：{$content.source}</span>
+                        <span>发布时间：{$content.create_time|date='Y-m-d',###}</span>
+                        <span>{$content.click} 次浏览</span>
+                    </p>
+                </div>
+                <div class="content_des">
+                    <p>{$content.desc}</p>
+                </div>
+                <div class="content">
+                    {$content.content|sitelink}
+                </div>
+                <div class="prve">
+                    <p>上一篇： {$content.prev}</p>
+                    <p>下一篇： {$content.next}</p>
+                </div>
+            </div>
+        </div>
+	</div>
+<include file="public:footer" />
+</div>
+</body>
+</html>

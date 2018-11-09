@@ -1,0 +1,84 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn" data-type="doAdd" href="{:url('adduser')}">新增</a>
+				<div class="table" v-el:table>
+					<table>
+						<thead>
+							<tr>
+								<th width="60"><span>ID</span></th>
+								<th width="100"><span>管理员名称</span></th>
+								<th><span>管理员角色</span></th>
+								<th class="sort" width="150"><span>登录次数</span></th>
+								<th width="100"><span>上次登录ip</span></th>
+                                <th class="sort" width="150"><span>上次登录时间</span></th>
+                                <th width="100"><span>真实姓名</span></th>
+                                <th width="100"><span>状态</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{foreach name="infolist" item="v"}
+			                <tr>
+			                    <td>{$v.id}</td>
+			                    <td>{$v.username}</td>
+                                <td>{$v.title}</td>
+                                <td>{$v.loginnum}</td>
+                                <td>{$v.last_login_ip}</td>
+                                <td>{$v.last_login_time}</td>
+                                <td>{$v.real_name}</td>
+			                    <td>
+			                        <a href="javascript:;" class="change_status" data-id="{$v.id}"> <div class="layui-unselect layui-form-switch {if condition="$v.status eq 1"}layui-form-onswitch{/if}"><i></i></div> </a>
+			                    </td>
+			                    <td>
+		                            <a class="btn do-action" data-type="doEdit" data-href="{:url('edituser')}" data-id="{$v.id}">编辑</a>
+		                            <a class="btn do-action" data-type="doDelOne" data-href="{:url('deluser')}" data-id="{$v.id}">删除</a>
+			                    </td>
+			                </tr>
+			                {/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+    layui.use(['layer','common'], function () {
+        var $ = layui.jquery, layer = layui.layer;
+
+        $(document).on('click','.change_status', function () {
+            var id=$(this).attr('data-id');
+            var obs=$(this);
+            $.ajax({
+                url: '{:url("stateuser")}',
+                dataType: "json",
+                data:{'id':id},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        obs.find('div').removeClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                    }else{
+                        obs.find('div').addClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                    }
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

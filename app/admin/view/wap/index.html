@@ -1,0 +1,138 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="layui-form-item">
+			            <label class="layui-form-label">自动跳转</label>
+			            <div class="layui-input-inline">
+			               	<input type="checkbox" name="wap_auto" {if config('sys.wap_auto')}checked{/if} lay-skin="switch" lay-filter="switchTest">
+			            </div>
+			        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">二级域名</label>
+                        <div class="layui-input-inline" style="width:100px;">
+                            <input type="checkbox" name="wap_levelurl" {if config('sys.wap_levelurl')}checked{/if} lay-skin="switch" lay-filter="switchTest">
+                        </div>
+                        <div class="layui-input-inline"><font class="font_tip">默认为"m.二级域名后缀"</font></div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">手机LOGO</label>
+                        <div class="layui-input-inline">
+                            <input id="path1" class="layui-input" type="text" name="wap_logo" value="{:config('sys.wap_logo')}"><br>
+                            <img id="img_path1" class="defimg" src="{:config('sys.wap_logo')}" onerror="javascript:this.style.display='none';">
+                        </div>
+                        <div class="layui-input-inline w450">
+                            <input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
+                            <div class="site-demo-upload upload-img fl ml5">
+                                <div class="site-demo-upbar">
+                                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">手机版权信息</label>
+			            <div class="layui-input-inline">
+			                <textarea name="wap_copyright" placeholder="版权信息" class="layui-textarea w700">{:config('sys.wap_copyright')}</textarea>
+			            </div>
+			        </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('index')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+
+        //上传图片
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'file'])}" //上传接口
+            ,before: function(input){
+                //console.log('图片上传中');
+            }
+            ,title:'上传图片'
+            ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
+            ,method: 'post' //上传接口的http类型
+            ,ext: 'jpg|png|gif'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#path1").val(data.image_name);
+                    $("#img_path1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+        $('.BrowerPicture').click(function(){
+            var path = $(this).attr('rel');
+            layer.open({
+                type: 2,
+                title: '选择站内图片',
+                shadeClose: true,
+                shade: false,
+                anim: 2,
+                area: ['750px', '350px'],
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+            });
+        });
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('wap/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

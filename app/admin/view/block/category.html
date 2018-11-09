@@ -1,0 +1,69 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn" href="{:url('addcategory')}">添加自定义块分类</a>
+				<div class="table" v-el:table>
+					<form id="export-form" method="post" >
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th class="sort" width="80"><span>ID</span></th>
+								<th class="sort" ><span>分类名称</span></th>
+								<th width="150"><span>数据量</span></th>
+								<th class="sort" width="80"><span>排序</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{notempty name="infolist"}
+		                    	{volist name="infolist" id="v"}
+								<tr>
+									<td>{$v.id}</td>
+									<td>{$v.title}</td>
+									<td><a class="btn do-action" href="{:url('index', ['cid'=>$v['id']])}">管理 [ {$v.count} ]</a></td>
+									<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td>
+									<td>
+										<a class="btn do-action" data-type="doEdit" data-href="{:url('editcategory')}" data-id="{$v.id}">编辑</a>
+		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delcategory',['ids'=>$v['id']])}">删除</a>
+									</td>
+								</tr>
+								{/volist}
+		                    {else /}
+		                        <td colspan="5" class="text-center"> 暂未发现数据! </td>
+		                    {/notempty}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+    $(document).on('blur','.sort', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+                url: '{:url("sortcategory")}',
+                dataType: "json",
+                data:{'id':id,'sort':obs.val()},
+                type: "POST",
+                success: function(data){
+                    //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+            });
+       });
+</script>
+</body>
+</html>

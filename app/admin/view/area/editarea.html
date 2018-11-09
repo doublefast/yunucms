@@ -1,0 +1,147 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+				<input type="hidden" name="id" value="{$info.id}">
+				<div class="layui-form-item">
+		            <label class="layui-form-label">默认顶级</label>
+		            <div class="layui-input-inline" style="width: 300px">
+		                <select data-val="true" lay-filter="pid" name="pid" lay-verify="required">
+		                    <option selected="selected" value="0">默认顶级</option>
+		                    {foreach name="arealist" item="v"}
+		                        <option value="{$v.id}" {if $v.id eq $info.pid}selected{/if} {if $v.id eq $info.id}disabled{/if}>{if $v.pid neq 0}　　├ {/if}{$v.title}</option>
+		                    {/foreach}
+		                </select>
+		            </div>
+		        </div>
+
+				<div class="layui-form-item">
+		            <label class="layui-form-label">地区名称</label>
+		            <div class="layui-input-block">
+		                <input name="title" autocomplete="off" value="{$info.title}" placeholder="地区名称" class="layui-input w300" type="text" required  lay-verify="title">
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">名称缩写</label>
+		            <div class="layui-input-block">
+		                <input name="stitle" autocomplete="off" value="{$info.stitle}" placeholder="名称缩写" class="layui-input w300" type="text" required  lay-verify="title" >
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">英文名称</label>
+		            <div class="layui-input-block">
+		                <input name="etitle" autocomplete="off" value="{$info.etitle}" placeholder="英文名称" class="layui-input w300" type="text" required  lay-verify="title">
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">排序</label>
+		            <div class="layui-input-block">
+		                <input name="sort" lay-verify="number" autocomplete="off" value="{$info.sort}" placeholder="输入顺序" class="layui-input w300" type="text">
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">是否推荐</label>
+		            <div class="layui-input-block">
+		            	<input type="checkbox"  name="istop" {if $info.istop}checked{/if} lay-skin="switch" lay-filter="switchTest">
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">独立内容</label>
+		            <div class="layui-input-block">
+		            	<input type="checkbox"  name="iscon" {if $info.iscon}checked{/if} lay-skin="switch" lay-filter="switchTest">
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">二级域名</label>
+		            <div class="layui-input-block">
+		            	<input type="checkbox"  name="isurl" {if $info.isurl}checked{/if} lay-skin="switch" lay-filter="switchTest">
+		            </div>
+		        </div>
+		        <div class="title_bar mb20">
+					地区首页独立SEO设置
+				</div>
+				<div class="layui-form-item">
+			        <label class="layui-form-label">首页SEO标题</label>
+			        <div class="layui-input-inline">
+			            <input class="layui-input w700" type="text" name="seo_title" value="{$info.seo_title}" placeholder="首页SEO标题">
+			        </div>
+			    </div>
+
+			    <div class="layui-form-item">
+			        <label class="layui-form-label">首页SEO关键词</label>
+			        <div class="layui-input-inline">
+			            <input class="layui-input w700" type="text" name="seo_keywords" value="{$info.seo_keywords}" placeholder="首页SEO关键词">
+			        </div>
+			    </div>
+
+			    <div class="layui-form-item">
+			        <label class="layui-form-label">首页SEO描述</label>
+			        <div class="layui-input-inline">
+			           	<textarea class="layui-textarea w700" name="seo_description" placeholder="建议不超过200个字符，描述里包含关键词">{$info.seo_description}</textarea>
+			        </div>
+			    </div>
+
+		        <div class="layui-form-item">
+		        	<label class="layui-form-label"></label>
+		            <div class="layui-input-block">
+		            	<button class="btn" lay-submit="" lay-filter="add-role" data-href={:url('editarea')}>提交</button>
+		            </div>
+		        </div>
+				</form>
+			</div>
+		</div>
+	</div>
+<script>
+    layui.use(['form','common'], function(){
+        var $ = layui.jquery,common=layui.common,form = layui.form();
+        //监听提交
+        form.on('submit(add-role)', function(data){
+            var sub=true;
+            var url=$(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('area/index',['id'=>$info.pid])}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

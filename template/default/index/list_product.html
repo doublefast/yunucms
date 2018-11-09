@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title><if condition="strlen($category.seo_title) neq 0">{$category.seo_title}<else/>{$category.title}-<yunu:config name="site_title"></if></title>
+    <meta name="keywords" content="{$category.seo_keywords}">
+    <meta name="description" content="{$category.seo_desc}">
+	<link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+</head>
+<body>
+<include file="public:header" />
+    <div class="main container">
+    	<div class="center">
+<include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+                <div class="content_des">
+                    {$category.desc}
+                </div>
+	    		<div class="pro_list">
+					<ul>
+                        <yunu:list cid="$cid" orderby="sort asc" pagesize="8">
+                        <li>
+                            <a href="{$list.url}">
+                                <img src="{$list.pic}" alt="{$list.title}" width="180" height="190" img-Auto="true">
+                                <span>{$list.title}</span>
+                            </a>
+                        </li>
+                        </yunu:list>
+                    </ul>
+				</div>
+				<div class="pages">
+					{$page}
+				</div>
+                <div class="flink">
+                    <div class="flink_tit mt30">
+                        <p></p>
+                        <span>地区产品</span>
+                    </div>
+                    <div class="flink_list">
+                        <ul>
+                            <yunu:area type="1">
+                            <li><a href="{$area.url}">{$area.title}</a></li>
+                            </yunu:area>
+                        </ul>
+                    </div>
+                </div>
+    		</div>
+    	</div>
+    </div>
+<include file="public:footer" />
+<script type="text/javascript" src="__PUBLIC__/js/mk.js"></script>
+<script type="text/javascript">
+    $('img[img-Auto]').imgAuto();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
+    <meta name="description" content="<yunu:config name='seo_description'/>">
+    <title>{$category.title}-<yunu:config name="site_title" /></title>
+    <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+    <script type="text/javascript" src="__PUBLIC__/js/jquery-1.12.4.min.js"></script>
+</head>
+<style type="text/css">
+    .content input[type="text"].check {
+        height: 32px;
+        line-height: 32px;
+        display: inline-block;
+        float: left;
+    }
+    .content input[type="text"] {
+        display: block;
+        height: 26px;
+        line-height: 26px;
+        padding: 0;
+        padding-left: 6px;
+        border: 1px solid #dedede;
+        width: 200px;
+        margin-bottom: 16px;
+    }
+    .content textarea {
+        display: block;
+        width: 460px;
+        height: 120px;
+        padding: 6px;
+        font-size: 12px;
+        border: 1px solid #dedede;
+        margin-top: 6px;
+        margin-bottom: 16px;
+    }
+    .content .img {
+        display: block;
+        float: left;
+        width: 150px;
+        height: 32px;
+    }
+    .content .p1 { 
+        display: inline-block;
+        float: left;
+        line-height: 26px;
+        width: 100px;
+        text-align: right;
+        color: #666;
+    }
+    .content .p2 { 
+        display: inline-block;
+        float: left;
+        position: relative;
+        line-height: 26px;
+        top: 46px;
+        width: 100px;
+        text-align: right;
+        color: #666;
+    }
+    .content .p3 { 
+        display: inline-block;
+        float: left;
+        line-height: 32px;
+        width: 100px;
+        text-align: right;
+        color: #666;
+    }
+    .content input[type="submit"] {
+        display: block;
+        float: left;
+        background: #fe693e;
+        margin-left: 100px;
+        cursor: pointer;
+        width: 90px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border: none;
+        color: #fff;
+        font-size: 14px;
+        border-radius: 3px;
+        margin-top: 15px;
+        font-family: "Microsoft YaHei";
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+    }
+</style>
+<body>
+    <include file="public:header" />
+    <div class="main container">
+        <div class="center">
+            <include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+                <div class="content">
+                    <form id="myform1" method="post" action="<yunu:url name='form'>">
+                        <input type="hidden" name="__token__" value="{$Request.token}">
+                        <input type="hidden" name="__formid__" value="1">
+                        <input type="hidden" name="__returntype__" value="default">
+                        <!--返回类型可选 defautl/json -->
+                        <span class="p1">联系人：</span>
+                        <input type="text" name="name" placeholder="联系人" id="input1" value=""> 
+                        <span class="p1">电话：</span>
+                        <input name="phone" type="text" placeholder="座机/手机号码" id="input2" value=""> 
+                        <span class="p2">你的留言：</span>
+                        <textarea name="yuanwang" id="text1"></textarea>
+                        <div class="clearfix">
+                            <span class="p3">验证码：</span>
+                            <input type="text" name="__captcha1__" class="check" placeholder="验证码" id="input3" value="">
+                            <img src="<yunu:url name='captcha' id='1'>" onclick="this.src='<yunu:url name='captcha' id='1'>'" class="img"/>
+                        </div>
+                        <input type="submit" value="提&nbsp;&nbsp;交" class="btn1">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <include file="public:footer" />
+</body>
+<script type="text/javascript">
+    $(".btn1").click(function(){
+    	var keyVal1= $("#input1").val(); 
+    	var keyVal2= $("#input2").val(); 
+    	var keyVal3= $("#input3").val(); 
+    	var keyVal4= $("#text1").val(); 
+    	if(keyVal1.length==0){  
+	        alert("姓名不可为空"); 
+	        return false;   
+	    } 
+    	if(keyVal2.length==0){  
+	        alert("电话不可为空");    
+	        return false;
+	    } 
+    	if(keyVal3.length==0){  
+	        alert("请输入验证码"); 
+	        return false;   
+	    } 
+    	if(keyVal4.length==0){  
+	        alert("请输入你的留言"); 
+	        return false;   
+	    } 
+	    else {
+	    	return true;
+	    }
+	});
+</script>
+
+</html>

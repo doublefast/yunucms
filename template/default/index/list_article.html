@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
+    <meta name="description" content="<yunu:config name='seo_description'/>">
+    <title>{$category.title}-<yunu:config name="site_title"/></title>
+	<link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+</head>
+<body>
+<include file="public:header" />
+    <div class="main container">
+    	<div class="center">
+<include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+	    		<div class="news_list">
+					<ul>
+                        <yunu:list cid="$cid" orderby="sort desc" pagesize="10">
+                        <li>
+                            <a href="{$list.url}"><span>{$list.title}</span></a>
+                            <p>{$list.create_time|date='Y-m-d',###}</p>
+                        </li>
+                        </yunu:list>
+					</ul>
+                    <div class="pages">
+                        {$page}
+                    </div>
+	    		</div>
+	    	</div>
+	    </div>
+	</div>
+<include file="public:footer" />
+</body>
+</html>

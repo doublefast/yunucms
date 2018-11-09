@@ -1,0 +1,161 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+
+				<div class="ui_prompt">
+                    <p class="ui_prompt_tit">温馨提示</p>
+                    <p>1、如原有数据需要保留<a href="{:url('data/index')}" target="_blank">【点此备份数据库】</a></p>
+                    <p>2、直接使用模版会出现很多错误，建议使用模版后下载数据包进行覆盖操作，需要覆盖数据库和上传uploads目录</p>
+                    <p>3、如不需数据包，需要自行调整模版中的调用ID和其他相关内容的调用</p>
+                </div> 
+
+				<div class="layui-form" id="view">
+				    <table class="layui-table mt10" lay-even="" lay-skin="row">
+				        <tbody>
+				            <tr>
+				                <td align="center" style="padding:50px 0" class="mcolor font18" id="loading">请稍等，正在获取云平台已购买模版......</td>
+				            </tr>
+				        </tbody>
+				    </table>
+				</div>
+				<script type="text/html" id="template">
+				<div class="table">
+				    <table class="layuitable" lay-even="" lay-skin="row">
+				        <thead>
+				            <tr>
+				                <th width="250px">模版编号</th>
+                                <th width="250px">PC版</th>
+                                <th width="250px">WAP版</th>
+                                <th >数据包</th>
+				                <th width="250px">操作</th>
+				            </tr> 
+				        </thead>
+				        <tbody>
+				            {{#  layui.each(d, function(index, item){ }}
+				            <tr>
+				                <td>{{ item.number }}</td>
+				                <td style="padding:10px 0;">
+                                    {{# if(item.number == 'default'){ }}
+                                        无预览
+                                    {{#  }else{ }}
+                                        <a href="{{ item.pc_href }}" target="_blank"><img src="http://{:config('yunucms.copyright')}{{ item.pc_img }}" height="150px"></a>
+                                    {{#  } }}
+                                </td>
+                                <td style="padding:10px 0;">
+                                    {{# if(item.number == 'default'){ }}
+                                        无预览
+                                    {{#  }else{ }}
+                                        <a href="{{ item.wap_href }}" target="_blank"><img src="http://{:config('yunucms.copyright')}{{ item.wap_img }}" height="150px"></a>
+                                    {{#  } }}
+                                </td>
+                                <td>
+                                    {{# if(item.data){ }}
+                                        <a href="http://{:config('yunucms.copyright')}{{ item.data }}" target="_blank">[ 点击下载 ]</a>
+                                    {{#  } }}
+                                    </td>
+				                <td>
+
+                                    {{# if(item.exist){ }}
+                                        {{# if(item.use){ }}
+                                            <b style="color:#2f81ce;">当前使用中</b>
+                                        {{#  }else{ }}
+                                            <a href="javascript:;" data-number="{{ item.number }}" class="btn doUse">使用此模版</a>
+                                        {{#  } }}
+                                    {{#  }else{ }}
+                                        <a href="javascript:;" data-number="{{ item.number }}" class="btn doUpgrade">安装此模版</a>
+                                    {{#  } }}
+				                    
+				                </td>
+				            </tr>
+				            {{#  }); }}
+				        </tbody>
+				    </table>
+				</div>
+				</script>
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['jquery', 'layer', 'laytpl'], function(){
+    var $ = layui.jquery, layer = layui.layer;
+    getTpl();
+    // 执行升级，
+    $(document).on('click', '.doUpgrade', function(){
+        var that = $(this);
+        layer.msg('正在下载 '+that.attr('data-number')+' 模版....',{time:500000});
+        $.ajax({
+            type: "POST",
+            url: '{:url("tpldownload")}',
+            data: 'number='+that.attr('data-number'),
+            success: function(res) {
+                if (res.code == 1) {
+                    layer.msg('模版: '+that.attr('data-number')+'安装成功！', {time:3000}, function(){
+                        location.href= '{:url()}';
+                    });
+                } else {
+                    layer.msg(res.msg, {}, function(){
+                        location.href= '{:url()}';
+                    });
+                }
+            }
+        });
+        return false;
+    });
+
+    $(document).on('click', '.doUse', function(){
+        var that = $(this);
+        layer.msg('正在更新设置....',{time:500000});
+        $.ajax({
+            type: "POST",
+            url: '{:url("tpluse")}',
+            data: 'number='+that.attr('data-number'),
+            success: function(res) {
+                if (res.code == 1) {
+                    layer.msg('模版: '+that.attr('data-number')+'使用成功！', {time:3000}, function(){
+                        location.href= '{:url()}';
+                    });
+                } else {
+                    layer.msg(res.msg, {}, function(){
+                        location.href= '{:url()}';
+                    });
+                }
+            }
+        });
+        return false;
+    });
+});
+
+function getTpl() {
+    var $ = layui.jquery,laytpl = layui.laytpl;
+    $('#loading').html('请稍等，正在获取模版......');
+
+    $.ajax({
+        type: "POST",
+        url: '{:url("tpl")}',
+        success: function(res) {
+            if (res.code == 1) {
+                var getTpl = template.innerHTML;
+                if (res.data == '') {
+                    $('#loading').html('云平台未查到已购买模版！');
+                    return false;
+                }
+                laytpl(getTpl).render(res.data, function(html) {
+                    view.innerHTML = html;
+                });
+            } else {
+                $('#loading').html('<span style="color:red;">'+res.msg+'</span> <a href="javascript:;" onclick="getVersion()" class="mcolor2">点此刷新重试</a>');
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>

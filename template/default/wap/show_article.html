@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html mip>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
+    <meta name="description" content="<yunu:config name='seo_description'/>">
+    <title>{$content.title}-<yunu:config name="site_title"/></title>
+    <link rel="stylesheet" type="text/css" href="https://mipcache.bdstatic.com/static/v1/mip.css">
+    <link rel="canonical" href="<yunu:config name='wapurl'/>">
+    
+    <style mip-custom>
+        .mip-head {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #3285ff;
+            z-index: 99;
+            border-bottom: 1px solid #ccc;
+            height: 43px;
+        }
+        .mip-head a {
+            margin-left: 5px;
+            color: #fff;
+            float: left;
+        }
+        .mip-head a p {
+            line-height: 44px;
+            font-size: 20px;
+            color: #fff;
+        }
+        .mip-head span {
+            float: right;
+            width: 44px;
+            height: 44px;
+            background: url(__PUBLIC__/img/other.png) no-repeat center;
+            background-size: 100%;
+        }
+        .mip-nav h3.mip-tit a {
+            transform: rotate(90deg);
+        }
+        .mip-nav mip-sidebar {
+            width: 50%;
+            background: #333;
+        }
+        .mip-nav mip-sidebar ul{
+            margin: 0 10px;
+        }
+        .mip-nav mip-sidebar li {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .mip-nav mip-sidebar a{
+            display: block;
+            font-size: 14px;
+            line-height: 24px;
+            padding: 4px 0;
+            color: #fff;
+            border-bottom: 1px solid #fff;
+            background-size: 15%;
+            padding-left: 40px;
+        }
+        .mip-nav mip-sidebar li:first-child a{
+            background: url(__PUBLIC__/img/index.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li a{
+            background: url(__PUBLIC__/img/about.png) no-repeat left;
+            background-size: 15%;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li+li a{
+            background: url(__PUBLIC__/img/pro.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li+li+li a{
+            background: url(__PUBLIC__/img/new.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li+li+li+li a{
+            background: url(__PUBLIC__/img/pic.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li+li+li+li+li a{
+            background: url(__PUBLIC__/img/cont.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li+li+li+li+li+li a{
+            background: url(__PUBLIC__/img/qt1.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li+li+li+li+li+li+li a{
+            background: url(__PUBLIC__/img/qt2.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-nav mip-sidebar li:first-child+li+li+li+li+li+li+li+li a{
+            background: url(__PUBLIC__/img/qt3.png) no-repeat left;
+            background-size: 15%;
+        }
+        .mip-img-container {
+            margin: 0;
+            padding-top: 44px;
+        }
+        /*head-nav.css*/
+        .mip-carousle-subtitle {
+            font-size: 18px;
+        }
+        .mip-carousel-indicator-wrapper {
+            position: relative;
+            top: -10px;
+            z-index: 10;
+        }
+        .mip-carousel-indicatorDot .mip-carousel-activeitem {
+            background: #3285ff;
+        }
+        .mip-fl {float: left;}
+        .mip-fr {float: right;}
+        .mip-text {
+            width: 98%;
+            padding: 0 1%;
+        }
+        .mip-clearfix {
+            clear: both;
+        }
+        .mip-ul {
+            width: 100%;
+        }
+        .mip-ul li {
+            width: 48%;
+            margin: 1%;
+            float: left;
+            list-style: none;
+        }
+        .mip-about {
+            width: 100%;
+        }
+        h3.mip-tit{
+            text-align: left;
+            margin-top: 10px;
+            font-size: 16px;
+            line-height: 32px;
+            background: #f2f2f2;
+            color: #666;
+            font-weight: normal;
+            display: inline-block;  
+            width: 100%;
+            float: left;
+        }
+        h3.mip-tit i {
+            width: 5px;
+            height: 32px; 
+            background: #3285ff;
+            float: left; 
+            margin-right: 10px;      
+        }
+        h3.mip-tit a {
+            float: right;
+            line-height: 30px;
+            font-size: 12px;
+            color: #666;
+            margin-right: 10px;
+            width: 20px;
+            height: 30px;
+            background: url(http://chenyang.t.yunucms.cn/template/default/wap/img/rii.png) no-repeat center; 
+            background-size: 100%;    
+        }
+        .mip-about .mip-text h4 {
+            font-size: 16px;
+            margin: 8px 0;
+            text-align: left;
+            font-weight: normal;
+        }
+        .mip-about .mip-text p {
+            font-size: 13px;
+            line-height: 24px; 
+        }
+        .mip-foot {
+            background: #f2f2f2;
+            width: 100%; 
+            padding: 15px 0;
+            margin-top: 20px;
+            padding-bottom: 65px;
+        }
+        .mip-foot p {
+            font-size: 13px;
+            line-height: 24px;
+            color: #666;
+            padding: 0 10px;
+        }
+        .mip-foot-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #3285ff;
+            z-index: 9;
+        }
+        .mip-foot-nav a {
+            width: 24.7%;
+            height: 50px;
+            float: left;
+            text-align: center;
+            color: #fff;
+            border-left: 1px solid #fff;
+        }
+        .mip-foot-nav a:first-child {
+            border-left: none;
+        }
+        .mip-foot-nav a .mip-layout-container {
+            width: 29px;
+            height: 19px;
+            display: block;
+            margin: 5px auto;
+        }
+        .mip-foot-nav a span{
+            font-size: 13px;
+            color: #fff;
+        }
+        .gotop {
+            width: 40px;
+            height: 40px;
+            background-size: 100%;
+            background: #3285ff;
+
+        }
+        .mip-content h4{
+            font-size: 16px;
+            margin: 8px 0;
+            text-align: left;
+            font-weight: normal;
+        }
+        .mip-content p{
+            font-size: 13px;
+            line-height: 24px;
+            margin-top: 8px;
+        }
+        .mip-content .mip-layout-container {
+            max-width: 98%;
+            display: block;
+            margin: 5px auto;
+        }
+        .mip-show-tit {}
+        .mip-show-tit h3 {
+            display: block;
+            text-align: center;
+            font-size: 18px;
+            color: #3285ff;
+            margin-bottom: 8px;
+            margin-top: 8px;
+        }
+        .mip-show-tit p {
+            width: 100%;
+            text-align: center;
+        }
+        .mip-show-tit p span {
+            display: inline-block;
+            margin: 0 5px;
+            font-size: 13px;
+            line-height: 24px;
+            color: #666;
+        }
+        .mip-prve {    
+            width: 98%;
+            padding: 0 1%;
+            margin-top: 15px;
+        }
+        .mip-prve p {
+            font-size: 13px;
+            line-height: 24px;
+            color: #666;
+        }
+        .mip-prve p a {
+            font-size: 13px;
+            line-height: 24px;
+            color: #666;
+            display: inline-block;
+        }
+    </style>
+    <noscript>
+        <style mip-officialrelease>
+        body {
+            -webkit-animation: none;
+            -moz-animation: none;
+            -ms-animation: none;
+            animation: none
+        }
+        </style>
+    </noscript>
+</head>
+
+<body>
+    <include file="public:header" />
+
+
+    <div class="mip-show-tit">
+        <h3>{$content.title}</h3>
+        <p>
+            <span>浏览量：{$content.click}</span>
+            <span>发布时间：{$content.update_time|date='Y-m-d',###}</span>
+        </p>
+    </div>
+    <div class="mip-content">
+        <div class="mip-text">
+            {$content.content}
+        </div>
+    </div>
+    <div class="mip-prve">
+        <p>上一篇： {$content.prev}</p>
+        <p>下一篇： {$content.next}</p>
+    </div>
+
+    <div class="mip-clearfix"></div>
+
+    
+    <include file="public:footer" />
+       
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
+    <meta name="description" content="<yunu:config name='seo_description'/>">
+    <title>{$title}-<yunu:config name="site_title"/></title>
+    <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+</head>
+<body>
+<include file="public:header" />
+    <div class="main container">
+        <div class="center">
+<include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+                
+                <div class="flink mt10">
+                    <div class="flink_tit">
+                        <p></p>
+                        <span>推荐产品</span>
+                    </div>
+                    <div class="pro_list">
+                        <ul>
+                            <yunu:list tag="$title" cid="21" limit="4" orderby="sort asc" >
+                            <li>
+                                <a href="{$list.url}">
+                                    <img src="{$list.pic}" alt="{$list.title}">
+                                    <span>{$list.title}</span>
+                                </a>
+                            </li>
+                            </yunu:list>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<include file="public:footer" />
+</div>
+</body>
+</html>

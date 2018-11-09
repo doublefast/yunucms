@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/layui/css/layui.css">
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/ui.css">
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/Font-Awesome/css/font-awesome.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/jquery.min.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/ui.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/public.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/layui/layui.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/global.js"></script>
+<title></title>
+<script language="JavaScript">
+var index = parent.layer.getFrameIndex(window.name); 
+function returnValue(sfile, stype){  
+    if (stype == 'picture') {
+        $("#img_{$docname}", window.parent.document).attr('src',sfile);
+        $("#img_{$docname}", window.parent.document).show();
+        $("#{$docname}", window.parent.document).val(sfile);
+        parent.layer.close(index);
+    } else {
+        window.parent.selectFile(sfile);
+    }
+}    
+</script>
+<style type="text/css">
+.folder{ float: left; margin: 10px; text-align: center; overflow: hidden; width: 100px; line-height: 30px;}
+.folder img{width: 100px; height: 100px;}
+</style>
+</head>
+<body>
+
+<div class="main">
+    <div class="list">    
+    <form action="{:url('/Public/backup')}" method="post" id="form_do" name="form_do">
+        <div class="folder">
+            <a href="{$purl}" title="上级目录"><img src="__ADM_PUBLIC__/img/back.jpg"><br>上级目录</a>
+        </div>
+        {notempty name="infolist"}
+        {volist name="infolist" id="v"}
+            <div class="folder">
+            {if condition="$v.isDir eq 1"}
+                <a href="{$v.url}" title="{$v.filename}"><img src="__ADM_PUBLIC__/img/folder.jpg"><br>{$v.filename}</a>
+            {else/}
+                <a href="#" onclick="returnValue('{$v.url}', '{$stype}');" title="{$v.filename}"><img src="{$v.url}"><br>{$v.filename}</a> 
+            {/if}
+            </div>
+        {/volist}
+        {/notempty}
+    </form>
+    </div>
+</div>
+</body>
+</html>

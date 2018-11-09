@@ -1,0 +1,166 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="title_bar mb20">
+						默认设置&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">可使用：[prov]、[city]、[prov_or_city] 三种标签配合使用</font>
+					</div>
+					<div class="layui-form-item">
+			            <label class="layui-form-label">首页SEO标题</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="seo_title" value="{:config('sys.seo_title')}" placeholder="首页SEO标题">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">首页SEO关键词</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="seo_keywords" value="{:config('sys.seo_keywords')}" placeholder="首页SEO关键词">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">首页SEO描述</label>
+			            <div class="layui-input-inline">
+			                <textarea class="layui-textarea w700" name="seo_description" placeholder="建议不超过200个字符，描述里包含关键词">{:config('sys.seo_description')}</textarea>
+			            </div>
+			        </div>
+			        <div class="title_bar mb20">
+						分站独立设置&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">如需实现主站和分站首页SEO信息不一致，则需填写以下信息</font>
+					</div>
+					<div class="layui-form-item">
+			            <label class="layui-form-label">是否开启</label>
+			            <div class="layui-input-inline">
+			                <input type="checkbox" {if config('sys.seo_area') eq 1}checked{/if} name="seo_area" lay-skin="switch" lay-filter="switchTest">
+			            </div>
+			        </div>
+			        <div class="layui-form-item area {if config('sys.seo_area') neq 1}none{/if}">
+			            <label class="layui-form-label">分站SEO标题</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="seo_title_area" value="{:config('sys.seo_title_area')}" placeholder="分站SEO标题">
+			            </div>
+			        </div>
+			        <div class="layui-form-item area {if config('sys.seo_area') neq 1}none{/if}">
+			            <label class="layui-form-label">分站SEO关键词</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="seo_keywords_area" value="{:config('sys.seo_keywords_area')}" placeholder="分站SEO关键词">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item area {if config('sys.seo_area') neq 1}none{/if}">
+			            <label class="layui-form-label">分站SEO描述</label>
+			            <div class="layui-input-inline">
+			                <textarea class="layui-textarea w700" name="seo_description_area" placeholder="建议不超过200个字符，描述里包含关键词">{:config('sys.seo_description_area')}</textarea>
+			            </div>
+			        </div>
+			        <div class="title_bar mb20">
+						主站默认显示地区&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">如果设置则主站显示该地区独立内容</font>
+					</div>
+			        <div class="layui-form-item ">
+			            <label class="layui-form-label">选择地区</label>
+			            <div class="layui-input-inline">
+			                <select name="seo_default_area" id="seo_default_area">
+				                <option value="0">不选择地区</option>
+				                    {foreach name="arealist" id='v' }
+				                    <option value="{$v.id}" {if config('sys.seo_default_area') eq $v['id']}selected{/if}>{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+				                    {/foreach}
+				                </select>
+			            </div>
+			        </div>
+
+			        
+					
+					<div class="title_bar mb20">
+						附加设置
+					</div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">核心关键词</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="seo_hxkeyword" value="{:config('sys.seo_hxkeyword')}" placeholder="核心关键词">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">长尾关键词</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="seo_cwkeyword" value="{:config('sys.seo_cwkeyword')}" placeholder="核心关键词">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">主动推送API</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w300" type="text" name="seo_bdurl" value="{:config('sys.seo_bdurl')}" placeholder="">
+			            </div>
+			            <div class="layui-input-inline"><font class="font_tip">百度主动推送API_URL <a href="http://zhanzhang.baidu.com/college/courseinfo?id=267&page=2#h2_article_title14" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>
+			        </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('seo')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('system/seo')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+        form.on('switch(switchTest)', function(data) {
+        	if (this.checked) {
+        		$(".area").show();
+        	}else{
+        		$(".area").hide();
+        	}
+        });
+    });
+</script>
+</body>
+</html>

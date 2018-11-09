@@ -1,0 +1,112 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					
+					<div class="ui_prompt">
+	                    <p class="ui_prompt_tit">温馨提示</p>
+	                    <p>操作说明详情 <a href="http://www.yunucms.com/Article/show/id/46.html" target="_blank" class="mcolor">点击查看</a></p>
+	                </div> 
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">是否开启</label>
+			            <div class="layui-input-inline">
+			                <input type="checkbox" {if config('sys.qiniu') eq 1}checked{/if} name="qiniu" lay-skin="switch" lay-filter="switchTest">
+			            </div>
+			        </div>
+			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
+			            <label class="layui-form-label">AccessKey/AK</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="qiniu_accesskey" value="{:config('sys.qiniu_accesskey')}" placeholder="AccessKey/AK">
+			            </div>
+			        </div>
+			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
+			            <label class="layui-form-label">SecretKey/SK</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="qiniu_secretkey" value="{:config('sys.qiniu_secretkey')}" placeholder="SecretKey/SK">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
+			            <label class="layui-form-label">BUCKET/空间名</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="qiniu_bucket" value="{:config('sys.qiniu_bucket')}" placeholder="BUCKET/空间名">
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item qiniu {if config('sys.qiniu') neq 1}none{/if}">
+			            <label class="layui-form-label">DOMAIN/域名</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input w700" type="text" name="qiniu_domain" value="{:config('sys.qiniu_domain')}" placeholder="DOMAIN/域名">
+			            </div>
+			        </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('qiniu')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('system/qiniu')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+        form.on('switch(switchTest)', function(data) {
+        	if (this.checked) {
+        		$(".qiniu").show();
+        	}else{
+        		$(".qiniu").hide();
+        	}
+        });
+    });
+	
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+    <div class="mip-head">
+        <a href="<yunu:url name="home"/>"><p><yunu:config name="site_title"></p></a>
+        <span on="tap:right-sidebar.open"></span>
+    </div>
+    <div class="mip-nav">
+        <mip-sidebar 
+            id="right-sidebar"
+            layout="nodisplay"
+            side="right"
+            class="mip-hidden">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="<yunu:url name='home'/>">网站首页</a></li>
+                <yunu:nav typeid='1'>
+                    <li><a href="{$nav.url}">{$nav.title}</a></li>
+                </yunu:nav>
+                <li class="navbar-wise-close">
+                    <span on="tap:right-sidebar.close"></span>
+                </li>
+            </ul>
+        </mip-sidebar>
+    </div>
+    
+    <div class="mip-img-container">
+        <mip-carousel 
+            autoplay
+            defer="5000"  
+            layout="responsive" 
+            width="375" 
+            height="178"
+            buttonController
+            indicatorId="mip-carousel-example">
+            <yunu:banner type="2" limit="10" orderby="sort desc">
+                <mip-img src="{$banner.pic}"></mip-img>
+            </yunu:banner>
+        </mip-carousel>
+        <div class="mip-carousel-indicator-wrapper">
+            <div class="mip-carousel-indicatorDot" id="mip-carousel-example">
+                <div class="mip-carousel-activeitem mip-carousel-indecator-item"></div>
+                <div class="mip-carousel-indecator-item"></div>
+                <div class="mip-carousel-indecator-item"></div>
+            </div>
+        </div>
+    </div>

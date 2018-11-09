@@ -1,0 +1,55 @@
+<IfModule mod_rewrite.c>
+  	Options +FollowSymlinks -Multiviews
+  	ErrorDocument 404 /404.htm
+  	RewriteEngine On
+
+  	RewriteCond %{REQUEST_FILENAME} !-d
+  	RewriteCond %{REQUEST_FILENAME} !-f
+
+	  RewriteRule ^(.*)\.(asp|aspx|asa|asax|dll|jsp|cgi|fcgi|pl)(.*)$ /404.htm
+
+  	RewriteRule ^admin/(.*).html$ index.php/admin/$1 [QSA,PT,L]
+  	RewriteRule ^admin/(.*)$ index.php/admin/$1 [QSA,PT,L]
+
+  	RewriteRule ^m/$ index.php/wap/index/index [QSA,PT,L]
+    RewriteRule ^m/(.*)_(.*)/(.*)_(.*).html$ index.php/wap/show/index?etitle=$3&area=$1&cw=$4 [QSA,PT,L]
+    RewriteRule ^m/(.*)_(.*)/(.*).html$ index.php/wap/show/index?etitle=$3&area=$1 [QSA,PT,L]
+    RewriteRule ^m/search/$ index.php/wap/search/index [QSA,PT,L]
+    RewriteRule ^m/myform/$ index.php/wap/myform/index [QSA,PT,L]
+    RewriteRule ^m/captcha/(.*)$ index.php/wap/myform/captcha?id=$1 [QSA,PT,L]
+    RewriteRule ^m/(.*)_search/$ index.php/wap/search/index?area=$1 [QSA,PT,L]
+    RewriteRule ^m/(.*)/(.*)_(.*).html$ index.php/wap/show/index?etitle=$2&cw=$3 [QSA,PT,L]
+
+    RewriteRule ^m/(.*)_tag/([\s\S]*)$ index.php/wap/tag/index?title=$2&area=$1 [QSA,PT,L]
+    RewriteRule ^m/tag/([\s\S]*)$ index.php/wap/tag/index?title=$1 [QSA,PT,L]
+
+    RewriteRule ^m/(.*)/(.*).html$ index.php/wap/show/index?etitle=$2 [QSA,PT,L]
+    RewriteRule ^m/(.*)_(.*)/$ index.php/wap/category/index?ctitle=$2&area=$1 [QSA,PT,L]
+    RewriteRule ^m/(.*)_(.*)/page/(.*)$ index.php/wap/category/index?ctitle=$2&area=$1&page=$3 [QSA,PT,L]
+    RewriteRule ^m/(.*)/$ index.php/wap/category/index?ctitle=$1 [QSA,PT,L]
+    RewriteRule ^m/(.*)/page/(.*)$ index.php/wap/category/index?ctitle=$1&page=$2 [QSA,PT,L]
+    RewriteRule ^m/(.*).html$ index.php/wap/index/index?area=$1 [QSA,PT,L]
+
+	  RewriteRule ^statics/ueditor/dialogs/(.*)/(.*).html$ statics/ueditor/dialogs/$1/$2.html [QSA,PT,L]
+  	RewriteRule ^index(.*)/$ index.php/index/index/index/$1 [QSA,PT,L]
+    RewriteRule ^(.*)_(.*)/(.*)_(.*).html$ index.php/index/show/index?etitle=$3&area=$1&cw=$4 [QSA,PT,L]
+    RewriteRule ^(.*)_(.*)/(.*).html$ index.php/index/show/index?etitle=$3&area=$1 [QSA,PT,L]
+    RewriteRule ^search/$ index.php/index/search/index [QSA,PT,L]
+    RewriteRule ^myform/$ index.php/index/myform/index [QSA,PT,L]
+    RewriteRule ^captcha/(.*)$ index.php/index/myform/captcha?id=$1 [QSA,PT,L]
+    RewriteRule ^search/page/(.*)$ index.php/index/search/index?page=$1 [QSA,PT,L]
+
+    RewriteRule ^(.*)_search/$ index.php/index/search/index?area=$1 [QSA,PT,L]
+
+    RewriteRule ^(.*)/(.*)_(.*).html$ index.php/index/show/index?etitle=$2&cw=$3 [QSA,PT,L]
+    RewriteRule ^(.*)/(.*).html$ index.php/index/show/index?etitle=$2 [QSA,PT,L]
+
+    RewriteRule ^(.*)_tag/([\s\S]*)$ index.php/index/tag/index?title=$2&area=$1 [QSA,PT,L]
+    RewriteRule ^tag/([\s\S]*)$ index.php/index/tag/index?title=$1 [QSA,PT,L]
+
+    RewriteRule ^(.*)_(.*)/$ index.php/index/category/index?ctitle=$2&area=$1 [QSA,PT,L]
+    RewriteRule ^(.*)_(.*)/page/(.*)$ index.php/index/category/index?ctitle=$2&area=$1&page=$3 [QSA,PT,L]
+    RewriteRule ^(.*)/$ index.php/index/category/index?ctitle=$1 [QSA,PT,L]
+    RewriteRule ^(.*)/page/(.*)$ index.php/index/category/index?ctitle=$1&page=$2 [QSA,PT,L]
+    RewriteRule ^(.*).html$ index.php/index/index/index?area=$1 [QSA,PT,L]
+</IfModule>

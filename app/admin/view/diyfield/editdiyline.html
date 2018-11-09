@@ -1,0 +1,85 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <input type="hidden" name="mid" value="{$info.mid}">
+                    <input type="hidden" name="id" value="{$info.id}">
+                    <input type="hidden" name="title" value="{$info.title}">
+                    <input type="hidden" name="field" value="{$info.field}">
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">分组备注文字</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="remark" value="{$info.remark}" placeholder="分组备注文字">
+                        </div>
+                    </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">排序</label>
+			            <div class="layui-input-block">
+			                <input name="sort" lay-verify="number" autocomplete="off"  value="{$info.sort}" placeholder="输入顺序" class="layui-input w300" type="text">
+			            </div>
+			        </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editdiyline')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common'], function(){
+    var $ = layui.jquery;
+    $form = $('form');
+    var form = layui.form(),layer = layui.layer, common=layui.common;
+
+    //监听提交
+    form.on('submit(save)', function(data){
+        var sub = true;
+        var url = $(this).data('href');
+        if(url){
+            if(sub){
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    dataType: 'json',
+                    data: data.field,
+                    success: function (info) {
+                        if (info.code == 1) {
+                            common.layerAlertSHref(info.msg, '提示', "{:url('diyfield/index',['mid'=>$info['mid']])}");
+                        }else {
+                            common.layerAlertE(info.msg, '提示');
+                            $(data.elem).removeAttr("disabled").text("提交");
+                        }
+                    },
+                    beforeSend: function () {
+                        $(data.elem).attr("disabled", "true").text("提交中...");
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        common.layerAlertE(textStatus, '提示');
+                    }
+                });
+            }
+        }else{
+            common.layerAlertE('链接错误！', '提示');
+        }
+        return false;
+    });
+
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<?php 
+return [
+	'seo_title'=>'[prov_or_city]建筑装饰五金,[prov][city]机械五金件,[prov][city]手动工具,[prov][city]电动工具',
+	'seo_keywords'=>'镇江建筑装饰五金,镇江机械五金件,镇江手动工具,镇江电动工具',
+	'seo_description'=>'镇江公司创立于2000年， 经过多年的不懈努力，公司现已经成为一家专业从事IT产品开发、生产和销售的高科技企业。公司成立几年来，一直致力于工控/服务器机箱及各种非标箱体的开发与生产，产品现广泛应用于计算机网络、监控、安防、广电、通讯和仪器设备等多种行业',
+	'seo_hxkeyword'=>'建筑装饰五金,机械五金件,手动工具,电动工具',
+	'seo_cwkeyword'=>'厂家,报价,哪家好,批发',
+	'site_title'=>'北京某某机械有限公司',
+	'site_url'=>'www.yunucms.com',
+	'site_levelurl'=>'gwww.yunucms.com',
+	'site_logo'=>'/uploads/image/20170929/fbe0415ab900053aef3846e0077c1ef5.jpg',
+	'site_copyright'=>'<p>TEL：010-88888888   MOB:13888888888  EMAIL：66666666@qq.com</p>
+<p>公司地址：某某市某某区某某路建材产业总部基地</p>
+<p>版权所有：某某建筑建材有限公司    ICP8888888</p>
+<p>Powered by <a href=\"http://www.yunucms.com/\" target=\"_blank\">YUNUCMSv1.0.6</a></p>',
+	'site_guide'=>'0',
+	'theme_style'=>'default',
+	'url_model'=>'3',
+	'wap_auto'=>'1',
+	'wap_logo'=>'/uploads/image/20170922/20170922163524_57831.jpg',
+	'wap_copyright'=>'Powered by YUNUCMS 1.0.6 ©2008-2017 www.yunucms.com',
+	'wap_levelurl'=>'0',
+	'login_url'=>'yunu.php',
+	'seo_bdurl'=>'',
+	'seo_area'=>'0',
+	'seo_title_area'=>'[prov_or_city]建筑装饰五金,[prov][city]机械五金件,[prov][city]手动工具,[prov][city]电动工具',
+	'seo_keywords_area'=>'[prov][city]建筑装饰五金,[prov][city]机械五金件,[prov][city]手动工具,[prov][city]电动工具',
+	'seo_description_area'=>'[prov][city]公司创立于2000年， 经过多年的不懈努力，公司现已经成为一家专业从事IT产品开发、生产和销售的高科技企业。公司成立几年来，一直致力于工控/服务器机箱及各种非标箱体的开发与生产，产品现广泛应用于计算机网络、监控、安防、广电、通讯和仪器设备等多种行业',
+	'site_protocol'=>'http',
+	'site_slide'=>'1',
+	'seo_default_area'=>'0',
+	'qiniu'=>'0',
+	'qiniu_accesskey'=>'',
+	'qiniu_secretkey'=>'',
+	'qiniu_bucket'=>'',
+	'qiniu_domain'=>'',
+];

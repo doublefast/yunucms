@@ -1,0 +1,227 @@
+{include file="public/header" /}
+<style>
+.content_nav_list{
+	overflow:auto;
+	height: 100%;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
+<link rel="stylesheet" href="__ADM_PUBLIC__/css/webuploader.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/webuploader.js"></script>
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="title_bar mb20">
+						通用设置
+					</div>
+					
+					<div class="layui-form-item">
+			            <label class="layui-form-label">所属栏目</label>
+			            <div class="layui-input-inline w300">
+			                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required">
+			                    <option selected="selected" value="0">默认顶级</option>
+			                    {volist name="catelist" id="v"}
+			                    <option value="{$v.id}">{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+			                    {/volist}
+			                </select>
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">内容模型</label>
+			            <div class="layui-input-inline w300">
+			                <select data-val="true" lay-filter="mid" name="mid" lay-verify="required">
+			                	<option selected="selected" value="">选择模型</option>
+			                    {volist name="modellist" id="v"}
+			                    <option value="{$v.id}">{$v.title}</option>
+			                    {/volist}
+			                </select>
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">封面页模版</label>
+			            <div class="layui-input-inline w300">
+			                <select data-val="true" lay-filter="tpl_cover" name="tpl_cover" >
+			                	<option selected="selected" value="">选择模版</option>
+			                    {volist name="coverfile" id="v"}
+			                    <option value="{$v}">{$v}</option>
+			                    {/volist}
+			                </select>
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">列表页模版</label>
+			            <div class="layui-input-inline w300">
+			                <select data-val="true" lay-filter="tpl_list" name="tpl_list" >
+			                	<option selected="selected" value="">选择模版</option>
+			                    {volist name="listfile" id="v"}
+			                    <option value="{$v}">{$v}</option>
+			                    {/volist}
+			                </select>
+			            </div>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">内容页模版</label>
+			            <div class="layui-input-inline w300">
+			                <select data-val="true" lay-filter="tpl_show" name="tpl_show">
+			                	<option selected="selected" value="">选择模版</option>
+			                    {volist name="showfile" id="v"}
+			                    <option value="{$v}">{$v}</option>
+			                    {/volist}
+			                </select>
+			            </div>
+			        </div>
+
+			        <div class="title_bar mb20">
+						批量添加
+					</div>
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">栏目名称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input titleinp" type="text" placeholder="栏目名称" >
+			            </div>
+			            <a class="btn delbtn"> - </a>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">栏目名称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input titleinp" type="text" placeholder="栏目名称">
+			            </div>
+			            <a class="btn delbtn"> - </a>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">栏目名称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input titleinp" type="text"  placeholder="栏目名称">
+			            </div>
+			            <a class="btn delbtn"> - </a>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">栏目名称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input titleinp" type="text" placeholder="栏目名称">
+			            </div>
+			            <a class="btn delbtn"> - </a>
+			        </div>
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">栏目名称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input titleinp" type="text" placeholder="栏目名称">
+			            </div>
+			            <a class="btn delbtn"> - </a>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label"></label>
+			            <div class="layui-input-inline"></div>
+			            <a class="btn addbtn"> + </a>
+			        </div>
+					<input type="hidden" name="titlelist" id="titlelist">
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('batchaddcategory')}'>提交</button>
+	                    </div>
+			        </div>
+				
+				</form>
+			</div>
+		</div>
+	</div>
+
+<script>
+function updateinput(){
+	valstr = "";
+	$(".titleinp").each(function(){
+		if ($(this).val()) {
+			valstr = valstr+$(this).val()+"***" ;
+		};
+  	});
+	$("#titlelist").val(valstr);
+}
+$('.delbtn').click(function(){
+	$(this).parent().remove();
+});
+$(".titleinp").blur(function() {
+    updateinput();
+ });
+$('.addbtn').click(function(){
+	var input_html="";
+	input_html += '<div class="layui-form-item">';
+	input_html += '<label class="layui-form-label">栏目名称</label>';
+	input_html += '<div class="layui-input-inline">';
+	input_html += '<input class="layui-input titleinp" type="text" placeholder="栏目名称" >';
+	input_html += '</div>';
+	input_html += '<a class="btn delbtn"> - </a>';
+	input_html += '</div>';
+
+	$(this).parent().before(input_html);
+	$(".delbtn").on("click", function() {
+    	$(this).parent().remove();
+ 	});
+ 	$(".titleinp").on("blur", function() {
+    	updateinput();
+ 	});
+});
+layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common, laydate = layui.laydate, laytpl =layui.laytpl,box = '#diqu';
+			
+        //监听提交
+        form.on('submit(save)', function(data){
+        	if (!$('#titlelist').val()) {
+        		common.layerAlertE("请填写需要添加的栏目名称", '提示');
+        		return false;
+        	};
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('category/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+        
+
+        
+	   
+    });
+</script>
+</body>
+</html>

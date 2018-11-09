@@ -1,0 +1,93 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn mr10" href="{:url('addbanner')}">新增</a><a class="btn do-action" data-type="doDelete" data-href="{:url('delbanner')}">删除</a>
+				<div class="table" v-el:table>
+					<form id="export-form" method="post" action="{:url('index')}">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
+								<th class="sort" width="60"><span>ID</span></th>
+								<th class="sort" width="200"><span>幻灯片名称</span></th>
+								<th width="100"><span>主图片</span></th>
+								<th width="100"><span>副图片</span></th>
+								<th><span>幻灯链接</span></th>
+								<th width="100"><span>类型</span></th>
+								<th class="sort" width="80"><span>排序</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{notempty name="infolist"}
+		                    	{volist name="infolist" id="v"}
+								<tr>
+									<td><input class="ids i-checks" type="checkbox" name="ck" ids="{$v.id}"></td>
+									<td>{$v.id}</td>
+									<td>{$v.title}</td>
+									<td><a class="blue" href="{$v.pic}" target="_blank">【预览】</a></td>
+									<td>{notempty name="v['fpic']"}<a class="blue" href="{$v.fpic}" target="_blank">【预览】</a>{/notempty}</td>
+									<td>{$v.url}</td>
+									<td>{$v.tname}</td>
+									<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td>
+									<td>
+										<a class="btn do-action" data-type="doEdit" data-href="{:url('editbanner')}" data-id="{$v.id}">编辑</a>
+		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delbanner',['ids'=>$v['id']])}">删除</a>
+									</td>
+								</tr>
+								{/volist}
+		                    {else /}
+		                        <td colspan="8" class="text-center"> 暂未发现数据! </td>
+		                    {/notempty}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    layui.use(['layer', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common;
+        laypage = layui.laypage;
+        //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+        //全选的实现
+        $('.check-all').on('ifChecked', function (event) {
+            $('input[name="ck"]').iCheck('check');
+        });
+        $('.check-all').on('ifUnchecked', function (event) {
+            $('input[name="ck"]').iCheck('uncheck');
+        });
+    });
+    $(document).on('blur','.sort', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+                url: '{:url("sortbanner")}',
+                dataType: "json",
+                data:{'id':id,'sort':obs.val()},
+                type: "POST",
+                success: function(data){
+                    //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+            });
+       });
+</script>
+</body>
+</html>

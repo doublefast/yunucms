@@ -1,0 +1,214 @@
+{include file="public/header" /}
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+
+                    <!--area_start-->
+                    <div class="layui-form check_diqu" id="diqu">
+                        <ul>
+                            {notempty name="arealist"}
+                            {volist name="arealist" id="v"}
+                            <li>
+                                <input type="checkbox" {if $v['ischk'] }checked{/if} name="diqu[]" value="{$v['id']}" lay-skin="primary" lay-filter="diqu" title="{$v['title']}">
+                                
+                                {notempty name="v.node"}
+                                <ul>
+                                {volist name="v.node" id="v1"}
+                                <li>
+                                    <input type="checkbox" {if $v1['ischk'] }checked{/if} name="diqu[]" value="{$v1['id']}" lay-skin="primary" lay-filter="diqu" title="{$v1['title']}">
+                                    {notempty name="v1.node"}
+                                    <ul>
+                                    {volist name="v1.node" id="v2"}
+                                    <li>
+                                    <input type="checkbox" {if $v2['ischk'] }checked{/if} name="diqu[]" value="{$v2['id']}" lay-skin="primary" lay-filter="diqu" title="{$v2['title']}">
+                                    </li>
+                                    {/volist}
+                                    </ul>
+                                    {/notempty}
+                                </li>
+                                {/volist}
+                                </ul>
+                                {/notempty}
+                            </li>
+                            {/volist}
+                            {/notempty}
+                        </ul>
+                    </div>
+                    <!--area_end-->
+
+                    <input name="id" type="hidden" value="{$info.id}">
+					<div class="layui-form-item">
+                        <label class="layui-form-label">链接标题</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="title" value="{$info.title}" placeholder="链接标题" lay-verify="required">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">链接地址</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="url" value="{$info.url}" placeholder="链接地址" lay-verify="required">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">链接图片</label>
+                        <div class="layui-input-inline">
+                            <input id="path1" class="layui-input" type="text" name="pic" value="{$info.pic}"><br>
+                            <img id="img_path1" class="defimg" src="{$info.pic}" onerror="javascript:this.style.display='none';">
+                        </div>
+                        <div class="layui-input-inline w450">
+                            <input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
+                            <div class="site-demo-upload upload-img fl ml5">
+                                <div class="site-demo-upbar">
+                                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">链接位置</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="type" value="1" title="首页" {if $info.type eq 1}checked{/if}>
+                            <input type="radio" name="type" value="2" title="内页" {if $info.type eq 2}checked{/if}>
+                            <input type="radio" name="type" value="3" title="其他" {if $info.type eq 3}checked{/if}>
+                        </div>
+                    </div>
+
+                    {notempty name="arealist"}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">所属地区</label>
+                        <div class="layui-input-inline">
+                            <input id="area" type="hidden" name="area" value="{$info.area}">
+                            <a class="btn" id="open_diqu">点击选择</a>&nbsp;&nbsp;&nbsp;<font class="font_tip">不选择，默认为只在主站显示</font>
+                        </div>
+                    </div>
+                    {/notempty}
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">排序</label>
+                        <div class="layui-input-block">
+                            <input name="sort" value="{$info.sort}" lay-verify="number" autocomplete="off" placeholder="输入顺序" class="layui-input" type="text" style="width: 300px;">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-inline">
+                          <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editlink')}'>提交</button>
+                        </div>
+                    </div>
+                </form>
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(), common=layui.common,box = '#diqu';
+
+         //上传图片
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'file'])}" //上传接口
+            ,before: function(input){
+                //console.log('图片上传中');
+            }
+            ,title:'上传图片'
+            ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
+            ,method: 'post' //上传接口的http类型
+            ,ext: 'jpg|png|gif'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#path1").val(data.image_name);
+                    $("#img_path1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+        $('.BrowerPicture').click(function(){
+            var path = $(this).attr('rel');
+            layer.open({
+                type: 2,
+                title: '选择站内图片',
+                shadeClose: true,
+                shade: false,
+                anim: 2,
+                area: ['750px', '350px'],
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+            });
+        });
+
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('link/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+         $('#open_diqu').on('click', function(){
+                layer.open({
+                    title: '选择地区',
+                    type: 1,
+                    content: $(box),
+                    skin: 'layer_diqu',
+                    area: ['60%','50%'],
+                    btn: '确定',
+                    yes: function(index, layero){
+                        var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
+                            return $(el).val();
+                        }).get().join(',');
+                        $('#area').val(value);
+                        layer.close(index);
+                    }
+                });
+        });
+        
+        diqu(layer, form, box);
+
+    });
+</script>
+</body>
+</html>

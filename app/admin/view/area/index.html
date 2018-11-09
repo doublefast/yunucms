@@ -1,0 +1,153 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn mr10" href="{:url('addarea',['pid'=>$pid])}">新增</a><a class="btn do-action mr10" data-type="doDelete" data-href="{:url('delarea')}">删除</a><a class="btn mr10 editstatus" rel="{:url('statearea',['type'=>'istop','val'=>1])}">一键全部推荐</a><a class="btn mr10 editstatus" rel="{:url('statearea',['type'=>'istop','val'=>0])}">取消全部推荐</a><a class="btn mr10 editstatus" rel="{:url('statearea',['type'=>'isurl','val'=>1])}">一键开启二级域名</a><a class="btn mr10 editstatus" rel="{:url('statearea',['type'=>'isurl','val'=>0])}">一键取消二级域名</a>
+
+				<div class="table">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
+								<th width="50"><span>ID</span></th>
+								<th ><span>名称</span></th>
+								<th width="100"><span>缩写</span></th>
+								<th width="100"><span>英文名</span></th>
+								<th width="80"><span>推荐</span></th>
+								<th width="80"><span>独立内容</span></th>
+								<th width="80"><span>二级域名</span></th>
+								<th class="sort" width="80"><span>排序</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{notempty name="infolist"}
+		                        {volist name="infolist" id="v"}
+		                        <tr>
+		                            <td><input class="ids i-checks" type="checkbox" name="ids[]" ids="{$v.id}"></td>
+		                          	<td>{$v.id}</td>
+		                          	<td align="left">
+		                          		{if condition="$v.count gt 0"}
+		                          			<a href="{:url('index',['id'=>$v['id']])}">{$v.title}&nbsp;&nbsp;{$v.count} / <font color="red">{$v.top}</font></a>
+		                          		{else}
+											{$v.title}
+		                          		{/if}
+		                          	</td>
+		                          	<td>{$v.stitle}</td>
+		                          	<td>{$v.etitle}</td>
+		                          	<td><a href="javascript:;" class="change_status" data-id="{$v.id}" data-tp="top"> <div class="layui-unselect layui-form-switch {if condition="$v.istop eq 1"}layui-form-onswitch{/if}"><i></i></div> </a></td>
+		                          	<td><a href="javascript:;" class="change_status" data-id="{$v.id}" data-tp="con"> <div class="layui-unselect layui-form-switch {if condition="$v.iscon eq 1"}layui-form-onswitch{/if}"><i></i></div> </a></td>
+		                          	<td><a href="javascript:;" class="change_status" data-id="{$v.id}" data-tp="url"> <div class="layui-unselect layui-form-switch {if condition="$v.isurl eq 1"}layui-form-onswitch{/if}"><i></i></div> </a></td>
+		                          	<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td> 	
+		                            <td>
+		                                <a class="btn" href="{:url('editarea',['id'=>$v['id']])}">编辑</a>
+		                                <a class="btn do-action" data-type="doDelOne" data-href="{:url('delarea')}" data-id="{$v.id}">删除</a>
+		                            </td>
+		                        </tr>
+		                        {/volist}
+		                    {else /}
+		                        <td colspan="10" class="text-center"> 暂未发现数据库表! </td>
+		                    {/notempty}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    layui.use(['layer', 'laypage','common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common;
+        laypage = layui.laypage;
+        //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+        //全选的实现
+        $('.check-all').on('ifChecked', function (event) {
+            $('input[name="ids[]"]').iCheck('check');
+        });
+        $('.check-all').on('ifUnchecked', function (event) {
+            $('input[name="ids[]"]').iCheck('uncheck');
+        });
+
+        $(document).on('click','.editstatus', function () {
+            var url = $(this).attr('rel');
+            if (1 > $(".layuitable tbody input:checked").size()) return common.layerAlertE("对不起，请选中您要操作的数据！", "提示");
+                for (var c = "", d = $(".layuitable tbody input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                
+                $.ajax({
+                url: url,
+                dataType: "json",
+                data:{'ids':c},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        location.reload();
+                    }else{
+                        layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                    }
+                },
+            });
+        });
+
+    });
+
+	$(document).on('blur','.sort', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+                url: '{:url("sortarea")}',
+                dataType: "json",
+                data:{'id':id,'sort':obs.val()},
+                type: "POST",
+                success: function(data){
+                    //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+       	});
+  	});
+
+  	$(document).on('click','.change_status', function () {
+        var id = $(this).attr('data-id');
+        var tp = $(this).attr('data-tp');
+        $url = ""; 
+        if(tp == "url") $url = '{:url("stateurl")}';
+        if(tp == "top") $url = '{:url("statetop")}';
+        if(tp == "con") $url = '{:url("statecon")}';
+        var obs = $(this);
+        $.ajax({
+            url: $url,
+           	dataType: "json",
+            data:{'id':id},
+            type: "POST",
+            success: function(data){
+                if(data.code == 1){
+                    obs.find('div').removeClass('layui-form-onswitch');
+                    layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                }else{
+                    obs.find('div').addClass('layui-form-onswitch');
+                    layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                }
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                alert(ajaxobj.responseText);
+            }
+        });
+    });
+</script>
+</body>
+</html>

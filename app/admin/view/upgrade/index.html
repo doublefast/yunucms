@@ -1,0 +1,157 @@
+{include file="public/header" /}
+<style>
+.mcolor { color: #0099cc;}
+.mcolor2 { color: #f00; }
+</style>
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+
+
+                <div class="ui_prompt">
+                    <p class="ui_prompt_tit">温馨提示</p>
+                    <p>1、云平台地址 <a href="http://www.yunucms.com" target="_blank" class="mcolor">http://www.yunucms.com</a></p>
+                    <p>2、通信正常后可继续操作</p>
+                    <p>3、只有绑定了官网云平台帐号，授权认证后可使用在线升级服务</p>
+                </div> 
+
+
+				<div class="layui-form-item">
+                    <label class="layui-form-label">云平台</label>
+                    <div class="layui-form-label" style="width:500px; text-align:left;">
+                        <span id="connectionStatus">...</span>
+                    </div>
+                </div>
+
+                <div class="layui-form-item showupgeade" style="display:none;">
+                    <label class="layui-form-label">绑定账号</label>
+                    <div class="layui-form-label" style="width:500px; text-align:left;">
+                        {if condition="config('cloud.identifier')"}
+                            {:config('cloud.identifier')} <a href="javascript:void(0);" class="mcolor cloudBind">重新绑定</a>
+                        {else /}
+                            <a href="javascript:void(0);" class="mcolor2 cloudBind">绑定云平台账号</a>
+                        {/if}
+                    </div>
+                </div>
+
+                <div class="layui-form-item showupgeade" style="display:none;">
+                    <label class="layui-form-label">授权认证</label>
+                    <div class="layui-form-label" style="width:500px; text-align:left;">
+                        {if condition="config('cloud.grant')"}
+                            <span class="mcolor">已认证</span>
+                        {else /}
+                            <span class="mcolor2">未认证 (官网授权后，需重新绑定云平台帐号)</span>
+                        {/if}
+                    </div>
+                </div>
+
+                <div class="layui-form-item ">
+                    <label class="layui-form-label">当前版本</label>
+                    <div class="layui-form-label" style="width:500px; text-align:left;">
+                        v{:config('yunucms.version')}&nbsp;&nbsp;<span class="showupgeade" style="display:none;">{if condition="config('cloud.grant')"}<a href="{:url('lists')}" id="upgrade" class="mcolor">点此获取升级</a>{else /}<a href="javascript:layer.msg('请先前往云平台进行授权！');" id="upgrade" class="mcolor">点此获取升级</a>{/if}</span>
+                    </div>
+                </div>
+
+                <div class="layui-form-item showupgeade" style="display:none;">
+                    <label class="layui-form-label">模版更新</label>
+                    <div class="layui-form-label" style="width:500px; text-align:left;">
+                        {if condition="config('cloud.grant')"}<a href="{:url('tpl')}" id="upgrade" class="mcolor">点此模版更新</a>{else /}<a href="javascript:layer.msg('请先前往云平台进行授权！');" id="upgrade" class="mcolor">点此模版更新</a>{/if}
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <label class="layui-form-label">运行环境</label>
+                    <div class="layui-form-label" style="width:500px; text-align:left;">
+                        {$_SERVER["SERVER_SOFTWARE"]}
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">服务器时间</label>
+                    <div class="layui-form-label" style="width:500px; text-align:left;">
+                        {:date("Y年n月j日 H:i:s")}
+                    </div>
+                </div>
+
+				</form>
+			</div>
+			
+		</div>
+	</div>
+<script type="text/html" id="popCloudBind">
+    <form class="layui-form layui-form-pane page-form" action="{:url()}" method="post" id="editForm">
+        <div class="layui-form-item">
+            <div class="layui-input-inline ">
+                <input type="text" class="layui-input" name="username" lay-verify="required" autocomplete="off" placeholder="请输入云平台登陆账号">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline ">
+                <input type="password" class="layui-input" name="password" lay-verify="required" autocomplete="off" placeholder="请输入云平台登陆密码">
+            </div>
+        </div>
+        <!--<div class="layui-form-item">
+            <div class="layui-input-inline ">
+                <input type="text" class="layui-input" name="vcode" lay-verify="required" autocomplete="off" placeholder="请输入验证码"  style="width:50%;float:left;">
+                <img id="verify" src="http://www.yunucms.com/Index/verify.html" alt="" width="100" height="35" onclick="this.src = 'http://www.yunucms.com/Index/verify.html' + '#' + Math.random()" title="点击更换" style="float:left;margin-left:10px;">
+            </div>
+        </div>-->
+        <div class="layui-form-item" id="resultTips"></div>
+    </form>
+</script>
+<script>
+layui.use(['form','common'], function(){
+    var $ = layui.jquery;
+    $form = $('form');
+    var form = layui.form(),layer = layui.layer, common=layui.common;
+
+    if ('{$html_status}' == '1') {
+        $('#connectionStatus').html('<font class="mcolor">通信正常</font>');
+        $('.showupgeade').show();
+    }else{
+        $('#connectionStatus').html('<font class="mcolor2">通信异常</font>');
+        $('.showupgeade').hide();
+    }
+
+    $('.cloudBind').on('click', function() {
+        layer.open({
+            title:'绑定云平台 / <a href="http://www.yunucms.com/Login/register.html?domain={$_SERVER["SERVER_NAME"]}" target="_blank" class="mcolor">注册云平台</a>',
+            id:'popLoginBox',
+            area:'380px',
+            content:$('#popCloudBind').html(),
+            btn:['确认绑定', '取消'],
+            btnAlign:'c',
+            move:false,
+            yes:function(index) {
+                var tips = $('#resultTips');
+                tips.html('请稍后，云平台通信中...');
+                $.post('{:url('')}', $('#editForm').serialize(), function(res) {
+                    if (res.code == 1) {
+                        common.layerAlertS(res.msg, '提示');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    } else {
+                        tips.addClass('mcolor2').html(res.msg);
+                        setTimeout(function() {
+                            tips.removeClass('mcolor2').html('');
+                        }, 3000);
+                    }
+                });
+                return false;
+            }
+        });
+    });
+
+});
+</script>
+</body>
+</html>

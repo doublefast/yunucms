@@ -1,0 +1,85 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<div class="table">
+					<form id="export-form" method="post">
+					<table>
+						<thead>
+							<tr>
+								<th class="sort" width="150"><span>备份名称</span></th>
+								<th class="sort" width="100"><span>卷数</span></th>
+								<th class="sort" width="100"><span>压缩</span></th>
+								<th class="sort"><span>数据大小</span></th>
+								<th class="sort" width="150"><span>备份时间</span></th>
+                                <th class="sort" width="150"><span>状态</span></th>
+								<th width="200"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+						{notempty name="infolist"}
+                            {volist name="infolist" id="vo"}
+                            <tr>
+                                <td>{$vo.time|date='Ymd-His',###}</td>
+                                <td>{$vo.part}</td>
+                                <td>{$vo.compress}</td>
+                                <td>{$vo.size|format_bytes}</td>
+                                <td>{$key}</td>
+                                <td>-</td>
+                                <td>
+                                    <a class="btn db-import" href="{:url('revert',['time'=>$vo['time']])}">还原</a>
+                                    <a class="btn do-action" data-type="doDelOne" data-href="{:url('del',['time'=>$vo['time']])}">删除</a>
+                                </td>
+                            </tr>
+                            {/volist}
+                        {else /}
+                            <td colspan="7" class="text-center"> 暂无备份数据</td>
+                        {/notempty}
+						</tbody>
+					</table>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+
+    layui.use(['layer','common'], function () {
+        var $ = layui.jquery, layer = layui.layer;
+        $(".db-import").click(function () {
+            var self = this, status = ".";
+            $.get(self.href, success, "json");
+            window.onbeforeunload = function () { return "正在还原数据库，请不要关闭！";};
+            return false;
+            function success(data) {
+                if (data.code) {
+                    if (data.data.gz) {
+                        data.msg += status;
+                        if (status.length === 5) {
+                            status = ".";
+                        } else {
+                            status += ".";
+                        }
+                    }
+                    $(self).parent().prev().text(data.msg);
+                    if (data.data.part) {
+                        $.get(self.href, {"part": data.data.part, "start": data.data.start}, success, "json");
+                    } else {
+                        window.onbeforeunload = function () {return null;};
+                    }
+                } else {
+                    layer.alert(data.msg,0);
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

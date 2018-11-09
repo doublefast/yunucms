@@ -1,0 +1,53 @@
+            <div class="main_l fl" id="main_l">
+                <p>
+                    <span><yunu:type typeid="$category['id']" type="parent">{$type.title}</yunu:type></span>
+                    <i>PRODUCT DISPLAY</i>
+                </p>
+                <ul>
+                    <yunu:catlist cid="$category['id']" limit="10" type="parent" orderby="sort desc" flag="1">
+                    <li <if condition="$catlist['id'] eq $cid || $catlist['id'] eq $category['pid']">class="active"</if>><a href="{$catlist.url}"><span>{$catlist.title}</span></a>
+                    </li>
+                    <ul>
+                    <volist name="catlist['child']" id="v">
+                        <li><a href="{$v.url}">{$v.title}</a></li>
+                    </volist>
+                    </ul>
+                    </yunu:catlist>
+                </ul>
+                <div class="liuyan">
+                    <b>
+                        <yunu:type typeid='30'>
+                        <a href="{$type.url}">
+                            <img src="__PUBLIC__/img/lxa1.jpg" alt="">
+                            <img src="__PUBLIC__/img/lxa2.jpg" alt="">
+                        </a>
+                        </yunu:type>
+                    </b>
+                    <b>
+                        <a href="javascript:;">
+                            <img src="__PUBLIC__/img/lya1.jpg" alt="">
+                            <img src="__PUBLIC__/img/lya2.jpg" alt="">
+                        </a>
+                    </b>
+                </div>
+            </div>
+<script type="text/javascript" src="__PUBLIC__/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+    ;(function () {
+        var last_dom = $('#main_l .active').next('ul').show();
+        $('#main_l>ul>li').filter(function () {
+            var t = $(this),
+                ul = t.next('ul');
+            if (ul.children().length) {
+                t.on('mouseenter', function () {
+                    if (ul.index() != last_dom.index()) {
+                        last_dom.slideUp('fast');
+                        last_dom = ul.slideDown('fast');
+                    };
+                });
+            }else{
+                t.addClass('no_child');
+            }
+        });
+    })();
+</script>

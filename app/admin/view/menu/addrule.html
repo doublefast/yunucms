@@ -1,0 +1,121 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+				<div class="layui-form-item">
+		            <label class="layui-form-label">默认顶级</label>
+		            <div class="layui-input-inline w300">
+		                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required" lay-search="">
+		                    <option selected="selected" value="">默认顶级</option>
+		                    {foreach name="admin_rule" item="v"}
+		                        <option value="{$v.id}">{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+		                    {/foreach}
+		                </select>
+		            </div>
+		        </div>
+				<div class="layui-form-item">
+		            <label class="layui-form-label">菜单名称</label>
+		            <div class="layui-input-block">
+		                <input name="title" autocomplete="off" value="" placeholder="菜单名称" class="layui-input w300" type="text" required  lay-verify="title">
+		            </div>
+		        </div>
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">节点</label>
+		            <div class="layui-input-inline">
+		                <input name="name" autocomplete="off" value="" placeholder="模块/控制器/方法" class="layui-input w300" type="text" required  lay-verify="required">
+		            </div>
+		            <div class="layui-input-inline"><font class="font_tip">如：admin/user/adduser (一级节点添加“#”即可)</font></div>
+		        </div>
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">css样式</label>
+		            <div class="layui-input-inline">
+		                <input name="css" autocomplete="off" value="" placeholder="输入菜单名称前显示的CSS样式" class="layui-input w300" type="text">
+		            </div>
+		            <div class="layui-input-inline"><font class="font_tip">如：fa fa-user <a href="http://fontawesome.io/icons/" target="_blank" style="text-decoration:underline;"> [ 参考网址 ]</a></font></div>
+		        </div>
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">排序</label>
+		            <div class="layui-input-block">
+		                <input name="sort" lay-verify="number" autocomplete="off" value="0" placeholder="输入顺序" class="layui-input w300" type="text">
+		            </div>
+		        </div>
+
+		        <div class="layui-form-item">
+		            <label class="layui-form-label">是否启用</label>
+		            <div class="layui-input-block">
+		            	<input type="checkbox" checked="" name="status" lay-skin="switch" lay-filter="switchTest">
+
+		            </div>
+		        </div>
+		        <div class="layui-form-item">
+		        	<label class="layui-form-label"></label>
+		            <div class="layui-input-block">
+		            	<button class="btn" lay-submit="" lay-filter="add-role" data-href={:url('addrule')}>提交</button>
+		            </div>
+		        </div>
+				</form>
+			</div>
+		</div>
+	</div>
+<script>
+    layui.use(['form','common'], function(){
+        var $ = layui.jquery,common=layui.common,form = layui.form();
+        //自定义验证规则
+        form.verify({
+            pid: function(value){
+                if(value == ""){
+                    return '菜单分类不能为空';
+                }
+            }
+            ,title:function(value){
+                if(value == ""){
+                    return '菜单名称不能为空';
+                }
+            }
+
+        });
+        //监听提交
+        form.on('submit(add-role)', function(data){
+            var sub=true;
+            var url=$(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('menu/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

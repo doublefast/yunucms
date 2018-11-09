@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
+    <meta name="description" content="<yunu:config name='seo_description'/>">
+    <title>{$content.title}-<yunu:config name="site_title"/></title>
+	<link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+</head>
+<body>
+<include file="public:header" />
+    <div class="main container">
+    	<div class="center">
+<include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+                <div class="content_tit">
+                    <h3>{$content.title}</h3>
+                    <p>
+                        <span>发布时间：{$content.create_time|date='Y-m-d',###}</span>
+                    </p>
+                </div>
+                <div class="content_des">
+                    <p>{$content.desc}</p>
+                </div>
+                <div class="content">
+                    <div class="show_img">
+                        <ul>
+                            <li><img src="{$content.pic}" alt=""></li>
+                        </ul>
+                    </div>
+                    <div class="content_content">
+                        {$content.content}
+                    </div>
+                </div>
+                <div class="tag mt15">
+                    相关标签：
+                    <yunu:tag title="$content['tag']">
+                         <a href="{$tag.url}"><span>{$tag.title}</span></a>
+                    </yunu:tag>
+                </div>
+                <div class="prve">
+                    <p>上一篇： {$content.prev}</p>
+                    <p>下一篇： {$content.next}</p>
+                </div>
+
+                <div class="flink mt20">
+                    <div class="flink_tit">
+                        <p></p>
+                        <span>相关新闻</span>
+                    </div>
+                    <div class="news_list">
+                        <ul>
+                            <yunu:list cid="28" limit="5" orderby="sort desc">
+                            <li>
+                                <a href="{$list.url}"><span>{$list.title}</span></a>
+                                <p>{$list.create_time|date='Y-m-d',###}</p>
+                            </li>
+                            </yunu:list>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flink mt10">
+                    <div class="flink_tit">
+                        <p></p>
+                        <span>相关产品</span>
+                    </div>
+                    <div class="pro_list">
+                        <ul>
+                            <yunu:list cid="21" limit="4" orderby="sort asc" tag="1">
+                            <li>
+                                <a href="{$list.url}">
+                                    <img src="{$list.pic}" alt="{$list.title}">
+                                    <span>{$list.title}</span>
+                                </a>
+                            </li>
+                            </yunu:list>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="f14 mt20">
+                    相关服务：
+                    <yunu:cwkeywords>
+                        <a href="{$cwkeywords.url}">{$cwkeywords.name}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    </yunu:cwkeywords>
+                </div>
+
+                <div class="f14 mt20">
+                    地区产品：
+                    <yunu:area type='1'>
+                        <a href="{$area.url}">{$area.title}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    </yunu:area>
+                </div>
+            </div>
+    	</div>
+    </div>
+<include file="public:footer" />
+</div>
+</body>
+</html>

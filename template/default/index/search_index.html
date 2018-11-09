@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title>搜索结果-<yunu:config name="site_title"/></title>
+    <script type="text/javascript" src="__PUBLIC__/js/jquery-1.8.0.min.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+</head>
+<body>
+<include file="public:header" />
+    <div class="main container">
+        <div class="center">
+            <include file="public:left" />
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <a href="javascript:void();">您的当前位置：搜索结果页</a>
+                    </p>
+                </div>
+                <div class="news_list">
+                    <ul>
+                        <yunu:list orderby="sort desc" keyword="$keyword">
+                        <li>
+                            <a href="{$list.url}"><span>{$list.title}</span></a>
+                            <p>{$list.create_time|date='Y-m-d',###}</p>
+                        </li>
+                        </yunu:list>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+<include file="public:footer" />
+
+</body>
+</html>

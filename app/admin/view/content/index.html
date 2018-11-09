@@ -1,0 +1,304 @@
+{include file="public/header" /}
+<style>
+.content_nav_list{
+    overflow:auto;
+    height: 100%;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="sidebar2" >
+				<a class="btn_expand" href="javascript:;"></a>
+				<a class="btn_contract" href="javascript:;"></a>
+				
+				<ul class="content_nav_list">
+					{notempty name="catlist"}
+		            {volist name="catlist" id="v"}
+		            <li><a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">{if $v.pid eq 0}<i class="fa fa-folder-open"></i>{else}<span style="display:inline-block;width:{$v.leftpin / 2}px;"></span>├ {/if}{$v['title']}</a></li>
+		            {/volist}
+		            {/notempty}
+				</ul>
+			</div>
+
+			{notempty name="cate.title"}
+			<div class="content_box">
+
+                    <div class="layui-form check_diqu" id="diqu">
+                        <ul>
+                            {volist name="arealist" id="v"}
+                            <li>
+                                <input type="checkbox" name="diqu[]" value="{$v['id']}" lay-skin="primary" lay-filter="diqu" title="{$v['title']}">
+                                
+                                {notempty name="v.node"}
+                                <ul>
+                                {volist name="v.node" id="v1"}
+                                <li>
+                                    <input type="checkbox" name="diqu[]" value="{$v1['id']}" lay-skin="primary" lay-filter="diqu" title="{$v1['title']}">
+                                    {notempty name="v1.node"}
+                                    <ul>
+                                    {volist name="v1.node" id="v2"}
+                                    <li>
+                                    <input type="checkbox" name="diqu[]" value="{$v2['id']}" lay-skin="primary" lay-filter="diqu" title="{$v2['title']}">
+                                    </li>
+                                    {/volist}
+                                    </ul>
+                                    {/notempty}
+                                </li>
+                                {/volist}
+                                </ul>
+                                {/notempty}
+                            </li>
+                            {/volist}
+                           
+                        </ul>
+                    </div>
+
+
+				<div class="title">
+					<span>{$cate.title}</span>
+				</div>
+				<a class="btn fl mr10" href="{:url('addcontent',['cid'=>$cate['id']])}">添加内容</a><a class="btn fl mr10" href="{:url('batchaddcontent',['cid'=>$cate['id']])}">批量添加</a><a class="btn do-action mr10" data-type="doDelete" data-href="{:url('delcontent')}">删除</a><a class="btn do-action mr10" data-type="doState" data-href="{:url('stateall',['istop'=>1])}">推荐</a><a class="btn do-action mr10" data-type="doState" data-href="{:url('stateall',['istop'=>0])}">取消推荐</a><a class="btn do-action mr10" data-type="doState" data-href="{:url('baidu')}">百度推送</a>
+				<div class="search fr">
+					<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<input type="text" id="key" value="{:input('param.key')}" placeholder="请输入文章标题名称" >
+					<a class="icon-search" href="javascript:;"></a>
+					</form>
+				</div>
+				<div class="clear"></div>
+				<div class="table" v-el:table>
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input type="checkbox" class="selected-all"></th>
+								<th width="60"><span>编号</span></th>
+								<th ><span>标题</span></th>
+								<th width="100"><span>分类</span></th>
+								<th width="60"><span>浏览</span></th>
+								<th width="140"><span>发布时间</span></th>
+								<th width="80"><span>推荐</span></th>
+								<th width="80"><span>排序</span></th>
+								<th width="140"><span>操作</span></th>
+							</tr>
+						</thead>
+						<script id="arlist" type="text/html">
+                            {{# for(var i=0;i<d.length;i++){  }}
+                            <tr class="long-td">
+                                <td>
+                                    <div class="icheckbox_square-green diychk" style="position: relative;"><input type="checkbox" style="position: absolute; opacity: 0;" name="ck" ids="{{d[i].id}}" value="true"><ins class="iCheck-helper"></ins></div>  
+                                </td>
+                                <td>{{d[i].id}}</td>
+                                <td>{{d[i].title}}</td>
+                                <td>{$cate['title']}</td>
+                                <td>{{d[i].click}}</td>
+                                <td {{# if(d[i].isyy){}}style="color:red;font-weight:bold;"{{#  } }}>{{d[i].create_time}}</td>
+                                <td><a href="javascript:;" class="change_status" data-id="{{d[i].id}}"> <div class="layui-unselect layui-form-switch {{# if(d[i].istop == 1){}} layui-form-onswitch{{#  } }} "><i></i></div> </a></td>
+                                <td><input class="sort" type="number" maxlength="4" data-id="{{d[i].id}}" value="{{d[i].sort}}"/></td>
+                                <td>
+                                    <a class="btn do-action" data-type="doEdit" data-href="{:url('editcontent')}" data-id="{{d[i].id}}">编辑</a>
+                                    <a class="btn do-action" data-type="doDelOne" data-href="{:url('delcontent')}" data-id="{{d[i].id}}">删除</a>
+                                </td>
+                            </tr>
+                            {{# } }}
+                        </script>
+                        <tbody id="article_list" class="article_list"></tbody>
+
+						<tbody>
+
+							<tr class="last_tr">
+								<td><input type="checkbox" class="selected-all"></td>
+								<td colspan="8" class="tal">
+			
+									<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+									<div style="width:250px; float:left;" class="mr10">
+											<select name="ftype" id="ftype">
+				                                <option value="0">选择分类</option>
+				                                {foreach name="catlist" id='v' }
+				                                <option value="{$v.id}" {if ($v.cover neq 0) or ($v.mid neq $cate.mid) or ($v.id eq $cate.id)}disabled{/if}>{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+				                                {/foreach}
+				                            </select>
+			                        </div>
+			                        <div style="float:left;" class="mr10"><a class="btn do-action move_category" style="height:37px;line-height:37px;">批量移动到</a></div>
+			                        </form>
+
+                                    <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                                    <div style="float:left;" class="mr10">
+                                        <input id="area" type="hidden" name="area">
+                                        <a class="btn" id="open_diqu" style="height:37px;line-height:37px;">批量设置地区</a>          
+                                    </div>
+                                    </form>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div id="AjaxPage" style="float: right;margin-top:-10px; "></div>
+                <div class="CountPage" style="float: right;clear:both; margin-right:15px; margin-top:-5px;">
+                    共 {$count} 条 <span id="allpage"></span>
+                </div>
+                <div style="clear:both;"></div>
+			</div>
+			{else /}
+			<div class="content_box"></div>
+			{/notempty}
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    var url='{:url("content/index",['cid'=>$cate['id']])}';
+    var allpages='{$allpage}';
+    layui.use(['layer', 'form','laypage','common', 'icheck','laytpl'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common, form = layui.form(),box = '#diqu';
+        $form = $('form');
+        laytpl =layui.laytpl;
+        laypage = layui.laypage;
+        
+        common.Ajaxpage();
+
+        //加载单选框样式
+        $((".table [type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+
+        //全选
+        $(document).on('ifChanged','.selected-all', function (event) {
+            if ($(this).attr("checked")) {
+                $("#article_list .diychk").addClass('checked');
+                $("#article_list .diychk").children('input:checkbox').attr("checked", true);
+            }else{
+                $("#article_list .diychk").removeClass('checked');
+                $("#article_list .diychk").children('input:checkbox').attr("checked", false);
+            }
+        });
+        $(document).on('click','.diychk', function () {
+            if ($(this).hasClass('checked')) {
+                $(this).removeClass('checked');
+                $(this).children('input:checkbox').attr("checked", false);
+            }else{
+                $(this).addClass('checked');
+                $(this).children('input:checkbox').attr("checked", true);
+            }
+        });
+
+        $('#open_diqu').on('click', function(){
+            if (1 > $(".layuitable .article_list input:checked").size()){
+                layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+            }else{
+                layer.open({
+                    title: '选择地区',
+                    type: 1,
+                    content: $(box),
+                    skin: 'layer_diqu',
+                    area: ['60%','50%'],
+                    btn: '确定',
+                    yes: function(index, layero){
+                        var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
+                            return $(el).val();
+                        }).get().join(',');
+                        for (var c = "", d = $(".layuitable .article_list input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                        $('#area').val(value);
+                        $.ajax({
+                            url: '{:url("movearea")}',
+                            dataType: "json",
+                            data:{'ids':c, aid:value},
+                            type: "POST",
+                            success: function(data){
+                                if(data.code == 1){
+                                    parent.layer.alert(data.msg, {
+                                        title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                    }, function () {
+                                        location.href = location.href;
+                                    });
+                                }
+                            }
+                        }); 
+                    }
+                });
+            }
+        });
+        diqu(layer, form, box);
+    });
+
+    //移动分类
+    $(document).on('click','.move_category', function () {
+    	if ($('#ftype').val() == 0){
+    		layer.alert("对不起，请选中需要移动到的分类！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+    		return false;
+    	}
+    	if (1 > $(".layuitable .article_list input:checked").size()){
+    		layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+    	}else{
+    		for (var c = "", d = $(".layuitable .article_list input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+    		$.ajax({
+                url: '{:url("movecategory")}',
+                dataType: "json",
+                data:{'ids':c, cid:$('#ftype').val()},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                    	parent.layer.alert(data.msg, {
+                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                        }, function () {
+                            location.href = location.href;
+                        });
+                    }
+                }
+            });
+    	}
+
+    });
+    
+    $(document).on('click','.change_status', function () {
+            var id=$(this).attr('data-id');
+            var obs=$(this);
+            $.ajax({
+                url: '{:url("statecontent")}',
+                dataType: "json",
+                data:{'id':id},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        obs.find('div').removeClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                    }else{
+                        obs.find('div').addClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                    }
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+            });
+    });
+
+    $(document).on('click','.icon-search', function () {
+    	window.location.href = "{:url("content/index",['cid'=>$cate['id']])}?key="+$('#key').val();
+    });
+
+    $(document).on('blur','.sort', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+            url: '{:url("sortcontent")}',
+            dataType: "json",
+            data:{'id':id,'sort':obs.val()},
+            type: "POST",
+            success: function(data){
+                //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
+            }
+        });
+   	});
+</script>
+</body>
+</html>

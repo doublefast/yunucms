@@ -1,0 +1,185 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="layui-form-item">
+			            <label class="layui-form-label">自定义块名称</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="title" placeholder="自定义块名称" lay-verify="required">
+			            </div>
+                        <div class="layui-input-inline"><font class="font_tip">自定义块名称只能由字母组成</font></div>
+			        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">描述</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="remark" placeholder="描述" lay-verify="required">
+                        </div>
+                        <div class="layui-input-inline"><font class="font_tip">中文描述更方便管理</font></div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">分类</label>
+                        <div class="layui-input-inline">
+                            <select name="cid" id="cid">
+                                {volist name="clist" id="v"}
+                                <option value="{$v.id}" {if $v.id eq $cid}selected="selected"{/if}>{$v.title}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">类型</label>
+                        <div class="layui-input-inline">
+                            <select name="type" lay-filter="seltype">
+                                <option value="1">文字</option>
+                                <option value="2">图片</option>
+                                <option value="3">丰富</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item content content1">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-inline">
+                            <textarea name="content1" placeholder="输入内容" class="layui-textarea w450"></textarea>
+                        </div>
+                    </div>
+
+			        <div class="layui-form-item content content2" style="display:none;">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-inline">
+                            <input id="path1" class="layui-input" type="text" name="content2" ><br>
+                            <img id="img_path1" class="defimg"  onerror="javascript:this.style.display='none';">
+                        </div>
+                        <div class="layui-input-inline w450">
+                            <input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
+                            <div class="site-demo-upload upload-img fl ml5">
+                                <div class="site-demo-upbar">
+                                    <input type="file" name="file" class="layui-upload-file" id="upload-image">
+                                </div>
+                            </div>
+                        </div>
+			        </div>
+
+					<div class="layui-form-item content content3" style="display:none;">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-inline">
+                            <textarea name="content3" id="content"></textarea>
+                        </div>
+                    </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('addblock')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+    window.UEDITOR_HOME_URL = '__UEDITOR__/';
+    window.onload = function() {
+        window.UEDITOR_CONFIG.initialFrameWidth=700;
+        window.UEDITOR_CONFIG.initialFrameHeight=300;
+        UE.getEditor('content');
+    }
+</script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>
+
+<script>
+layui.use(['form','layedit','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common,layedit = layui.layedit;
+
+        //上传图片
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'file'])}" //上传接口
+            ,before: function(input){
+                //console.log('图片上传中');
+            }
+            ,title:'上传图片'
+            ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
+            ,method: 'post' //上传接口的http类型
+            ,ext: 'jpg|png|gif'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#path1").val(data.image_name);
+                    $("#img_path1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+        $('.BrowerPicture').click(function(){
+            var path = $(this).attr('rel');
+            layer.open({
+                type: 2,
+                title: '选择站内图片',
+                shadeClose: true,
+                shade: false,
+                anim: 2,
+                area: ['750px', '350px'],
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+            });
+        });
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('block/index')}?cid="+$('#cid').val());
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+        form.on('select(seltype)', function(data) {
+            $(".content").hide();
+            $(".content"+data.value).show();
+        });
+    });
+
+</script>
+</body>
+</html>

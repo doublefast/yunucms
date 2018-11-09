@@ -1,0 +1,159 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <input type="hidden" name="mid" value="{$info.mid}">
+                    <input type="hidden" name="id" value="{$info.id}">
+					<div class="layui-form-item">
+			            <label class="layui-form-label">字段类型</label>
+			            <div class="layui-input-inline">
+                            <select name="ftype" lay-filter="ftype">
+                                <option value="0">选择类型</option>
+                                {foreach name="ftypelist" id='v' }
+                                <option value="{$key}" {if $key eq $info.ftype}selected{/if}>{$v}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+			        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否必填</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="isnotnull" value="1" title="必填" {if $info.isnotnull eq 1}checked{/if}>
+                            <input type="radio" name="isnotnull" value="0" title="非必填" {if $info.isnotnull eq 0}checked{/if}>
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">字段别名</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="title" value="{$info.title}" placeholder="字段别名" lay-verify="required">
+                        </div>
+                        <div class="layui-input-inline"><font class="font_tip">中文名称</font></div>
+                    </div>
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">字段名</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="field" value="{$info.field}" placeholder="字段名" lay-verify="required" onkeyup="this.value=this.value.replace(/[^a-zA-Z]/g,'')" maxlength="20">
+			            </div>
+                        <div class="layui-input-inline"><font class="font_tip">纯字母组合，最大长度20个字符</font></div>
+			        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">字段提示</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="remark" value="{$info.remark}" placeholder="字段提示">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">字段长度</label>
+                        <div class="layui-input-inline">
+                            <input name="length" lay-verify="number" autocomplete="off" value="{$info.length}" placeholder="输入字段长度" class="layui-input w300" type="text">
+                        </div>
+                        <div class="layui-input-inline"><font class="font_tip">最大长度255</font></div>
+                    </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">排序</label>
+			            <div class="layui-input-block">
+			                <input name="sort" lay-verify="number" autocomplete="off" value="{$info.sort}" placeholder="输入顺序" class="layui-input w300" type="text">
+			            </div>
+			        </div>
+
+                    <div class="layui-form-item showtv" {if $info.defaultValue eq ''}style="display:none"{/if}>
+                        <label class="layui-form-label"><div id="defaultTips">{$info.defaultTips}</div></label>
+                        <div class="layui-input-inline">
+                            <div id="defaultValue">{$info.defaultValue}</div>
+                        </div>
+                    </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editdiyfield')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common'], function(){
+    var $ = layui.jquery;
+    $form = $('form');
+    var form = layui.form(),layer = layui.layer, common=layui.common;
+
+    form.verify({
+        ftype:function(value){
+            if(value == ""){
+                return '字段类型必须选择';
+            }
+        }
+    });
+
+    //监听提交
+    form.on('submit(save)', function(data){
+        var sub = true;
+        var url = $(this).data('href');
+        if(url){
+            if(sub){
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    dataType: 'json',
+                    data: data.field,
+                    success: function (info) {
+                        if (info.code == 1) {
+                            common.layerAlertSHref(info.msg, '提示', "{:url('diyfield/index',['mid'=>$info['mid']])}");
+                        }else {
+                            common.layerAlertE(info.msg, '提示');
+                            $(data.elem).removeAttr("disabled").text("提交");
+                        }
+                    },
+                    beforeSend: function () {
+                        $(data.elem).attr("disabled", "true").text("提交中...");
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        common.layerAlertE(textStatus, '提示');
+                    }
+                });
+            }
+        }else{
+            common.layerAlertE('链接错误！', '提示');
+        }
+        return false;
+    });
+
+    form.on('select(ftype)', function(data) {
+        $.ajax({
+            url: "{:url('defaultvalue')}",
+            type: 'post',
+            dataType: 'json',
+            data: {'formtype':data.value},
+            success: function (info) {
+                if (info.html) {
+                    $(".showtv").show();
+                    $("#defaultTips").html(info.typename);
+                    $("#defaultValue").html(info.html);
+                }else{
+                    $(".showtv").hide();
+                }
+                     
+            },
+        });
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<a class="btn" data-type="doAdd" href="{:url('addrole')}">新增</a>
+				<div class="table" v-el:table>
+					<table>
+						<thead>
+							<tr>
+								<th width="100"><span>ID</span></th>
+								<th width="200"><span>角色名称</span></th>
+								<th class="sort"><span>状态</span></th>
+								<th class="sort" width="150"><span>添加时间</span></th>
+								<th class="sort" width="150"><span>更新时间</span></th>
+								<th width="230"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{foreach name="infolist" item="v"}
+			                <tr>
+			                    <td>{$v.id}</td>
+			                    <td style="text-align:left;">{$v.title}</td>
+			                    <td align="center">
+			                        <a href="javascript:;" class="change_status" data-id="{$v.id}"> <div class="layui-unselect layui-form-switch {if condition="$v.status eq 1"}layui-form-onswitch{/if}"><i></i></div> </a>
+			                    </td>
+			                    <td align="center">{$v.create_time}</td>
+			                    <td align="center">{$v.update_time}</td>
+			                    <td align="center">
+			                        <a class="btn do-action" onclick="giveQx({$v.id})">分配权限</a>
+		                            <a class="btn do-action" data-type="doEdit" data-href="{:url('editrole')}" data-id="{$v.id}">编辑</a>
+		                            <a class="btn do-action" data-type="doDelOne" data-href="{:url('delrole')}" data-id="{$v.id}">删除</a>
+			                    </td>
+			                </tr>
+			                {/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- 权限分配 -->
+<div class="zTreeDemoBackground left" style="display: none" id="role">
+    <input type="hidden" id="nodeid" value="">
+    <div class="form-group">
+        <div class="col-sm-5 col-sm-offset-2">
+            <ul id="treeType" class="ztree"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4 col-sm-offset-4" style="margin-bottom: 15px;margin-left: 15px;">
+            <input type="button" value="确认分配" class="btn btn-primary" id="postform"/>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="__ADM_PUBLIC__/js/zTree/zTreeStyle.css" type="text/css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/zTree/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/zTree/jquery.ztree.excheck-3.5.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/zTree/jquery.ztree.exedit-3.5.js"></script>
+
+<script type="text/javascript">
+    zNodes = '';
+    var index = '';
+    var index2 = '';
+    //分配权限
+    function giveQx(id){
+        $("#nodeid").val(id);
+        //加载层
+        index2 = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+        //获取权限信息
+        $.getJSON('./giveAccess', {'type' : 'get', 'id' : id}, function(res){
+            layer.close(index2);
+            if(res.code == 1){
+                zNodes = JSON.parse(res.data);  //将字符串转换成obj
+                //页面层
+                index = layer.open({
+                    type: 1,
+                    area:['350px', '600px'],
+                    title:'权限分配',
+                    skin: 'layui-layer-demo', //加上边框
+                    content: $('#role')
+                });
+                //设置位置
+                layer.style(index, {
+                    top: '150px'
+                });
+                //设置zetree
+                var setting = {
+                    check:{
+                        enable:true
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    }
+                };
+
+                $.fn.zTree.init($("#treeType"), setting, zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("treeType");
+                zTree.expandAll(true);
+            }else{
+                layer.alert(res.msg);
+            }
+        });
+    }
+
+    //确认分配权限
+    $("#postform").click(function(){
+        var zTree = $.fn.zTree.getZTreeObj("treeType");
+        var nodes = zTree.getCheckedNodes(true);
+        var NodeString = '';
+        $.each(nodes, function (n, value) {
+            if(n>0){
+                NodeString += ',';
+            }
+            NodeString += value.id;
+        });
+
+        var id = $("#nodeid").val();
+        //写入库
+        $.post('{:url('giveAccess')}', {'type' : 'give', 'id' : id, 'rule' : NodeString}, function(res){
+            layer.close(index);
+            if(res.code == 1){
+                layer.msg(res.msg,{icon:1,time:1500,shade: 0.1}, function(){});
+            }else{
+                layer.msg(res.msg);
+            }
+
+        }, 'json')
+    })
+
+    layui.use(['layer','common'], function () {
+        var $ = layui.jquery, layer = layui.layer;
+
+        $(document).on('click','.change_status', function () {
+            var id=$(this).attr('data-id');
+            var obs=$(this);
+            $.ajax({
+                url: '{:url("staterole")}',
+                dataType: "json",
+                data:{'id':id},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        obs.find('div').removeClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                    }else{
+                        obs.find('div').addClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                    }
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

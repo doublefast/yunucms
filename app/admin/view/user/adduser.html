@@ -1,0 +1,111 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+				<div class="layui-form-item">
+		            <label class="layui-form-label">管理员名称</label>
+		            <div class="layui-input-inline">
+		                <input class="layui-input" type="text" name="username" placeholder="管理员名称"  lay-verify="title">
+		            </div>
+		        </div>
+				<div class="layui-form-item">
+                    <label class="layui-form-label">管理员角色</label>
+                    <div class="layui-input-inline">
+                        <select name="groupid" lay-verify="required">
+                            <option value="">请选择</option>
+                            {if !empty($role)}
+                            {foreach name="role" item="vo"}
+                            <option value="{$vo.id}">{$vo.title}</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+
+                    </div>
+
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" type="password" name="password" placeholder="密码"  lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">真实姓名</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" type="text" name="real_name" placeholder="真实姓名"  lay-verify="required">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" checked="" name="status" lay-skin="switch" lay-filter="switchTest" title="开关"><div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
+                    </div>
+                </div>
+		        <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-inline">
+		              <button class="btn" lay-submit="" lay-filter="add-role" data-href={:url('adduser')}>提交</button>
+                    </div>
+		        </div>
+				</form>
+			</div>
+		</div>
+	</div>
+<script>
+    layui.use(['form','common'], function(){
+        var $ = layui.jquery,common=layui.common,form = layui.form();
+        
+        form.verify({
+            title:function(value){
+                if(value == ""){
+                    return '管理员名称不能为空';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(add-role)', function(data){
+            var sub=true;
+            var url=$(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('user/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

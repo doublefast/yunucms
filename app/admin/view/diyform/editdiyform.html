@@ -1,0 +1,104 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+                <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <input type="hidden" name="id" value="{$info.id}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">表单名称</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="title" value="{$info.title}" placeholder="模型名称" lay-verify="required">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">数据表名</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="tabname" value="{$info.tabname}" placeholder="数据表名" lay-verify="required" onkeyup="this.value=this.value.replace(/[^a-zA-Z]/g,'')" maxlength="20">
+                        </div>
+                        <div class="layui-input-inline"><font class="font_tip">纯字母组合，最大长度20个字符</font></div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">描述说明</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="remark" value="{$info.remark}" placeholder="描述说明" lay-verify="required">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">验证方式</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="yzcode" value="0" title="关闭" {if $info.yzcode eq 0}checked{/if}>
+                            <input type="radio" name="yzcode" value="1" title="验证码" {if $info.yzcode eq 1}checked{/if}>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <input type="checkbox" name="status" {if $info.status eq 1}checked{/if} lay-skin="switch" lay-filter="switchTest">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-inline">
+                          <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editdiyform')}'>提交</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+<script>
+layui.use(['form','common'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('diyform/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

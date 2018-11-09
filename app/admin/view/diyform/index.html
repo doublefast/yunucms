@@ -1,0 +1,121 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn mr10" href="{:url('adddiyform')}">新增</a>
+				<div class="table" v-el:table>
+					<form id="export-form" method="post" action="{:url('index')}">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th class="sort" width="60"><span>ID</span></th>
+								<th width="100"><span>名称</span></th>
+								<th width="100"><span>表名</span></th>
+								<th><span>备注</span></th>
+								<th width="120"><span>未读 / 总数</span></th>
+								<th width="80"><span>代码</span></th>
+								<th width="100"><span>字段管理</span></th>
+								<th width="200"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{notempty name="infolist"}
+		                    	{volist name="infolist" id="v"}
+								<tr>
+									<td>{$v.id}</td>
+									<td>{$v.title}</td>
+									<td>{$v.tabname}</td>
+									<td>{$v.remark}</td>
+									<td><a class="btn" href="{:url('formcon', ['fid'=>$v['id']])}">{$v.wdcount} / {$v.xxcount}</a></td>
+									<td><a class="btn do-action" onclick="showcode({$v.id})">代码</a></td>
+									<td><a class="btn" href="{:url('diyfield', ['mid'=>$v['id']])}" >字段 [ {$v.fcount} ]</a></td>
+									<td>
+										<a class="btn do-action doCopy" data-id="{$v.id}">复制</a>
+										<a class="btn do-action" data-type="doEdit" data-href="{:url('editdiyform')}" data-id="{$v.id}">编辑</a>
+		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('deldiyform',['ids'=>$v['id']])}">删除</a>
+									</td>
+								</tr>
+								{/volist}
+		                    {else /}
+		                        <td colspan="8" class="text-center"> 暂未发现数据! </td>
+		                    {/notempty}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+var index2 = '';
+//表单代码
+function showcode(id){
+	layer.open({
+		type: 2,
+		title: '表单代码',
+		shadeClose: true,
+		area: ['80%', '60%'],
+		skin: 'layui-layer-demo',
+		content: "{:url('showcode')}?id="+id
+	});
+}
+layui.use(['common'], function(){
+    var common=layui.common;
+
+    $(document).on('blur','.sort', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+            url: '{:url("sortdiymodel")}',
+            dataType: "json",
+            data:{'id':id,'sort':obs.val()},
+            type: "POST",
+            success: function(data){
+                //window.location = window.location;
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
+            }
+        });
+    });
+
+    $(document).on('click','.doCopy', function () {
+    	var id = $(this).attr('data-id');
+		var obs = $(this);
+    	layer.confirm("确定复制当前表单？", {
+                title: "提示",
+                btnAlign: 'c',
+                resize: false,
+                icon: 3,
+                btn: ['确定复制', '我再想想'],
+                yes: function () {
+			        $.ajax({
+			            url: '{:url("copydiyform")}',
+			            dataType: "json",
+			            data:{'id':id},
+			            type: "POST",
+			            success: function(info){
+			                if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('diyform/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+			            }
+			        });
+                }
+        });
+    });
+});
+</script>
+</body>
+</html>
