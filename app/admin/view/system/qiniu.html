@@ -10,11 +10,12 @@
 					<span>{$position.name}</span>
 				</div>
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
-					
+					{if !$isagent}
 					<div class="ui_prompt">
 	                    <p class="ui_prompt_tit">温馨提示</p>
 	                    <p>操作说明详情 <a href="http://www.yunucms.com/Article/show/id/46.html" target="_blank" class="mcolor">点击查看</a></p>
-	                </div> 
+	                </div>
+	                {/if}
 
 					<div class="layui-form-item">
 			            <label class="layui-form-label">是否开启</label>

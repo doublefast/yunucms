@@ -72,9 +72,10 @@ class Show extends Common
 		$content['nexturl'] = $next['infourl'];
 		$content['nexttitle'] = $next['infotitle'];
 
-		//$content['content'] = str_replace("img", 'mip-img', $content['content']);
+		$pccontent = new \app\index\model\ContentModel();
 
 		$content = update_str_dq($content, config('sys.sys_area'));
+		$content['pcurl'] = $pccontent->getContentUrl($content, '', []);
 
 		$this->assign([
 			'content' => $content,

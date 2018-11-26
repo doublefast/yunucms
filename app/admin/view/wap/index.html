@@ -24,6 +24,14 @@
                         </div>
                         <div class="layui-input-inline"><font class="font_tip">默认为"m.二级域名后缀"</font></div>
                     </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">MIP设置</label>
+                        <div class="layui-input-inline" style="width:100px;">
+                            <input type="checkbox" name="wap_mip" {if config('sys.wap_mip')}checked{/if} lay-skin="switch" lay-filter="switchTest">
+                        </div>
+                        <div class="layui-input-inline"><font class="font_tip">启用后编辑器内"img"标签自动转换为"mip-img"</font></div>
+                    </div>
                     
                     <div class="layui-form-item">
                         <label class="layui-form-label">手机LOGO</label>

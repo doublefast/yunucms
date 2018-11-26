@@ -22,17 +22,8 @@ class Index extends Common
         $sys_mysql = db()->query('SELECT VERSION();');
         $sys_mysql = is_array($sys_mysql) ? $sys_mysql[0]['VERSION()'] : '';
 
-       
-        //验证授权
-        $this->update_path = ROOT_PATH.'data'.DS.'uppack'.DS;
-	    $this->cloud = new \com\Cloud(config('cloud.identifier'), $this->update_path);
-	    
-	    $heads = get_headers($this->cloud->apiUrl()."/main.html", 1);
-	    $html_status = "";
-        if (stristr($heads[0], "200") && stristr($heads[0], "OK")) {
-            $html_status = file_get_contents($this->cloud->apiUrl()."/main.html");
-        }
-      
+	    $this->cloud = new \com\Cloud(config('cloud.identifier'));
+	    $html_status = url_get_contents($this->cloud->apiUrl()."/main.html");
         $html_status = $html_status == 'SUCCESS' ? 1 : 0;
         $cloudstr = "<font style='color:#000;'>通信异常</font>";
         if ($html_status) {
@@ -45,6 +36,9 @@ class Index extends Common
             }else{
             	$cloudstr = "<font style='color:#000;'>已认证</font>";
             }
+            $version = include_once(ROOT_PATH.'version.php');
+        	config($version);
+            $this->cloud->record(config('sys.site_title'), config('yunucms.version'))->api('Record');
         }
 
         //主词排名监控获取
@@ -120,6 +114,7 @@ class Index extends Common
             $info = $user->getRoleInfo($hasUser['groupid']);
             session('admin_username', $username);
             session('admin_uid', $hasUser['id']);
+            session('groupid', $hasUser['groupid']);
             session('rolename', $info['title']);
             session('rule', $info['rules']);
             session('name', $info['name']);

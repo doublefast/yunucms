@@ -151,6 +151,17 @@
   border-color: #e1e6eb; 
 }
 
+.table input.edittitle {
+  border: 1px solid #fff;
+  width: 100%;
+  text-align: left;
+  line-height: 27px; 
+}
+
+.table input.sort:focus, .table input.edittitle:focus {
+  border-color: #e1e6eb; 
+}
+
 .index_block {
   width: calc((100% + 16px)/4 - 16px);
   height: 100px;
@@ -464,5 +475,14 @@
 .key_table .btn1 {
     display: inline-block;
 }
-
+.list_rows{
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #e2e2e2;
+    border-radius: 2px;
+    vertical-align: top;
+    background-color: #fff;
+    box-sizing: border-box!important;
+}
 /*# sourceMappingURL=public.css.map */

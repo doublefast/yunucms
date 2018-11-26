@@ -69,8 +69,6 @@ class Common extends Controller{
         config('sys.sys_levelurl', $levelurl);
         session('sys_levelurl', $levelurl ? $levelurl : null);
 
-
-
         if (is_dir(RUNTIME_PATH.'temp'.DS)) {//分站开启，自动清除缓存
             $path = RUNTIME_PATH.'temp'.DS;
             dir_del($path);

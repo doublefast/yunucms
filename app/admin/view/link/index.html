@@ -1,4 +1,6 @@
 {include file="public/header" /}
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
 </head>
 <body>
 	<div id="main-container">
@@ -6,6 +8,7 @@
 		<div class="main">
 			<div class="notice">{$position.url}</div>
 			<div class="main_content">
+				<div class="layui-form check_diqu" id="diqu"></div>
 				<div class="title">
 					<span>{$position.name}</span>
 				</div>
@@ -25,7 +28,7 @@
 								<th width="150"><span>操作</span></th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="article_list">
 							{notempty name="infolist"}
 		                    	{volist name="infolist" id="v"}
 								<tr>
@@ -46,6 +49,20 @@
 		                        <td colspan="8" class="text-center"> 暂未发现数据! </td>
 		                    {/notempty}
 						</tbody>
+						<tbody>
+
+							<tr class="last_tr">
+								<td><input class="i-checks checkbox check-all" type="checkbox"></td>
+								<td colspan="7" class="tal">
+                                    <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                                    <div style="float:left;" class="mr10">
+                                        <input id="area" type="hidden" name="area">
+                                        <a class="btn" id="open_diqu" style="height:37px;line-height:37px;">批量设置地区</a>          
+                                    </div>
+                                    </form>
+								</td>
+							</tr>
+						</tbody>
 					</table>
 				</div>
 			</div>
@@ -53,8 +70,8 @@
 	</div>
 <script>
     var laytpl,laypage;
-    layui.use(['layer', 'common', 'icheck'], function () {
-        var $ = layui.jquery, layer = layui.layer, common = layui.common;
+    layui.use(['layer', 'form', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common, form = layui.form(),box = '#diqu';
         laypage = layui.laypage;
         //加载单选框样式
         $(("[type='checkbox']")).iCheck({
@@ -67,6 +84,53 @@
         $('.check-all').on('ifUnchecked', function (event) {
             $('input[name="ck"]').iCheck('uncheck');
         });
+
+        $('#open_diqu').on('click', function(){
+            if (1 > $(".layuitable #article_list input:checked").size()){
+                layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+            }else{
+            	$.ajax({
+                    url: '{:url("content/getarea")}',
+                    dataType: "html",
+                    type: "POST",
+                    success: function(data){
+                		$(box).html(data);
+                        area_select($("#diqu input:checkbox"));
+                    }
+                }); 
+
+                var diqulay = layer.open({
+                    title: '选择地区',
+                    type: 1,
+                    content: $(box),
+                    skin: 'layer_diqu',
+                    area: ['60%','50%'],
+                    btn: '确定',
+                    yes: function(index, layero){
+                        var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
+                            return $(el).val();
+                        }).get().join(',');
+                        for (var c = "", d = $(".layuitable #article_list input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                        $('#area').val(value);
+                        $.ajax({
+                            url: '{:url("movearea")}',
+                            dataType: "json",
+                            data:{'ids':c, aid:value},
+                            type: "POST",
+                            success: function(data){
+                                if(data.code == 1){
+                                    parent.layer.alert(data.msg, {
+                                        title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                    });
+                                    layer.close(diqulay);
+                                }
+                            }
+                        }); 
+                    }
+                });
+            }
+        });
+        diqu(layer, form, box);
     });
 
     $(document).on('blur','.sort', function () {

@@ -14,8 +14,8 @@
 					  	<ul class="layui-tab-title">
 						    <li class="layui-this">基本信息</li>
 						    <li>SEO设置</li>
-						    <li>附加设置</li>
 						    <li>其他设置</li>
+						    <li>分站设置</li>
 					  	</ul>
 					  	<div class="layui-tab-content">
 						    <div class="layui-tab-item layui-show">
@@ -120,6 +120,24 @@
 						                </select>
 						            </div>
 						        </div>
+
+						        <div class="title_bar mb20">
+									内容设置
+								</div>
+
+						    	<div class="layui-form-item">
+						            <label class="layui-form-label">栏目简介</label>
+						            <div class="layui-input-inline">
+						                <textarea name="desc" id="desc"></textarea>
+						            </div>
+						        </div>
+
+						        <div class="layui-form-item">
+			                        <label class="layui-form-label">栏目内容</label>
+			                        <div class="layui-input-inline">
+			                            <textarea name="content" id="content"></textarea>
+			                        </div>
+			                    </div>
 						    </div>
 
 						    <div class="layui-tab-item">
@@ -147,23 +165,6 @@
 						    </div>
 
 						    <div class="layui-tab-item">
-						    	<!--附加设置-->
-						    	<div class="layui-form-item">
-						            <label class="layui-form-label">栏目简介</label>
-						            <div class="layui-input-inline">
-						                <textarea name="desc" id="desc"></textarea>
-						            </div>
-						        </div>
-
-						        <div class="layui-form-item">
-			                        <label class="layui-form-label">栏目内容</label>
-			                        <div class="layui-input-inline">
-			                            <textarea name="content" id="content"></textarea>
-			                        </div>
-			                    </div>
-						    </div>
-
-						    <div class="layui-tab-item">
 						    	<!--其他设置-->
 						    	<div class="layui-form-item">
 				                    <label class="layui-form-label">栏目属性</label>
@@ -186,15 +187,8 @@
 						            <div class="layui-input-inline">
 						                <input class="layui-input" type="text" name="etitle" placeholder="不填写则自动生成">
 						            </div>
+						            {if !$isagent}<font class="font_tip">栏目集权&nbsp;<a href="http://www.yunucms.com/Article/show/id/233.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font>{/if}
 						        </div>
-
-						        <div class="layui-form-item">
-			                        <label class="layui-form-label">地区分站</label>
-			                        <div class="layui-input-inline">
-			                            <input type="checkbox" checked="" name="isarea" lay-skin="switch" lay-filter="switchTest">
-			  
-			                        </div>
-			                    </div>
 
 								<div class="layui-form-item">
 				                    <label class="layui-form-label">是否显示</label>
@@ -220,6 +214,32 @@
 				                    </div>
 				                </div>
 						    </div>
+
+						    <div class="layui-tab-item">
+						    	<!--分站设置-->
+						    	<div class="layui-form-item">
+			                        <label class="layui-form-label" style="width:150px">地区分站</label>
+			                        <div class="layui-input-inline w150">
+			                            <input type="checkbox" checked="" name="isarea" lay-skin="switch" lay-filter="switchTest">
+			                        </div>
+			                    </div>
+
+			                    <div class="layui-form-item">
+			                        <label class="layui-form-label" style="width:150px">栏目URL同步主站</label>
+			                        <div class="layui-input-inline w100">
+			                            <input type="checkbox" name="catmainurl" lay-skin="switch" lay-filter="switchTest">
+			                        </div>
+			                        <font class="font_tip">开启后该栏目链接同步主站URL</font>
+			                    </div>
+
+			                    <div class="layui-form-item">
+			                        <label class="layui-form-label" style="width:150px">内容URL同步主站</label>
+			                        <div class="layui-input-inline w100">
+			                            <input type="checkbox" name="conmainurl" lay-skin="switch" lay-filter="switchTest">
+			                        </div>
+			                        <font class="font_tip">开启后该栏目添加新内容时“附加设置”-“链接同步主站”默认状态为“开启”</font>
+			                    </div>
+						    </div>
 						</div>
 					</div>
 
@@ -235,13 +255,13 @@
 		</div>
 	</div>
 <script type="text/javascript">
-	var option= {toolbars: [[
-            'fullscreen', 'source', '|',
-            'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor',
-            'paragraph', 'fontfamily', 'fontsize', '|',
-            'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
-            'link', 'unlink',
-        ]]};
+    var option= {toolbars: [[
+        'fullscreen', 'source', '|',
+        'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor',
+        'paragraph', 'fontfamily', 'fontsize', '|',
+        'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+        'link', 'unlink',
+    ]],initialFrameHeight:100};
 
     window.UEDITOR_HOME_URL = '__UEDITOR__/';
     window.onload = function() {

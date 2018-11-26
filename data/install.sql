@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50547
 File Encoding         : 65001
 
-Date: 2018-09-30 10:53:07
+Date: 2018-11-15 11:15:35
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -35,7 +35,7 @@ CREATE TABLE `yunu_admin` (
 -- ----------------------------
 -- Records of yunu_admin
 -- ----------------------------
-INSERT INTO `yunu_admin` VALUES ('1', 'admin', 'ebbd202c239d6fc65061ae22a13c1b69', '608', '127.0.0.1', '1538273916', 'admin', '1', '1');
+INSERT INTO `yunu_admin` VALUES ('1', 'admin', 'ebbd202c239d6fc65061ae22a13c1b69', '638', '127.0.0.1', '1542249511', 'admin', '1', '1');
 INSERT INTO `yunu_admin` VALUES ('7', 'xiaoyang', '00da39a5e5ab83b43f2a6749052b3ed4', '3', '127.0.0.1', '1535110117', '新闻', '1', '13');
 
 -- ----------------------------
@@ -3855,7 +3855,7 @@ CREATE TABLE `yunu_browse` (
   `time` int(11) DEFAULT NULL,
   `type` tinyint(1) DEFAULT '1' COMMENT '1PC 2手机',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7365 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7453 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of yunu_browse
@@ -3888,37 +3888,39 @@ CREATE TABLE `yunu_category` (
   `content` text,
   `cover` tinyint(1) DEFAULT '0' COMMENT '0列表  1频道',
   `isarea` tinyint(1) DEFAULT '1' COMMENT '开启地区分站0关闭 1开启',
+  `catmainurl` tinyint(1) DEFAULT '0' COMMENT '栏目URL链接主站点1开始 0关闭',
+  `conmainurl` tinyint(1) DEFAULT '0' COMMENT '内容URL链接主站点1开始 0关闭',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=82 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=83 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of yunu_category
 -- ----------------------------
-INSERT INTO `yunu_category` VALUES ('27', '其他五金', 'qitawujin', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '6', '1', '0', '0', '', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('26', '五金配附件', 'wujinpeifujian', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '5', '1', '0', '0', '', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('20', '关于我们', 'guanyuwomen', 'ABOUT US', '0', '37', '/uploads/image/20170929/9c945b7db7641940eeb9ac0f9e9b303a.jpg', '', '', '', '', '', 'list_page.html', '', '1', '1', '0', '1', '<p>1创立于2000年， 经过多年的不懈努力，公司现已经成为一家专业从事IT产品开发、生产和销售的高科技企业。公司成立几年来，一直致力于工控/服务器机箱及各种非标箱体的开发与生产，产品现广泛应用于计算机网络、监控、安防、广电、通讯和仪器设备等多种行业</p>', '<p>深圳市**科技有限公司位于美百度丽富饶的中国广东省深圳市松岗溪头工业区，主要从事精密模具开发及制造，专业冲压精密五金电子电器零配件等.产品已通过ISO--9001：2000国际标准品质体系认证，以满足各种客户的多层次需求，全体职员本着“以人为本，以质取胜，持续改进，永续经营”的企业生产理念，产品直销日本，美国，欧洲及东南亚其它国家。我们承诺：为客户提供价格合理，质量优良的产品及服务，以期提高市场的竞争力，成为你最值得信赖的供应商。主要产品：机箱，机蕊，汽车音箱，传真机，打印机，复印机，手机，摄像头,外壳及配件，各种精密端子，电子五金配件，各类五金弹片等。<br/></p><p>创立于2000年， 经过多年的不懈努力，公司现已经成为一家专业从事IT产品开发、生产和销售的高科技企业。公司成立几年来，一直致力于工控/服务器机箱及各种非标箱体的开发与生产，产品现广泛应用于计算机网络、监控、安防、广电、通讯和仪器设备等多种行业，公司设计生产的多种标准及非标产品，成功地替代了多种进口产品，为用户极大地降低了成本，也为我们的民族事业做出了我们的一份贡献！</p><p>公司的主要产品大类别有：19″服务器机箱、工控机箱、网络机柜、服务器机柜、非标机柜、各种操作台、电视墙、非线性编辑台、配电柜（强弱电）、各种机箱。我们的产品结构合理，性能稳定可靠，品质优良，品种齐全。</p><p>公司拥有一批专业的工程设计人员，先进的生产设备及可靠的生产能力；我们崇尚先进的企业文化，追求先进的经营理念、管理理念和人才理念，树立团结和谐的大局观、诚实守信的道德观，坚持加强企业两个文明建设，内增员工凝聚力，外塑 企业良好形象 ，不断增强公司的核心竞争力。</p><p>公司将进一步依靠自身优势和雄厚的实力，发挥良好的品牌效应，坚持“以管理和技术的不断进步为顾客提供满意产品”的质量方针，竭力为国内外新老客户提供更优质的产品和服务</p><p>选择我们，就等于你自己办了一个加工厂！</p><p>展望未来，我们充满信心，因为在您的点击支持和合作下，令本公司的业务蒸蒸日上！ 诚邀各界人士光临指导！</p>', '1', '1');
-INSERT INTO `yunu_category` VALUES ('21', '产品展示', 'chanpinzhanshi', '', '0', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '2', '1', '0', '1', '<p>某某有限公司位于美丽富饶的中国广东省深圳市松岗溪头工业区，主要从事精密模具开发及制造，专业冲压精密五金电子电器零配件等.产品已通过ISO--9001：2000国际标准品质体系认证，以满足各种客户的多层次需求，全体职员本着“以人为本，以质取胜，持续改进，永续经营”的企业生产理念，产品直销日本，美国，欧洲及东南亚其它国家。我们承诺：为客户提供价格合理，质量优良的产品及服务，以期提高市场的竞争力，成为你最值得信赖的供应商。主要产品：机箱，机蕊，汽车音箱，传真机，打印机，复印机，手机，摄像头,外壳及配件，各种精密端子，电子五金配件，各类五金弹片等。</p>', '', '1', '1');
-INSERT INTO `yunu_category` VALUES ('22', '建筑装饰五金', 'jianzhuzhuangshiwujin', '', '21', '40', '', '', '', '', '', '', 'list_product_diy.html', 'show_product.html', '1', '1', '0', '0', '<p>建筑五金建筑物或构筑物中装用的金属和非金属制品、配件的总称。一般具有实用和装饰双重效果。</p>', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('23', '机械五金件', 'jixiewujinjian', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '2', '1', '0', '0', '<p>五金：传统的五金制品，也称“小五金”。指金、银、铜、铁、锡五种金属。经人工加工可以制成刀、剑等艺术品或金属器件。现代社会的五金更为广泛，例如五金工具、五金零部件、日用五金、建筑五金以及安防用品等。小五金产品大都不是最终消费品。</p>', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('24', '手动工具', 'shoudonggongju', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '3', '1', '0', '0', '', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('25', '电动工具', 'diandonggongju', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '4', '1', '0', '0', '', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('28', '新闻中心', 'xinwenzhongxin', '', '0', '33', '', '', '', '', '', '', 'list_article.html', 'show_article.html', '3', '1', '0', '1', '', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('29', '客户案例', 'kehuanli', '', '0', '35', '', '', '', '', '', '', 'list_picture.html', 'show_product.html', '4', '1', '0', '1', '<p>这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置</p>', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('30', '联系我们', 'lianxiwomen', '', '0', '37', '', '', '', '', '', '', 'list_page.html', '', '5', '1', '0', '1', '', '<p>联系我们内容</p>', '1', '1');
-INSERT INTO `yunu_category` VALUES ('34', '荣誉证书', 'rongyuzhengshu', '', '0', '34', '/uploads/image/20170928/b28e4b51a2e99393fc66dac3b41cfdbf.jpg', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('35', '建筑五金', 'jianzhuwujin', '', '22', '40', '', '', '', '', '', '', 'list_product_diy.html', 'show_product.html', '0', '1', '0', '0', '<p>建筑五金建筑物或构筑物中装用的金属和非金属制品、配件的总称。一般具有实用和装饰双重效果。</p>', '', '0', '1');
-INSERT INTO `yunu_category` VALUES ('36', '装饰五金', 'zhuangshiwujin', '', '22', '40', '', '', '', '', '', '', 'list_product_diy.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('38', '机械五金', 'jixie', '', '23', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('39', '钳子/夹子', 'qianzijiazi', '', '24', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('40', '扳手工具', 'banshougongju', '', '24', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('41', '金工工具', 'jingonggongju', '', '25', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('42', '木工工具', 'mugonggongju', '', '25', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('43', '砂磨抛光工具', 'shamopaoguanggongju', '', '25', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('44', '钉枪类气动工', 'dingqiangleiqidonggong', '', '26', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('45', '喷枪吹尘枪', 'penqiangchuichenqiang', '', '26', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('46', '紧固类气动工具', 'jinguleiqidonggongju', '', '26', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0');
-INSERT INTO `yunu_category` VALUES ('68', '更多分站', 'map', '', '0', '37', '', '', '', '', '', '', 'list_map.html', '', '0', '1', '0', '0', '', '', '1', '1');
-INSERT INTO `yunu_category` VALUES ('73', '在线留言', 'zaixianliuyan', '', '0', '37', '', '', '', '', '', '', 'list_page_book.html', '', '0', '1', '0', '0', '', '', '0', '1');
+INSERT INTO `yunu_category` VALUES ('27', '其他五金', 'qitawujin', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '6', '1', '0', '0', '', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('26', '五金配附件', 'wujinpeifujian', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '5', '1', '0', '0', '', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('20', '关于我们', 'guanyuwomen', 'ABOUT US', '0', '37', '/uploads/image/20170929/9c945b7db7641940eeb9ac0f9e9b303a.jpg', '', '', '', '', '', 'list_page.html', '', '1', '1', '0', '1', '<p>1创立于2000年， 经过多年的不懈努力，公司现已经成为一家专业从事IT产品开发、生产和销售的高科技企业。公司成立几年来，一直致力于工控/服务器机箱及各种非标箱体的开发与生产，产品现广泛应用于计算机网络、监控、安防、广电、通讯和仪器设备等多种行业</p>', '<p>深圳市**科技有限公司位于美百度丽富饶的中国广东省深圳市松岗溪头工业区，主要从事精密模具开发及制造，专业冲压精密五金电子电器零配件等.产品已通过ISO--9001：2000国际标准品质体系认证，以满足各种客户的多层次需求，全体职员本着“以人为本，以质取胜，持续改进，永续经营”的企业生产理念，产品直销日本，美国，欧洲及东南亚其它国家。我们承诺：为客户提供价格合理，质量优良的产品及服务，以期提高市场的竞争力，成为你最值得信赖的供应商。主要产品：机箱，机蕊，汽车音箱，传真机，打印机，复印机，手机，摄像头,外壳及配件，各种精密端子，电子五金配件，各类五金弹片等。<br/></p><p>创立于2000年， 经过多年的不懈努力，公司现已经成为一家专业从事IT产品开发、生产和销售的高科技企业。公司成立几年来，一直致力于工控/服务器机箱及各种非标箱体的开发与生产，产品现广泛应用于计算机网络、监控、安防、广电、通讯和仪器设备等多种行业，公司设计生产的多种标准及非标产品，成功地替代了多种进口产品，为用户极大地降低了成本，也为我们的民族事业做出了我们的一份贡献！</p><p>公司的主要产品大类别有：19″服务器机箱、工控机箱、网络机柜、服务器机柜、非标机柜、各种操作台、电视墙、非线性编辑台、配电柜（强弱电）、各种机箱。我们的产品结构合理，性能稳定可靠，品质优良，品种齐全。</p><p>公司拥有一批专业的工程设计人员，先进的生产设备及可靠的生产能力；我们崇尚先进的企业文化，追求先进的经营理念、管理理念和人才理念，树立团结和谐的大局观、诚实守信的道德观，坚持加强企业两个文明建设，内增员工凝聚力，外塑 企业良好形象 ，不断增强公司的核心竞争力。</p><p>公司将进一步依靠自身优势和雄厚的实力，发挥良好的品牌效应，坚持“以管理和技术的不断进步为顾客提供满意产品”的质量方针，竭力为国内外新老客户提供更优质的产品和服务</p><p>选择我们，就等于你自己办了一个加工厂！</p><p>展望未来，我们充满信心，因为在您的点击支持和合作下，令本公司的业务蒸蒸日上！ 诚邀各界人士光临指导！</p>', '1', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('21', '产品展示', 'pro/chanpinzhanshi', '', '0', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '2', '1', '0', '1', '<p>某某有限公司位于美丽富饶的中国广东省深圳市松岗溪头工业区，主要从事精密模具开发及制造，专业冲压精密五金电子电器零配件等.产品已通过ISO--9001：2000国际标准品质体系认证，以满足各种客户的多层次需求，全体职员本着“以人为本，以质取胜，持续改进，永续经营”的企业生产理念，产品直销日本，美国，欧洲及东南亚其它国家。我们承诺：为客户提供价格合理，质量优良的产品及服务，以期提高市场的竞争力，成为你最值得信赖的供应商。主要产品：机箱，机蕊，汽车音箱，传真机，打印机，复印机，手机，摄像头,外壳及配件，各种精密端子，电子五金配件，各类五金弹片等。</p>', '', '1', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('22', '建筑装饰五金', 'jianzhuzhuangshiwujin', '', '21', '40', '', '', '', '', '', '', 'list_product_diy.html', 'show_product.html', '1', '1', '0', '0', '<p>建筑五金建筑物或构筑物中装用的金属和非金属制品、配件的总称。一般具有实用和装饰双重效果。</p>', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('23', '机械五金件', 'jixiewujinjian', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '2', '1', '0', '0', '<p>五金：传统的五金制品，也称“小五金”。指金、银、铜、铁、锡五种金属。经人工加工可以制成刀、剑等艺术品或金属器件。现代社会的五金更为广泛，例如五金工具、五金零部件、日用五金、建筑五金以及安防用品等。小五金产品大都不是最终消费品。</p>', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('24', '手动工具', 'shoudonggongju', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '3', '1', '0', '0', '', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('25', '电动工具', 'diandonggongju', '', '21', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '4', '1', '0', '0', '', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('28', '新闻中心', 'news/xinwenzhongxin', '', '0', '33', '', '', '', '', '', '', 'list_article.html', 'show_article.html', '3', '1', '0', '1', '', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('29', '客户案例', 'kehuanli', '', '0', '35', '', '', '', '', '', '', 'list_picture.html', 'show_product.html', '4', '1', '0', '1', '<p>这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置这里是案例简介设置</p>', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('30', '联系我们', 'lianxiwomen', '', '0', '37', '', '', '', '', '', '', 'list_page.html', '', '5', '1', '0', '1', '', '<p>联系我们内容</p>', '1', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('34', '荣誉证书', 'rongyuzhengshu', '', '0', '34', '/uploads/image/20170928/b28e4b51a2e99393fc66dac3b41cfdbf.jpg', '测试11荣誉证书SEO标题', '测试22荣誉证书SEO关键词', '测试33荣誉证书SEO描述', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('35', '建筑五金', 'jianzhuwujin', '', '22', '40', '', '', '', '', '', '', 'list_product_diy.html', 'show_product.html', '0', '1', '0', '0', '<p>建筑五金建筑物或构筑物中装用的金属和非金属制品、配件的总称。一般具有实用和装饰双重效果。</p>', '', '0', '1', '0', '0');
+INSERT INTO `yunu_category` VALUES ('36', '装饰五金', 'zhuangshiwujin', '', '22', '40', '', '', '', '', '', '', 'list_product_diy.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('38', '机械五金', 'jixie', '', '23', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('39', '钳子/夹子', 'qianzijiazi', '', '24', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('40', '扳手工具', 'banshougongju', '', '24', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('41', '金工工具', 'jingonggongju', '', '25', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('42', '木工工具', 'mugonggongju', '', '25', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('43', '砂磨抛光工具', 'shamopaoguanggongju', '', '25', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('44', '钉枪类气动工', 'dingqiangleiqidonggong', '', '26', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('45', '喷枪吹尘枪', 'penqiangchuichenqiang', '', '26', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('46', '紧固类气动工具', 'jinguleiqidonggongju', '', '26', '34', '', '', '', '', '', '', 'list_product.html', 'show_product.html', '0', '1', '0', '0', '', '', '0', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('68', '更多分站', 'map', '', '0', '37', '', '', '', '', '', '', 'list_map.html', '', '0', '1', '0', '0', '', '', '1', '0', '0', '0');
+INSERT INTO `yunu_category` VALUES ('73', '在线留言', 'zaixianliuyan', '', '0', '37', '', '测试11在线留言SEO标题', '测试22在线留言SEO关键词', '测试33在线留言SEO描述', '', '', 'list_page_book.html', '', '0', '1', '0', '0', '', '', '1', '1', '0', '0');
 
 -- ----------------------------
 -- Table structure for yunu_content
@@ -3947,29 +3949,29 @@ CREATE TABLE `yunu_content` (
   `pic` varchar(100) DEFAULT NULL,
   `tag` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=158 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=162 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of yunu_content
 -- ----------------------------
 INSERT INTO `yunu_content` VALUES ('29', '34', '34', '1', '', '', '1', '1', '0', '1', '1506676635', '1506676703', '1', '', '', '', '', '0', '0', '/uploads/image/20170929/76dc0e2d121b17eab37f474a65d171e8.png', '');
-INSERT INTO `yunu_content` VALUES ('30', '29', '35', '案例1', '', '', '210', '1', '0', '1', '1506676928', '1506676947', '1', '', '', '', '', '0', '0', '/uploads/image/20170929/8c181da0f27dc6671dd5ec70453f9117.jpg', '');
+INSERT INTO `yunu_content` VALUES ('30', '29', '35', '案例1', '', '', '211', '1', '0', '1', '1506676928', '1506676947', '1', '', '', '', '', '0', '0', '/uploads/image/20170929/8c181da0f27dc6671dd5ec70453f9117.jpg', '');
 INSERT INTO `yunu_content` VALUES ('31', '29', '35', '案例2', '', '', '220', '2', '0', '1', '1506676948', '1506676979', '1', '', '', '', '', '0', '0', '/uploads/image/20170929/981f6de833848af6d8cb62f6d744e3af.jpg', '');
 INSERT INTO `yunu_content` VALUES ('32', '29', '35', '案例3', '', '', '208', '3', '0', '1', '1506676980', '1506677001', '1', '', '', '', '', '0', '0', '/uploads/image/20170929/9288bda0cb4a34871cd1d91e58acd7ff.jpg', '');
 INSERT INTO `yunu_content` VALUES ('33', '29', '35', '案例4', '', '', '211', '4', '0', '1', '1506677001', '1506677038', '1', '', '', '', '', '0', '0', '/uploads/image/20170929/c85b598ca28b7e8865c8d1ec9aae5dd9.jpg', '');
 INSERT INTO `yunu_content` VALUES ('34', '29', '35', '案例5', '', '', '201', '5', '0', '1', '1506677039', '1506677059', '1', '', '', '', '', '0', '0', '/uploads/image/20170929/9d61483058cc825f4aafd6f3232132c6.jpg', '');
 INSERT INTO `yunu_content` VALUES ('35', '28', '33', '公司顺利通过中国环境标志产品认证', '', '', '151', '1', '0', '1', '1506677106', '1524296681', '1', '', '', '', ',1,', '0', '0', '', '');
-INSERT INTO `yunu_content` VALUES ('36', '28', '33', '五金配件的进口与国产之争', '', '', '121', '2', '0', '1', '1506677158', '1535111006', '1', '', '', '', ',88888888,110000,', '1', '0', '', '');
-INSERT INTO `yunu_content` VALUES ('37', '28', '33', '天津工厂组织后备骨干军训活动', '', '', '109', '3', '0', '1', '1506677190', '1506677213', '1', '', '', '', ',88888888,110000,', '1', '0', '', '');
-INSERT INTO `yunu_content` VALUES ('38', '28', '33', '五金检测中心获资格 小榄锁具“锁”向无阻', '', '', '115', '4', '0', '1', '1506677508', '1508135263', '1', '', '', '', '', '0', '0', '', '产品');
-INSERT INTO `yunu_content` VALUES ('39', '22', '40', '阜平红', '', '', '718', '1', '0', '1', '1506731922', '1536646550', '1', '', '', '', '', '0', '0', '/uploads/image/20170930/79a34d620c72e122acb8f6078dc5922f.jpg', '产品');
-INSERT INTO `yunu_content` VALUES ('40', '22', '40', '新米黄', '', '', '464', '2', '0', '1', '1506731951', '1523514067', '1', '', '', '', '', '0', '0', '/uploads/image/20170930/5502581c5ae3a6d50864d93f86c62c7f.jpg', '');
+INSERT INTO `yunu_content` VALUES ('36', '28', '33', '五金配件的进口与国产之争', '', '', '131', '2', '0', '1', '1506677158', '1535111006', '1', '', '', '', ',88888888,110000,', '1', '0', '', '');
+INSERT INTO `yunu_content` VALUES ('37', '28', '33', '天津工厂组织后备骨干军训活动', '', '', '111', '3', '0', '1', '1506677190', '1506677213', '1', '', '', '', ',88888888,110000,', '1', '0', '', '');
+INSERT INTO `yunu_content` VALUES ('38', '28', '33', '五金检测中心获资格 小榄锁具“锁”向无阻', '', '', '118', '4', '0', '1', '1506677508', '1541488102', '1', '', '', '', '', '1', '0', '', '产品');
+INSERT INTO `yunu_content` VALUES ('39', '22', '40', '阜平红', '', '', '739', '1', '0', '1', '1506731922', '1542177156', '1', '', '', '', '', '0', '0', '/uploads/image/20170930/79a34d620c72e122acb8f6078dc5922f.jpg', '产品');
+INSERT INTO `yunu_content` VALUES ('40', '22', '40', '新米黄', '', '', '519', '2', '0', '1', '1506731951', '1523514067', '1', '', '', '', '', '0', '0', '/uploads/image/20170930/5502581c5ae3a6d50864d93f86c62c7f.jpg', '');
 INSERT INTO `yunu_content` VALUES ('41', '22', '40', '紫水晶', '', '', '306', '3', '0', '1', '1506731983', '1523514058', '1', '', '', '', '', '0', '0', '/uploads/image/20170930/c729a7e40e8f69664d03827832023b86.jpg', '');
 INSERT INTO `yunu_content` VALUES ('42', '22', '40', '金黄锻', '', '', '181', '4', '0', '1', '1506732006', '1523514047', '1', '', '', '', '', '0', '0', '/uploads/image/20170930/df4bd10759e2c97bdf47d87258bb96fd.jpg', '');
 INSERT INTO `yunu_content` VALUES ('43', '22', '40', '玛瑙红', '', '', '58', '5', '0', '1', '1506732030', '1523514034', '1', '', '', '', ',,2,4,,', '0', '0', '/uploads/image/20170930/0150de725a47a260c846caec388a37ce.jpg', '');
 INSERT INTO `yunu_content` VALUES ('44', '22', '40', '阿拉伯绿', '', '', '127', '6', '0', '1', '1506732050', '1523518281', '1', '', '', '', '', '0', '0', '/uploads/image/20170930/86af2b44f21a4e22ba6fa0a035975d03.jpg', '');
 INSERT INTO `yunu_content` VALUES ('45', '22', '40', '人造板', '', '', '466', '7', '10', '1', '1521679266', '1529398843', '1', '', '', '', ',,88888888,,', '0', '0', '/uploads/image/20170930/688a51f93e518e38f4b45a6a274d04ad.jpg', 'asda');
-INSERT INTO `yunu_content` VALUES ('46', '35', '40', 'FHB200-BG', '', '', '165', '8', '0', '1', '1508129374', '1536977574', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/77e467ecd89008cdb7045fc638cc8e1d.jpg', '');
+INSERT INTO `yunu_content` VALUES ('46', '35', '40', 'FHB200-BG', '', '', '180', '8', '0', '1', '1508129374', '1542178841', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/77e467ecd89008cdb7045fc638cc8e1d.jpg', '');
 INSERT INTO `yunu_content` VALUES ('47', '35', '40', '22-FHE-SB', '', '', '159', '9', '2', '1', '1508129404', '1536977555', '1', '', '', '', ',,88888888,,', '0', '0', '/uploads/image/20171016/7f0f09c6dc95a402dd0272041c3f81ec.jpg', '');
 INSERT INTO `yunu_content` VALUES ('48', '36', '40', '23EG', '', '', '158', '10', '3', '1', '1508129426', '1508129439', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/4d886e83e628dd3ab561160d6517c378.jpg', '');
 INSERT INTO `yunu_content` VALUES ('49', '36', '40', '23-SG', '', '', '11', '11', '0', '1', '1508129440', '1533001263', '1', '', '', '', ',88888888,110000,320000,321100,321183,321182,321181,321112,321111,321102,321200,321202,321203,321284,321283,321282,321281,321300,321324,321323,321322,321311,321302,320200,320282,320281,320214,320213,320211,320206,320205,320300,320302,320303,320382,320381,320324,320323,320322,320321,320311,320305,320400,320404,320402,320482,320481,320412,320411,320100,320125,320124,320116,320115,320114,320113,320111,320106,320105,320104,320102,320800,320830,320829,320826,320804,320802,320831,320900,320902,320982,320981,320925,320924,320923,320922,320921,320903,321000,321088,321084,321081,321023,321003,321002,320500,320582,320581,320508,320507,320506,320505,320583,320584,320585,320700,320724,320723,320722,320721,320706,320703,320600,320684,320682,320681,320623,320621,320612,320611,320602,', '0', '0', '/uploads/image/20171016/0eb89d53055a6020098dcfc940b38731.jpg', '');
@@ -3977,8 +3979,8 @@ INSERT INTO `yunu_content` VALUES ('50', '36', '40', 'TZ-02', '', '', '117', '12
 INSERT INTO `yunu_content` VALUES ('51', '36', '40', 'HZ-033', '', '', '18', '13', '0', '1', '1508140545', '1508140880', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/353e188cea14817ff721f4273de66b70.jpg', '');
 INSERT INTO `yunu_content` VALUES ('52', '36', '40', 'HYU-036', '', '', '19', '14', '0', '1', '1508140569', '1508140869', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/ee3a0dd68b76b6ab2bed9d1ea04a8b8c.jpg', '');
 INSERT INTO `yunu_content` VALUES ('53', '36', '40', 'TYZ-89', '', '', '14', '15', '0', '1', '1508140646', '1523242756', '1', '', '', '', ',88888888,', '0', '0', '/uploads/image/20171016/ba166ccb43242480a37a3ad06a9dbc30.jpg', '');
-INSERT INTO `yunu_content` VALUES ('54', '38', '34', 'RE-01', '', '', '126', '17', '0', '1', '1508140699', '1508140937', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/d0b6f4ab3b9ccbcd81b1101f38fce095.jpg', '');
-INSERT INTO `yunu_content` VALUES ('55', '38', '34', 'RE-016', '', '', '117', '18', '0', '1', '1508140722', '1508140926', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/b064a0ca40076606d814a8607447b168.jpg', '');
+INSERT INTO `yunu_content` VALUES ('54', '38', '34', 'RE-01', '', '', '127', '17', '0', '1', '1508140699', '1508140937', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/d0b6f4ab3b9ccbcd81b1101f38fce095.jpg', '');
+INSERT INTO `yunu_content` VALUES ('55', '38', '34', 'RE-016', '', '', '140', '18', '0', '1', '1508140722', '1508140926', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/b064a0ca40076606d814a8607447b168.jpg', '');
 INSERT INTO `yunu_content` VALUES ('56', '38', '34', 'RE-063', '', '', '118', '19', '0', '1', '1508140747', '1508140915', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/74bf8cdccfd687b827aa2bba4d9c5807.jpg', '');
 INSERT INTO `yunu_content` VALUES ('57', '38', '34', 'HUW-561', '', '', '116', '20', '0', '1', '1508140764', '1508140904', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/f018c0422d3206b9def8ef5d219e1b5e.jpg', '');
 INSERT INTO `yunu_content` VALUES ('58', '39', '34', 'YHU2000-HZ05', '', '', '119', '21', '0', '1', '1508140947', '1508140978', '1', '', '', '', '', '0', '0', '/uploads/image/20171016/5295442a0bcc8695dd36cd053aa14399.jpg', '');
@@ -4021,8 +4023,8 @@ INSERT INTO `yunu_content` VALUES ('121', '67', '39', '飒沓', '', '啊是', '5
 INSERT INTO `yunu_content` VALUES ('122', '67', '39', '啊盛大', '', '', '0', '2', '0', '1', '1515227816', '1515227922', '1', '', '', '', '', '0', '0', '', '');
 INSERT INTO `yunu_content` VALUES ('123', '67', '39', '啊盛大', '', '', '0', '3', '0', '1', '1515227924', '1515227962', '1', '', '', '', '', '0', '0', '', '');
 INSERT INTO `yunu_content` VALUES ('137', '41', '34', 'sssssssssssss', null, null, '0', '91', '0', '0', '1544551820', '1520412044', null, null, null, null, '', '0', '0', 'url', null);
-INSERT INTO `yunu_content` VALUES ('135', '28', '33', '古菌方谓菌膳-营养强化型菌类固体饮料', null, null, '0', '12', '0', '0', '0', '1520407682', null, null, null, null, '', '0', '0', '/uploads/image/20171026/1508984195.jpg', null);
-INSERT INTO `yunu_content` VALUES ('136', '28', '33', '古菌方谓菌膳-营养强化型菌类固体饮料', null, null, '0', '13', '0', '0', '0', '1520410609', null, null, null, null, '', '0', '0', 'http://www.yunucms.cn/FileUpload/1508984195.jpg', null);
+INSERT INTO `yunu_content` VALUES ('135', '28', '33', '古菌方谓菌膳-营养强化型菌类固体饮料', null, null, '5', '12', '0', '0', '0', '1520407682', null, null, null, null, '', '0', '0', '/uploads/image/20171026/1508984195.jpg', null);
+INSERT INTO `yunu_content` VALUES ('136', '28', '33', '古菌方谓菌膳-营养强化型菌类固体饮料', '', '', '37', '13', '0', '0', '0', '1540781424', null, '', '', '', '', '0', '0', 'http://www.yunucms.cn/FileUpload/1508984195.jpg', '');
 
 -- ----------------------------
 -- Table structure for yunu_diyfield
@@ -4146,7 +4148,7 @@ INSERT INTO `yunu_diy_article` VALUES ('1', '公司顺利通过中国环境标�
 INSERT INTO `yunu_diy_article` VALUES ('2', '五金配件的进口与国产之争', '本站', '<p>五金件是现代家具中非常关键的组成部分，别看个头小，在一定程度它却可以决定家具的功能和使用寿</p>', '<p>五金件是现代家具中非常关键的组成部分，别看个头小，在一定程度它却可以决定家具的功能和使用寿</p>');
 INSERT INTO `yunu_diy_article` VALUES ('3', '天津工厂组织后备骨干军训活动', '本站', '<p>为加强员工体能锻炼，提升工作激情，天津工厂年初举行了为期20多天的后备骨干军训活动</p>', '<p>为加强员工体能锻炼，提升工作激情，天津工厂年初举行了为期20多天的后备骨干军训活动</p>');
 INSERT INTO `yunu_diy_article` VALUES ('4', '五金检测中心获资格 小榄锁具“锁”向无阻', '本站', '<p>小榄镇在2004年便被国家授予“中国锁具出口基地”称号，然而小榄锁具在出口时，却要送到外地</p>', '<p>小榄镇在2004年便被国家授予“中国锁具出口基地”称号，然而小榄锁具在出口时，却要送到外地</p>');
-INSERT INTO `yunu_diy_article` VALUES ('13', '', '', null, '\n			<p>\n	菌之堂科技（北京）有限公司是一家集食用菌、益生菌产业链的高科技研发、生产、和销售于一体的集团化创新型企业。\n</p>\n<p>\n	依据传统文化，运用大自然中“野生真菌”其独有的药食同源特性，以高科技工艺为手段，打造一个集现代养生、服务产品、文化产品于一体的现代菌物医疗养生产业平台。公司专注于高效聚能利用方面进行产业链优化，突出“野生真菌”药食同源特性“有机、原生态”，可持续性发展品牌效应，大力推进“古菌方•菌疗养生”系列品牌建设。\n</p>\n<p>\n	通过对品牌信息的解读，力求能够在包装上体现品牌理念，提取“品牌时尚、简约轻奢、有机生态、健康养生”的调性关键词，打造古菌方产品独特的养生之道。\n</p>\n<p>\n	<img src=\"http://www.yunucms.cn/FileUpload/1508984195.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508993086.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508988877.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508989227.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508987102.jpg\" alt=\"\" />\n</p>\n<p>\n	<span>整体呈现轻奢简约风，元素以每个方格为一个单位，均匀的分布在包装上，具有秩序的美感和简约的品性，方格的分布又像是传统中药柜，养生的韵味油然而生与金属牌结合，呈现了高端品质，轻奢时尚的视觉调性。</span>\n</p>\n<p>\n	<img src=\"http://www.yunucms.cn/FileUpload/1508988525.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508986064.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508988358.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508985545.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508986021.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508991280.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508991680.jpg\" alt=\"\" />\n</p>\n<p>\n</p>		');
+INSERT INTO `yunu_diy_article` VALUES ('13', '', '', '', '<p><br/></p><p>&nbsp; &nbsp;\n	菌之堂科技（北京）有限公司是一家集食用菌、益生菌产业链的高科技研发、生产、和销售于一体的集团化创新型企业。</p><p>&nbsp; &nbsp;\n	依据传统文化，运用大自然中“野生真菌”其独有的药食同源特性，以高科技工艺为手段，打造一个集现代养生、服务产品、文化产品于一体的现代菌物医疗养生产业平台。公司专注于高效聚能利用方面进行产业链优化，突出“野生真菌”药食同源特性“有机、原生态”，可持续性发展品牌效应，大力推进“古菌方•菌疗养生”系列品牌建设。</p><p>&nbsp; &nbsp;\n	通过对品牌信息的解读，力求能够在包装上体现品牌理念，提取“品牌时尚、简约轻奢、有机生态、健康养生”的调性关键词，打造古菌方产品独特的养生之道。</p><p><img src=\"http://www.yunucms.cn/FileUpload/1508984195.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508993086.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508988877.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508989227.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508987102.jpg\" alt=\"\"/></p><p>整体呈现轻奢简约风，元素以每个方格为一个单位，均匀的分布在包装上，具有秩序的美感和简约的品性，方格的分布又像是传统中药柜，养生的韵味油然而生与金属牌结合，呈现了高端品质，轻奢时尚的视觉调性。</p><p><img src=\"http://www.yunucms.cn/FileUpload/1508988525.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508986064.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508988358.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508985545.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508986021.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508991280.jpg\" alt=\"\"/><img src=\"http://www.yunucms.cn/FileUpload/1508991680.jpg\" alt=\"\"/></p><p><br/></p><p><br/></p>');
 INSERT INTO `yunu_diy_article` VALUES ('12', '', '', null, '\n			<p>\n	菌之堂科技（北京）有限公司是一家集食用菌、益生菌产业链的高科技研发、生产、和销售于一体的集团化创新型企业。\n</p>\n<p>\n	依据传统文化，运用大自然中“野生真菌”其独有的药食同源特性，以高科技工艺为手段，打造一个集现代养生、服务产品、文化产品于一体的现代菌物医疗养生产业平台。公司专注于高效聚能利用方面进行产业链优化，突出“野生真菌”药食同源特性“有机、原生态”，可持续性发展品牌效应，大力推进“古菌方•菌疗养生”系列品牌建设。\n</p>\n<p>\n	通过对品牌信息的解读，力求能够在包装上体现品牌理念，提取“品牌时尚、简约轻奢、有机生态、健康养生”的调性关键词，打造古菌方产品独特的养生之道。\n</p>\n<p>\n	<img src=\"http://www.yunucms.cn/FileUpload/1508984195.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508993086.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508988877.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508989227.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508987102.jpg\" alt=\"\" />\n</p>\n<p>\n	<span>整体呈现轻奢简约风，元素以每个方格为一个单位，均匀的分布在包装上，具有秩序的美感和简约的品性，方格的分布又像是传统中药柜，养生的韵味油然而生与金属牌结合，呈现了高端品质，轻奢时尚的视觉调性。</span>\n</p>\n<p>\n	<img src=\"http://www.yunucms.cn/FileUpload/1508988525.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508986064.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508988358.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508985545.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508986021.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508991280.jpg\" alt=\"\" /><img src=\"http://www.yunucms.cn/FileUpload/1508991680.jpg\" alt=\"\" />\n</p>\n<p>\n</p>		');
 
 -- ----------------------------
@@ -4254,19 +4256,19 @@ CREATE TABLE `yunu_diy_productdiy` (
   `leixing` text,
   `color` text,
   PRIMARY KEY (`conid`)
-) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of yunu_diy_productdiy
 -- ----------------------------
-INSERT INTO `yunu_diy_productdiy` VALUES ('1', '', '<p>1</p>', '<p>1</p>', '金象地板', '竹木地板', '白色');
+INSERT INTO `yunu_diy_productdiy` VALUES ('1', '', '<p>1</p>', '<p>1<img src=\"/uploads/image/20181114/1542177153598184.jpg\" title=\"1542177153598184.jpg\" alt=\"111.jpg\"/></p>', '金象地板', '竹木地板', '白色');
 INSERT INTO `yunu_diy_productdiy` VALUES ('2', '', '<p>1</p>', '<p>1</p>', '其他', '竹木地板', '原木色');
 INSERT INTO `yunu_diy_productdiy` VALUES ('3', '', '<p>1</p>', '<p>1</p>', '久盛地板', '竹木地板', '复古');
 INSERT INTO `yunu_diy_productdiy` VALUES ('4', '', '<p>1</p>', '<p>1</p>', '久盛地板', '竹木地板', '复古');
 INSERT INTO `yunu_diy_productdiy` VALUES ('5', '', '<p>1</p>', '<p>1</p>', '其他', '复合地板', '其他');
 INSERT INTO `yunu_diy_productdiy` VALUES ('6', '', '<p>1</p>', '<p>1</p>', '久盛地板', '竹木地板', '复古');
 INSERT INTO `yunu_diy_productdiy` VALUES ('7', '', '<p>大事发生电风扇第三帝国&#39;大事发生的风格&#39;</p>', '<p>1撒打算的啊盛大啊盛大啊盛大撒发顺丰地方斯蒂芬asdf斯蒂芬sdf&nbsp;</p><p>第三方斯蒂芬sdf稍等发送到发送到</p><p>斯蒂芬斯蒂芬斯蒂芬稍等fsd</p><p>斯蒂芬稍等第三方斯蒂芬</p><p><img src=\"/uploads/image/20180619/1529398837205003.jpg\" title=\"1529398837205003.jpg\" alt=\"1111.jpg\"/></p><p>斯蒂芬稍等</p><p>第三方稍等</p><p>斯蒂芬sd方式的斯蒂芬</p>', '大自然地板', '竹木地板', '原木色');
-INSERT INTO `yunu_diy_productdiy` VALUES ('8', '', '', '<p>测试内容还真得写点什么才好</p>', '大卫地板', '实木地板', '红色');
+INSERT INTO `yunu_diy_productdiy` VALUES ('8', '', '', '<p>测试内容还真得写点什么才好五金件1五金件1五金件1</p>', '大卫地板', '实木地板', '红色');
 INSERT INTO `yunu_diy_productdiy` VALUES ('9', '', '', '<p>测试内容总得写点啥</p>', '大卫地板', '实木地板', '红色');
 INSERT INTO `yunu_diy_productdiy` VALUES ('10', '', '', '<p>23EG</p>', null, null, null);
 INSERT INTO `yunu_diy_productdiy` VALUES ('11', '', '<p>23-SG</p>', '<p>23-SG</p><table><tbody><tr class=\"firstRow\"><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">1</td><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">2</td><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">3</td></tr><tr><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">4</td><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">5</td><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">6</td></tr><tr><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">7</td><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">8</td><td width=\"207\" valign=\"top\" style=\"word-break: break-all;\">9</td></tr></tbody></table><p><br/></p>', '大卫地板', '实木地板', '红色');
@@ -4347,7 +4349,7 @@ CREATE TABLE `yunu_log` (
   `status` tinyint(1) DEFAULT NULL COMMENT '1 成功 2 失败',
   `add_time` int(11) DEFAULT NULL COMMENT '添加时间',
   PRIMARY KEY (`log_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=969 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=999 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of yunu_log
@@ -4365,10 +4367,11 @@ CREATE TABLE `yunu_sitelink` (
   `num` tinyint(5) DEFAULT '0',
   `otype` varchar(10) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否启用',
+  `areapre` tinyint(1) DEFAULT '0' COMMENT '地区前缀',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of yunu_sitelink
 -- ----------------------------
-INSERT INTO `yunu_sitelink` VALUES ('16', '五金件1', '@20', '@21', '10', '_blank', '1');
+INSERT INTO `yunu_sitelink` VALUES ('16', '五金件1', '@20', '@21', '10', '_blank', '1', '1');

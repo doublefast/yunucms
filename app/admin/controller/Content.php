@@ -31,21 +31,45 @@ class Content extends Common
         $where['cid'] = ['IN', $cidlist];  
 
         $Nowpage = input('get.page') ? input('get.page') : 1;
-        $limits = config("paginate.list_rows");
+        $limits = config("sys.admin_list_rows") ? config("sys.admin_list_rows") : 10;//config("paginate.list_rows");
         $count = $content->getContentCount($where);// 获取总条数
         $allpage = intval(ceil($count / $limits));//计算总页面
         $infolist = $content->getContentByWhere($where, $Nowpage, $limits);      
 
+        $homecon = new \app\index\model\ContentModel;
+
         foreach($infolist as $k=>$v){
             $infolist[$k]['isyy'] = strtotime($v['create_time']) > time() ? 1 : 0;
+            $infolist[$k]['time'] = date('Y-m-d', strtotime($v['create_time']));
             $infolist[$k]['gopage'] = $Nowpage;
             $cate = $category->getOneCategory($v['cid']);
             $infolist[$k]['ctitle'] = $cate['title'];
+            //前台URL
+            $indexurl = $homecon->getContentUrl($v, '', '');
+            if (config('sys.url_model') == 3) {
+                $indexurl = $indexurl.'html';
+            }
+            $indexurl = str_replace("&", "&amp;", $indexurl);
+            $infolist[$k]['indexurl'] = $indexurl;
         }  
 
     	$nav = new \org\Leftnav;
+        $maincatlist = [];
+        if (!$cid) {
+            //内容主页面显示栏目分类
+            $topcat = $category->getCategoryByPid(0);
+            foreach ($topcat as $k => $v) {
+                $v['concount'] = $content->getContentCount(['cid'=>$v['id']]);
+                $maincat['parentcat'] = $v;
+                $childcat = $nav::rule($allcate, '--', $v['id']);
+                foreach ($childcat as $k1 => $v1) {
+                    $childcat[$k1]['concount'] = $content->getContentCount(['cid'=>$v1['id']]);
+                }
+                $maincat['childcat'] = $childcat;
+                $maincatlist[] = $maincat;
+            }
+        } 
         $catlist = $nav::rule($allcate);
-
         
         $this->assign([
         	'cate' => $category->getOneCategory($cid),
@@ -55,6 +79,7 @@ class Content extends Common
             'allpage' => $allpage,
             'count' => $count,
             'gopage' => $gopage,
+            'maincatlist' => $maincatlist
        	]);
         if(input('get.page')){
 
@@ -65,32 +90,6 @@ class Content extends Common
 
     public function getarea()
     {
-        /*
-        <ul>
-        {volist name="arealist" id="v"}
-        <li>
-        <label class="diqu_checkbox"><input {if $v['ischk'] }checked{/if} type="checkbox" value="{$v['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v['title']}</span></label>
-        {notempty name="v.node"}
-        <ul>
-        {volist name="v.node" id="v1"}
-        <li>
-        <label class="diqu_checkbox"><input {if $v1['ischk'] }checked{/if} type="checkbox" value="{$v1['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v1['title']}</span></label>
-        {notempty name="v1.node"}
-        <ul>
-        {volist name="v1.node" id="v2"}
-        <label class="diqu_checkbox"><input {if $v2['ischk'] }checked{/if} type="checkbox" value="{$v2['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v2['title']}</span></label>
-        {/volist}
-        </ul>
-        {/notempty}
-        </li>
-        {/volist}
-        </ul>
-        {/notempty}
-        </li>
-        {/volist}   
-        </ul>
-         */
-        
         //获取开启独立内容地区列表
         $area = new AreaModel();
         $arealist = $area->getAllArea(['isopen'=>1]);
@@ -212,6 +211,7 @@ class Content extends Common
         	'catlist' => $catlist,
         	'fieldhtml' => $fieldhtml,
             'arealist' => $arealist,
+            'mainurl' => $cate['conmainurl'] ? 1 : 0,
        	]);
         return $this->fetch();
     }
@@ -606,6 +606,23 @@ class Content extends Common
         return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
     }
 
+    public function copyContent()
+    {
+        $id = input('param.ids');
+        $content = new ContentModel();
+        $flag = $content->copyContent($id);
+        return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
+    }
+
+    public function edittitle()
+    {
+        $id = input('param.id');
+        $title = input('param.title');
+        $db = Db::name('content');
+        $flag = $db->where(['id'=>$id])->setField(['title'=>$title]);
+        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+    }
+
     private function fieldformat($fiellist, $vallist = []){
     	$html = '';
     	$script = '';
@@ -651,14 +668,14 @@ class Content extends Common
                     $html .= '<textarea name="'.$v['field'].'" id="'.$v['field'].'" '.$req.'>'.$val.'</textarea>';
 
                     if (config('sys.api_wyc') && config('sys.api_bdqc')) {
-                    $html .= '<br/><a href="javascript:void(\'\');" class="wyc'.$v['field'].'"> -- 点击一键生成伪原创 -- </a>';
+                    $html .= '<br/><a href="javascript:void(\'\');" class="wyc'.$v['field'].'"> -- 点击一键生成同义词 -- </a>';
                     }
                     $html .= '</div>';
                     $html .= '</div>';
 
                     $ueditor .= 'UE.getEditor("'.$v['field'].'");';
 
-                    //伪原创
+                    //同义词
                     if (config('sys.api_wyc') && config('sys.api_bdqc')) {
                     $script .= '$(".wyc'.$v['field'].'").click(function(){';
                     $script .= '$.ajax({';
@@ -679,7 +696,7 @@ class Content extends Common
                     $script .= 'if (res.state == 200) {';
                     $script .= 'UE.getEditor("'.$v['field'].'").setContent(res.data);';
                     $script .= '}else{';
-                    $script .= 'alert("伪原创API错误："+res.msg);';
+                    $script .= 'alert("同义词API错误："+res.msg);';
                     $script .= '}';
                     $script .= '});';
                     $script .= '});';

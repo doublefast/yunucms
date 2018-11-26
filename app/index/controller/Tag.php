@@ -6,8 +6,8 @@ class Tag extends Common
 {
 	public function index(){
 		$input = input();
-		$input['title'] = htmlspecialchars($input['title']);
-		$this->assign($input);
+		$info['title'] = htmlspecialchars($input['title']);
+		$this->assign($info);
 		return $this->fetch();
 	}
 }

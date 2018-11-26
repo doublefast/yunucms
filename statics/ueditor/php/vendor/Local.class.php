@@ -46,7 +46,14 @@ class Local extends Base{
 			);
 			exit();
 		}
-
+		if (in_array('..', $pathlist)) {
+			return array(
+				'state' => 'ERROR',
+				'error' => 'Folders start from uploads'
+			);
+			exit();
+		}
+		
 		$file_path = $root_path.$file;
 		if( file_exists($file_path) ){
 			$result = @unlink($file_path);

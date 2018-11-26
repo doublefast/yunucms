@@ -16,15 +16,20 @@ function sitelink($con){
                 $url = $catemodel->getCategoryUrl($category);
             }
         }
-
-        $astr = "<a href='".$url."' target='".$v['otype']."' title='".$v['name']."'><strong>".$v['name']."</strong></a>";
-        $v['num'] = $num>0 ? $num : (empty($v['num']) ? -1 : $v['num']);
+        if ($v['areapre'] && session('sys_areainfo')) {
+            $area = session('sys_areainfo');
+            $newname = $area['stitle'].$v['name'];
+        }else{
+            $newname = $v['name'];
+        }
+        $astr = "<a href='".$url."' target='".$v['otype']."' title='".$newname."'><strong>".$newname."</strong></a>";
+        $v['num'] = $num > 0 ? $num : (empty($v['num']) ? -1 : $v['num']);
         $con = preg_replace( '|(<img\b[^>]*?)('.$v['name'].')([^>]*?\=)([^>]*?)('.$v['name'].')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);
         $con = preg_replace( '|(<img\b[^>]*?)('.$v['name'].')([^>]*?>)|U', '$1%&&&&&%$3', $con);
         $con = preg_replace( '|(<a\b[^>]*?)('.$v['name'].')([^>]*?>)(<[^<]*?)('.$v['name'].')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);
 
         $con = str_replace_limit($v['name'], $astr, $con, $v['num']);
-        $con = str_replace('%&&&&&%', $v['name'], $con);
+        $con = str_replace('%&&&&&%', $newname, $con);
     }
     return $con;
 }
@@ -272,8 +277,16 @@ function get_wapurl($url){
             	if ($url == '/') {
             		$url = $url.$area['etitle'].".html";
             	}else{
+                    
             		if ($area['isurl']) {
-	                    $url = '/'.$area['etitle'].'_'.substr($url, 1);
+                        $ctitle = input('ctitle') ? input('ctitle') : '';
+                        //集权模式
+                        if (strpos($ctitle, '/')) {
+                            $newctitle = str_replace_limit("/", "/".$area['etitle']."_", $ctitle, 1);
+                            $url = str_replace($ctitle, $newctitle, $url);
+                        }else{
+                            $url = '/'.$area['etitle'].'_'.substr($url, 1);
+                        }
 	                }
             	}
             }

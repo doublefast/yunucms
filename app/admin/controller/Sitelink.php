@@ -27,13 +27,15 @@ class Sitelink extends Common
                 $success = 0;
                 $error = 0;
                 foreach ($names as $k => $v) {
-                    $param['name'] = $v;
-                    $flag = $Sitelink->insertSitelink($param);
-                    if ($flag) {
-                        $success ++;
-                    }else{
-                        $error ++;
-                    }
+                	if ($v) {
+                		$param['name'] = $v;
+	                    $flag = $Sitelink->insertSitelink($param);
+	                    if ($flag) {
+	                        $success ++;
+	                    }else{
+	                        $error ++;
+	                    }
+                	}
                 }
                 return json(['code' => 1, 'data' => '', 'msg' => "多对一添加结果：成功：$success 失败：$error"]);
             }
@@ -48,15 +50,17 @@ class Sitelink extends Common
                 $success = 0;
                 $error = 0;
                 foreach ($names as $k => $v) {
-                    $param['name'] = $v;
-                    $param['url'] = $urls[$k];
-                    $param['wapurl'] = $wapurls[$k];
-                    $flag = $Sitelink->insertSitelink($param);
-                    if ($flag) {
-                        $success ++;
-                    }else{
-                        $error ++;
-                    }
+                	if ($v && $urls[$k] && $wapurls[$k]) {
+                		$param['name'] = $v;
+	                    $param['url'] = $urls[$k];
+	                    $param['wapurl'] = $wapurls[$k];
+	                    $flag = $Sitelink->insertSitelink($param);
+	                    if ($flag) {
+	                        $success ++;
+	                    }else{
+	                        $error ++;
+	                    }
+                	}
                 }
                 return json(['code' => 1, 'data' => '', 'msg' => "多对多添加结果：成功：$success 失败：$error"]);
             }

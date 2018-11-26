@@ -23,7 +23,11 @@
 			            <label class="layui-form-label">禁用词</label>
 			            <div class="layui-input-inline">
 			                <textarea class="layui-textarea w450" name="disablewords_content" rows="20">{:config('sys.disablewords_content')}</textarea>
+                            {if !$isagent}
+                            <font class="font_tip">注：最新广告法禁用词 [<a href="http://www.yunucms.com/Article/show/id/189.html" target="_blank">点击获取</a>]</font>
+                            {/if}
 			            </div> 
+
 			        </div>
 			   
 					<div class="layui-form-item">

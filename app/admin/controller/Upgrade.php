@@ -33,9 +33,6 @@ class Upgrade extends Common
             if ($password == '') {
                 return json(['code' => 2, 'msg' => '<font class="mcolor2">* 云平台登陆密码不能为空..</font>']);
             }
-            /* if ($vcode == '') {
-                return json(['code' => 2, 'msg' => '<font class="mcolor2">* 验证码不能为空..</font>']);
-            }*/
             $data = [];
             $data['username'] = $username;
             $data['password'] = $password;
@@ -48,6 +45,7 @@ class Upgrade extends Common
                 $coffile = CONF_PATH.DS.'extra'.DS.'cloud.php';
                 $condata['identifier'] = $res['data'];
                 $condata['grant'] = $res['grant'];
+                $condata['agent'] = $res['agent'];
                 setConfigfile($coffile, $condata);
                 // 缓存站点标识
                 if (is_file($coffile)) {
@@ -62,8 +60,7 @@ class Upgrade extends Common
             return json(['code' => 2, 'msg' => isset($res['msg']) ? $res['msg'] : '云平台绑定失败！']);
         }
 
-        $html_status = file_get_contents($this->cloud->apiUrl()."/main.html");
-
+        $html_status = url_get_contents($this->cloud->apiUrl()."/main.html");
         $html_status = $html_status == 'SUCCESS' ? 1 : 0;
         $this->assign('api_url', $this->cloud->apiUrl());
         $this->assign('html_status', $html_status);

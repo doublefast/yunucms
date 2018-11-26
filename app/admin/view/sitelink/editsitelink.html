@@ -51,9 +51,17 @@
                     
                     <div class="layui-form-item">
                         <label class="layui-form-label">是否启用</label>
-                        <div class="layui-input-block">
+                        <div class="layui-input-inline">
                             <input type="checkbox" {if $info.status eq 1}checked{/if} name="status" lay-skin="switch" lay-filter="switchTest">
                         </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">分站自动前缀</label>
+                        <div class="layui-input-inline w100">
+                            <input type="checkbox" {if $info.areapre eq 1}checked{/if} name="areapre" lay-skin="switch" lay-filter="switchTest">
+                        </div>
+                        <font class="font_tip">开启时，进入地区时站内锚文本自动带地区前缀</font>
                     </div>
 
                     <div class="layui-form-item">

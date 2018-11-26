@@ -144,6 +144,9 @@ function str2img($str, $num = 1) {
 
     if (count($matchContent[1]) >= $num) {
         $temp = $matchContent[1][$num -1];
+        if (!stristr($temp, 'http')) {
+            $temp = config('sys.site_protocol').'://'.config('sys.site_url').$temp;
+        }
     }else{
         $temp = "";
     }

@@ -118,6 +118,20 @@ class System extends Common
         }
         return $this->fetch();
     }
+    public function listrows()
+    {
+        $coffile = CONF_PATH.DS.'extra'.DS.'sys.php';
+        if(request()->isAjax()){
+            Config::load($coffile, '', 'sys');
+            $conflist = Config::get('','sys');
+            $param['admin_list_rows'] = input('list_rows');
+
+            setConfigfile($coffile, add_slashes_recursive(array_merge($conflist, $param)));
+
+            return json(['code' => 1, 'data' => '', 'msg' => '更新成功']);
+            exit();
+        }
+    }
     
     public function checkPmjkhq()
     {

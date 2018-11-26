@@ -12,7 +12,13 @@ class ContentModel extends Model
         $tabname = db('diymodel')->where(['id'=>$con['mid']])->value('tabname');
         $info = db('diy_'.$tabname)->where(['conid'=>$con['vid']])->find();
         $info['url'] = $this->getContentUrl($con);
-        return array_merge($con, $info);
+        $retarr = array_merge($con, $info);
+        if (config('sys.wap_mip')) { 
+            foreach ($retarr as $k => $v) {
+                $retarr[$k] = str_replace("<img", '<mip-img', $v);
+            }
+        }
+        return $retarr;
     }
 
     public function getContentArea($con, $area = [])
@@ -42,7 +48,7 @@ class ContentModel extends Model
             }
 
             if ($mainurlopen && $con['mainurl']) {
-                $con['url'] = $this->getYsContentUrl($con);
+                $con['url'] = $this->getContentUrl($con, '', [], false);
             }else{
                 $con['url'] = $this->getContentUrl($con, '', $area);
                 $con['title'] = $misarea ? $area['stitle'].$con['title'] : $con['title'];
@@ -82,7 +88,7 @@ class ContentModel extends Model
         return $infolist;
     }
 
-    public function getContentPrev($cid, $id){
+    public function getContentPrev($cid, $id, $orderby = 'id'){
         $where['id'] = ['LT', $id];
         $where['cid'] = ['EQ', $cid];
         $where['create_time'] = ['LT', time()];
@@ -94,24 +100,24 @@ class ContentModel extends Model
             $where['area'] = [['exp',' is NULL'],['eq',''],['eq',',,'],['LIKE','%,88888888,%'], 'or'];
         }
 
-        $info = $this->where($where)->order('id desc')->find();
-        $infojg = [
-            'infourl'   => '',
-            'infotitle'   => '没有了',
-            'infostr'   => '没有了'
-        ];
+        $info = $this->where($where)->order($orderby." desc")->find();
+        
         if ($info) {
             $info = $this->getContentArea($info);
-            $infojg = [
-                'infourl'   => $info['url'],
-                'infotitle'   => $info['title'],
-                'infostr'   => "<a href='".$info['url']."'>".$info['title']."</a>",
-            ];
+            $info['infourl'] = $info['url'];
+            $info['infotitle'] = $info['title'];
+            $info['infostr'] = "<a href='".$info['url']."'>".$info['title']."</a>";
+        }else{
+            $info['url'] = '';
+            $info['title'] = '没有了';
+            $info['infourl'] = '';
+            $info['infotitle'] = '没有了';
+            $info['infostr'] = '没有了';
         }
-        return $infojg;
+        return $info;
     }
 
-    public function getContentNext($cid, $id){
+    public function getContentNext($cid, $id, $orderby = 'id'){
         $where['id'] = ['GT', $id];
         $where['cid'] = ['EQ', $cid];
         $where['create_time'] = ['LT', time()];
@@ -122,24 +128,23 @@ class ContentModel extends Model
         }else{
             $where['area'] = [['exp',' is NULL'],['eq',''],['eq',',,'],['LIKE','%,88888888,%'], 'or'];
         }
-        $info = $this->where($where)->order('id asc')->find();
-        $infojg = [
-            'infourl'   => '',
-            'infotitle'   => '没有了',
-            'infostr'   => '没有了'
-        ];
+        $info = $this->where($where)->order($orderby.' asc')->find();
         if ($info) {
             $info = $this->getContentArea($info);
-            $infojg = [
-                'infourl'   => $info['url'],
-                'infotitle'   => $info['title'],
-                'infostr'   => "<a href='".$info['url']."'>".$info['title']."</a>",
-            ];
+            $info['infourl'] = $info['url'];
+            $info['infotitle'] = $info['title'];
+            $info['infostr'] = "<a href='".$info['url']."'>".$info['title']."</a>";
+        }else{
+            $info['url'] = '';
+            $info['title'] = '没有了';
+            $info['infourl'] = '';
+            $info['infotitle'] = '没有了';
+            $info['infostr'] = '没有了';
         }
-        return $infojg;
+        return $info;
     }
 
-    public function getContentUrl($con, $cw = '', $area = []) {
+    public function getContentUrl($con, $cw = '', $area = [], $openarea = true) {
 	    $url = '';
 	    //如果是跳转，直接就返回跳转网址
 	    if (!empty($con['jumpurl'])) {
@@ -147,8 +152,10 @@ class ContentModel extends Model
 	    }
 	    $cate = db('category')->where(['id'=>$con['cid']])->find();
 	    $cname = $cate['etitle'] ? $cate['etitle'] : $cate['id'];
-        if (!$area) {
-            $area = session('sys_areainfo');
+        if ($openarea) {
+            if (!$area) {
+                $area = session('sys_areainfo');
+            }
         }
 
 	    switch (config('sys.url_model')) {
@@ -166,7 +173,13 @@ class ContentModel extends Model
 		        $cw = $cw !== '' ? "_".$cw : $cw;
                 $url = $con['etitle'] ? $con['etitle'].$cw : $con['id'].$cw;
                 if ($area) {
-    	    		$url = $urlqz."/".$area['etitle']."_".$cname.'/'.$url.".".config('url_html_suffix');
+                    //集权模式
+                    if (strpos($cname, '/')) {
+                        $cname = str_replace_limit("/", "/".$area['etitle']."_", $cname, 1);
+                    }else{
+                        $cname = $area['etitle']."_".$cname;
+                    }
+    	    		$url = $urlqz."/".$cname.'/'.$url.".".config('url_html_suffix');
                 }else{
                     $url = $urlqz."/".$cname."/".$url.".".config('url_html_suffix');
                 }
@@ -175,32 +188,4 @@ class ContentModel extends Model
         $url = config('sys.site_protocol')."://".$url;
 	    return $url;
 	}
-
-    public function getYsContentUrl($con, $cw = '') {
-        $url = '';
-        //如果是跳转，直接就返回跳转网址
-        if (!empty($con['jumpurl'])) {
-            return $con['jumpurl'];
-        }
-        $cate = db('category')->where(['id'=>$con['cid']])->find();
-        $cname = $cate['etitle'] ? $cate['etitle'] : $cate['id'];
-
-        switch (config('sys.url_model')) {
-            case '1'://动态
-                $urlqz = config('sys.wap_levelurl') ? "m.".config('sys.site_levelurl') : config('sys.site_url');//url前缀
-                $urlcen = config('sys.wap_levelurl') ? '' : '/wap';//url前缀
-                $cw = $cw !== '' ? "&cw=".$cw : $cw;
-                $url = $urlqz."/index.php".$urlcen."/show/index?id=".$con['id'].$cw;
-
-                break;
-            case '3'://伪静态
-                $urlqz = config('sys.wap_levelurl') ? "m.".config('sys.site_levelurl') : config('sys.site_url').'/m';
-                $cw = $cw !== '' ? "_".$cw : $cw;
-                $url = $con['etitle'] ? $con['etitle'].$cw : $con['id'].$cw;
-                $url = $urlqz."/".$cname."/".$url.".".config('url_html_suffix');
-                break;
-        }
-        $url = config('sys.site_protocol')."://".$url;
-        return $url;
-    }
 }

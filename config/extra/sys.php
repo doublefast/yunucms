@@ -9,9 +9,9 @@ return [
 	'site_levelurl'=>'gjm.com',
 	'site_logo'=>'/uploads/image/20170929/fbe0415ab900053aef3846e0077c1ef5.jpg',
 	'site_copyright'=>'<p>TEL：010-88888888   MOB:13888888888  EMAIL：66666666@qq.com</p>
-<p>公司地址：某某市某某区某某路建材产业总部基地</p>
-<p>版权所有：某某建筑建材有限公司    ICP8888888</p>
-<p>Powered by <a href=\"http://www.yunucms.com/\" target=\"_blank\">YUNUCMSv1.1.5</a></p>',
+<p>本软件已进行版权登记，相关权利受法律保护，著作权信息：中华人民共和国国家版权局 计算机软件著作权登记证书：2018SR118857 </p>
+<p>版权所有 © 2018 云优CMS企业网站管理系统（www.yunucms.cn）镇江市云优网络科技有限公司 保留所有权利 Powered by YUNUCMS v1.1.5</p>
+<p>提示说明：本网站数据只供云优CMS功能演示使用，相关数据不具真实性，如需要了解云优CMS的相关功能请访问云优CMS官网</p>',
 	'site_guide'=>'0',
 	'theme_style'=>'default',
 	'url_model'=>'1',
@@ -66,7 +66,7 @@ return [
 	'upload_file_ext'=>'rar,zip,pdf,doc,docx,xls,xlsx,ttf',
 	'upload_image_size'=>'700',
 	'upload_image_ext'=>'jpg,png,gif,ico',
-	'image_watermark'=>'2',
+	'image_watermark'=>'0',
 	'image_watermark_pos'=>'9',
 	'image_watermark_text'=>'测试文字',
 	'image_watermark_text_size'=>'30',
@@ -208,4 +208,6 @@ TOP.1，
 冠军，',
 	'api_mediaapikey'=>'',
 	'api_media'=>'0',
+	'wap_mip'=>'0',
+	'admin_list_rows'=>'10',
 ];

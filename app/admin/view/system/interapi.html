@@ -25,7 +25,7 @@
 			            <div class="layui-input-inline">
 			                <input class="layui-input w300" type="text" name="seo_bdurl" value="{:config('sys.seo_bdurl')}" placeholder="">
 			            </div>
-			            <div class="layui-input-inline"><font class="font_tip">百度主动推送API_URL <a href="http://zhanzhang.baidu.com/college/courseinfo?id=267&page=2#h2_article_title14" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>
+			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip">百度主动推送API_URL <a href="http://help.yunucms.com/737468" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 			        <div class="layui-form-item api_bdts {if config('sys.api_bdts') neq 1}none{/if}">
 			            <label class="layui-form-label">子域名推送</label>
@@ -42,6 +42,7 @@
 			            <div class="layui-input-inline w100">
 			                <input type="checkbox" {if config('sys.api_bdxzh') eq 1}checked{/if} name="api_bdxzh" lay-skin="switch" lay-filter="api_bdxzh">
 			            </div>
+			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip"><a href="http://www.yunucms.com/article/show/id/86.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 			        <div class="layui-form-item api_bdxzh {if config('sys.api_bdxzh') neq 1}none{/if}">
 			            <label class="layui-form-label">推送URL类型</label>
@@ -55,7 +56,7 @@
 			            <div class="layui-input-inline">
 			                <input class="layui-input w300" type="text" name="seo_bdxzhurl" value="{:config('sys.seo_bdxzhurl')}" placeholder="">
 			            </div>
-			            <div class="layui-input-inline"><font class="font_tip">熊掌号主动推送API_URL <a href="http://www.yunucms.com/article/show/id/86.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>
+			            <div class="layui-input-inline"><font class="font_tip">熊掌号主动推送API_URL </font></div>
 			        </div>
 
 					<div class="title_bar mb20">
@@ -64,8 +65,9 @@
 					<div class="layui-form-item ">
 			            <label class="layui-form-label">URL</label>
 			            <div class="layui-input-inline">
-			                <input class="layui-input w700" type="text" name="bdcx_url" value="{:config('sys.bdcx_url')}" placeholder="">
+			                <input class="layui-input" type="text" name="bdcx_url" value="{:config('sys.bdcx_url')}" placeholder="">
 			            </div>
+			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip"><a href="http://www.yunucms.com/Article/show/id/94.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 
 					<div class="title_bar mb20">
@@ -77,6 +79,7 @@
 			            <div class="layui-input-inline w100">
 			                <input type="checkbox" {if config('sys.api_bdqc') eq 1}checked{/if} name="api_bdqc" id="api_bdqc" lay-skin="switch" lay-filter="api_bdqc">
 			            </div>
+			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip"><a href="http://www.yunucms.com/Article/show/id/76.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 			        <div class="layui-form-item api_bdqc {if config('sys.api_bdqc') neq 1}none{/if}">
 			            <label class="layui-form-label">百度APPID</label>
@@ -107,7 +110,7 @@
 			        </div>
 
 			        <div class="title_bar mb20">
-						伪原创API
+						同义词API
 					</div>
 
 					<div class="layui-form-item">
@@ -115,7 +118,7 @@
 			            <div class="layui-input-inline w100">
 			                <input type="checkbox" id="api_wyc" {if config('sys.api_wyc') eq 1}checked{/if} name="api_wyc" lay-skin="switch" lay-filter="api_wyc">
 			            </div>
-			            <div class="layui-input-inline"><font class="font_tip">开启伪原创前需先设置好百度切词接口 <a href="http://www.yunucms.com/article/show/id/85.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>
+			            <div class="layui-input-inline"><font class="font_tip">开启同义词前需先设置好百度切词接口 {if !$isagent}<a href="http://www.yunucms.com/article/show/id/85.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a>{/if}</font></div>
 			        </div>
 
 			        <div class="layui-form-item api_wyc {if config('sys.api_wyc') neq 1}none{/if}">
@@ -159,6 +162,7 @@
 			            <div class="layui-input-inline w100">
 			                <input type="checkbox" {if config('sys.api_xxts') eq 1}checked{/if} name="api_xxts" lay-skin="switch" lay-filter="api_xxts">
 			            </div>
+			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip"><a href="http://www.yunucms.com/article/show/id/92.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 
 			        <div class="title_bar mb20">
@@ -170,7 +174,7 @@
 			            <div class="layui-input-inline w100">
 			                <input type="checkbox" {if config('sys.api_pmjkhq') eq 1}checked{/if} id="api_pmjkhq" name="api_pmjkhq" lay-skin="switch" lay-filter="api_pmjkhq">
 			            </div>
-			            <div class="layui-input-inline"><font class="font_tip">开启排名监控获取前需先在平台添加排名监控查询 </font></div>
+			            <div class="layui-input-inline w700"><font class="font_tip">开启排名监控获取前需先在平台添加排名监控查询 {if !$isagent}<a href="http://www.yunucms.com/article/show/id/91.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a>{/if}</font></div>
 			        </div>
 
 			        <div class="title_bar mb20">
@@ -189,7 +193,7 @@
 			            <div class="layui-input-inline w100">
 			                <input type="checkbox" {if config('sys.api_media') eq 1}checked{/if} id="api_media" name="api_media" lay-skin="switch" lay-filter="api_media">
 			            </div>
-			            <div class="layui-input-inline w450"><font class="font_tip">开启媒体联盟前需先在平台购买相关服务，并填写授权域名:apikey </font></div>
+			            {if !$isagent}<div class="layui-input-inline w450"><font class="font_tip"><a href="http://www.yunucms.com/Article/show/id/119.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 
 					<div class="layui-form-item">

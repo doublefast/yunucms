@@ -47,6 +47,16 @@ class Cloud {
         return $this;
     }
 
+    public function record($site_title, $version = '') {
+        $data['timestamp'] = time();
+        $data['domain'] = $_SERVER['HTTP_HOST'];
+        $data['identifier'] = $this->identifier;
+        $data['site_name'] = $site_title;
+        $data['version'] = $version;
+        $this->data = $data;
+        return $this;
+    }
+
     public function api($api) {
         $this->api = self::api_url.'/index/name/'.$api;
         return $this->run($this->data);

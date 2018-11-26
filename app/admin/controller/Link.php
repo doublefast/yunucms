@@ -24,6 +24,7 @@ class Link extends Common
             }
             $infolist[$k]['wz'] = $wz;
         }
+
         $this->assign('infolist', $infolist);
         return $this->fetch();
     }
@@ -101,6 +102,16 @@ class Link extends Common
             $flag = $db->where(['id'=>$id])->setField(['status'=>1]);
             return json(['code' => 0, 'data' => $flag['data'], 'msg' => '已开启']);
         }
+    }
+
+    public function movearea()
+    {
+        $ids = input('param.ids');
+        $aid = input('param.aid');
+        $aid = $aid ? ','.$aid.',' : '';
+        $db = Db::name('Link');
+        $flag = $db->where('id', 'IN', $ids."0")->setField(['area'=>$aid]);
+        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
     }
 
     public function sortlink()

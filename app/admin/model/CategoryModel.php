@@ -63,6 +63,8 @@ class CategoryModel extends Model
             $param['isarea'] = array_key_exists("isarea", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $param['target'] = array_key_exists("target", $param) ? 1 : 0;
+            $param['catmainurl'] = array_key_exists("catmainurl", $param) ? 1 : 0;
+            $param['conmainurl'] = array_key_exists("conmainurl", $param) ? 1 : 0;
 
             $result = $this->validate('Category')->allowField(true)->save($param);
             if(false === $result){            
@@ -125,6 +127,8 @@ class CategoryModel extends Model
             $param['isarea'] = array_key_exists("isarea", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $param['target'] = array_key_exists("target", $param) ? 1 : 0;
+            $param['catmainurl'] = array_key_exists("catmainurl", $param) ? 1 : 0;
+            $param['conmainurl'] = array_key_exists("conmainurl", $param) ? 1 : 0;
             
             $result =  $this->validate('Category')->allowField(true)->save($param, ['id' => $param['id']]);
             if(false === $result){            
@@ -150,6 +154,15 @@ class CategoryModel extends Model
         }catch( PDOException $e){
             return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
         }
+    }
+    public function getCategoryByPid($pid)
+    {
+        $groupid = db('admin')->where(['id'=>session('admin_uid')])->value('groupid');
+        $role = new UserType();
+        $catlist = $role->getCatlistById($groupid);
+
+        $where = $catlist ? ['id'=>['IN',$catlist],'pid'=>$pid] : ['pid'=>$pid];
+        return $this->where($where)->order('sort asc')->select();
     }
 
     public function getChildsId($cate, $pid, $flag = 0) {

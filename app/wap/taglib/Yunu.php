@@ -25,6 +25,10 @@ class Yunu extends TagLib {
 			'attr'	=> 'type,limit,orderby',
 			'close'	=> 1,
 		),
+		'info'	=> array(//单条内容
+			'attr'	=> 'conid,type,orderby',
+			'close'	=> 1,
+		),
 		'block'	=> array(//自定义块
 			'attr'	=> 'name,infolen,textflag',
 			'close'	=> 0,
@@ -83,6 +87,9 @@ class Yunu extends TagLib {
 		}
 		if ($attr['name'] == 'wapurl') {
 			$confstr = get_wapurl(); //获取手机版当前页面URL
+		}
+		if ($attr['name'] == 'pcurl') {
+			$confstr = get_pcurl($_SERVER['REQUEST_URI']); //获取手机版当前页面URL
 		}
 		$confstr = update_str_dq($confstr, config('sys.sys_area'));
 
@@ -334,6 +341,40 @@ str;
 		$str .= $content;
 		$str .='<?php endforeach;?>';
 		return $str1.$str;
+	}
+
+	public function tagInfo($attr, $content) {
+		$conid = !isset($attr['conid']) || $attr['conid'] == '' ? -1 : $attr['conid'];
+		$type = empty($attr['type']) ? '' : $attr['type'];
+		$orderby = empty($attr['orderby']) ? "id" : $attr['orderby'];
+
+ 		$str = <<<str
+<?php
+		\$_conid = $conid;
+		\$_type = "$type";
+		\$_orderby = "$orderby";
+
+
+		\$_condata = db('content')->where(['id'=>\$_conid])->find();
+		if (\$_condata) {
+			\$_content = new app\wap\model\ContentModel();
+			if (\$_type == 'prev' || \$_type == 'next') {
+				if (\$_type == 'prev') {
+					\$_condata = \$_content->getContentPrev(\$_condata['cid'], \$_condata['id'], \$_orderby);
+				}else{
+					\$_condata = \$_content->getContentNext(\$_condata['cid'], \$_condata['id'], \$_orderby);
+				}
+				\$_condata = is_object(\$_condata) ? \$_condata->toarray() : \$_condata;
+			}else{
+				\$_condata = \$_content->getContentArea(\$_condata);
+			}
+		}
+		\$info = \$_condata;
+		\$info = update_str_dq(\$info, config('sys.sys_area'));
+?>		
+str;
+		$str .= $content;
+		return $str;
 	}
 
 	public function tagForm($attr, $content) {

@@ -147,6 +147,30 @@ class ContentModel extends Model
         }
     }
 
+    public function copyContent($id)
+    {
+        try{
+            $id = strpos($id,',') ?  $id."0" : $id;
+            $list = $this->where('id', 'IN', $id)->select();
+            $diymodeldb = DB::name('diymodel');
+            foreach ($list as $k => $v) {
+                $condata = $this->getOneContent($v['id']);
+                $tabname = $diymodeldb->where(['id'=>$condata['mid']])->value('tabname');
+                unset($condata['id']);
+                unset($condata['conid']);
+                $condata['vid'] = DB::name('diy_'.$tabname)->strict(false)->insertGetId($condata);
+                $condata['create_time'] = strtotime($condata['create_time']);
+                $condata['update_time'] = time();
+                $condata['title'] = $condata['title']."_COPY";
+                $result = $this->validate('Content')->strict(false)->insertGetId($condata);
+            }
+
+            return ['code' => 1, 'data' => '', 'msg' => '复制内容成功'];
+        }catch( PDOException $e){
+            return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
+        }
+    }
+
     public function delContentByCid($cidlist)
     {
         try{

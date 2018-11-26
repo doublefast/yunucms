@@ -17,6 +17,10 @@ class Yunu extends TagLib {
 			'attr'	=> 'fid,orderby,top,pagesize,limit',
 			'close'	=> 1,
 		),
+		'info'	=> array(//单条内容
+			'attr'	=> 'conid,type,orderby',
+			'close'	=> 1,
+		),
 		'link'	=> array(//友情链接
 			'attr'	=> 'type,flag,limit,orderby',
 			'close'	=> 1,
@@ -387,6 +391,39 @@ str;
 
 	}
 
+	public function tagInfo($attr, $content) {
+		$conid = !isset($attr['conid']) || $attr['conid'] == '' ? -1 : $attr['conid'];
+		$type = empty($attr['type']) ? '' : $attr['type'];
+		$orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
+
+ 		$str = <<<str
+<?php
+		\$_conid = $conid;
+		\$_type = "$type";
+		\$_orderby = "$orderby";
+
+		\$_condata = db('content')->where(['id'=>\$_conid])->find();
+		if (\$_condata) {
+			\$_content = new app\index\model\ContentModel();
+			if (\$_type == 'prev' || \$_type == 'next') {
+				if (\$_type == 'prev') {
+					\$_condata = \$_content->getContentPrev(\$_condata['cid'], \$_condata['id'], \$_orderby);
+				}else{
+					\$_condata = \$_content->getContentNext(\$_condata['cid'], \$_condata['id'], \$_orderby);
+				}
+				\$_condata = is_object(\$_condata) ? \$_condata->toarray() : \$_condata;
+			}else{
+				\$_condata = \$_content->getContentArea(\$_condata);
+			}
+		}
+		\$info = \$_condata;
+		\$info = update_str_dq(\$info, config('sys.sys_area'));
+?>		
+str;
+		$str .= $content;
+		return $str;
+	}
+
 	public function tagLink($attr, $content) {
 		$type = empty($attr['type']) ? '' : $attr['type'];
 		$orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
@@ -574,8 +611,9 @@ str;
 			} else{
 				if(\$autoindex >= \$_limit) break;
 			}
-			\$nav['target'] = \$nav['target'] ? '_blank' : '_self';
-			\$nav['url'] = \$_category->getCategoryUrl(\$nav, []);
+			\$nav['target'] = \$nav['target'] == 1 ? '_blank' : '_self';
+			\$navmainurl = \$nav['catmainurl'] ? false : true;
+			\$nav['url'] = \$_category->getCategoryUrl(\$nav, [] , \$navmainurl);
 
 			\$nav = update_str_dq(\$nav, config('sys.sys_area'));
 

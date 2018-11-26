@@ -15,6 +15,7 @@ class SitelinkModel extends Model
     public function insertSitelink($param)
     {
         $param['status'] = array_key_exists("status", $param) ? 1 : 0;
+        $param['areapre'] = array_key_exists("areapre", $param) ? 1 : 0;
         try{
             $result = $this->strict(false)->insertGetId($param);
             if(false === $result){            
@@ -30,6 +31,7 @@ class SitelinkModel extends Model
     public function editSitelink($param)
     {
         $param['status'] = array_key_exists("status", $param) ? 1 : 0;
+        $param['areapre'] = array_key_exists("areapre", $param) ? 1 : 0;
         try{
             $result =  $this->allowField(true)->save($param, ['id' => $param['id']]);
             if(false === $result){            

@@ -84,10 +84,84 @@ class Master extends Controller {
 
         $cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : $attr['cid'];
         $titlelen = empty($attr['titlelen']) ? 0 : intval($attr['titlelen']);
-        $orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
+
+        if (empty($attr['orderby'])) {
+            $orderby = "id DESC";
+        }else{
+            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
+                $orderby = $attr['orderby'];
+            }else{
+                $orderby = "id DESC";
+            }
+        }
+        
         $keyword = empty($attr['keyword']) ? '' : trim($attr['keyword']);
         $limit = empty($attr['limit']) ? null : $attr['limit'];
         $pages = empty($attr['pages']) || $attr['pages'] < 1 ? 1 : intval($attr['pages']);
+        $flag = empty($attr['flag']) ? '' : intval($attr['flag']);
+        $top = empty($attr['top']) ? '' : intval($attr['top']);
+
+        $_cid = $cid;
+        $_keyword = $keyword;
+        $_flag = $flag;
+        $_top = $top;
+        $_tag = $tag;
+
+        if($_cid == -1) $_cid = input('cid');
+        if ($_cid > 0 || substr($_cid, 0, 1) == '$') {
+            $_category = new \app\index\model\CategoryModel();
+            $_ids = $_category->getChildsId($_category->getCategory(), $_cid, true);
+            $_where = array('create_time' => array('LT', time()), 'cid'=> array('IN', $_ids));
+        }else {
+            $_where = array('create_time' => array('LT', time()));
+        }
+        if ($_keyword != '') {
+            $_where['title'] = array('LIKE','%'.$_keyword.'%');
+        }
+
+        if ($_flag) {
+            $_where['istop'] = $_flag;
+        }
+        if ($_top) {
+            $_where['top'] = $_top;
+        }
+
+        $_where['create_time'] = ['LT', time()];
+
+        $_infolist = db('content')->where($_where)->order("$orderby")->limit(($pages-1)*$limit,$limit)->select();
+
+        $_content = new \app\index\model\ContentModel();
+
+        foreach ($_infolist as $k => $list) {
+            $_infolist[$k] = $_content->getContentByCon($list);
+            $_infolist[$k]['alltitle'] = $list['title'];
+            $_infolist[$k]['url'] = $_content->getContentArea($list)['url'];
+            if($titlelen) $_infolist[$k]['title'] = str2sub($list['title'], $titlelen, 0);
+        }
+
+        $json = $this->info($_infolist !== null);
+        $json['data'] = $_infolist;
+        arr_pic_add_url($json);
+        return $attr['callback'] === null? $json : jsonp($json);
+    }
+
+    public function api_listmip() {
+        $attr = input();
+
+        $cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : $attr['cid'];
+        $titlelen = empty($attr['titlelen']) ? 0 : intval($attr['titlelen']);
+        if (empty($attr['orderby'])) {
+            $orderby = "id DESC";
+        }else{
+            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
+                $orderby = $attr['orderby'];
+            }else{
+                $orderby = "id DESC";
+            }
+        }
+        $keyword = empty($attr['keyword']) ? '' : trim($attr['keyword']);
+        $limit = empty($attr['limit']) ? null : $attr['limit'];
+        $pages = empty($attr['pageNum']) || $attr['pageNum'] < 1 ? 1 : intval($attr['pageNum']);
         $flag = empty($attr['flag']) ? '' : intval($attr['flag']);
         $top = empty($attr['top']) ? '' : intval($attr['top']);
         // $tag = empty($attr['tag']) ? '' : trim($attr['tag']);
@@ -116,22 +190,6 @@ class Master extends Controller {
         if ($_top) {
             $_where['top'] = $_top;
         }
-        // if ($_tag != '') {
-        //     if (isset($content)){
-        //         $_tagstr = $content['tag'];
-        //         $_taglist = explode('，',$_tagstr);
-        //         if (count($_taglist) > 1) {
-        //             $_tagarr = array();
-        //             foreach ($_taglist as $_k => $_v) {
-        //                 $_tagarr[] = ['LIKE','%'.$_v.'%'];
-        //             }
-        //             $_tagarr[] = 'or';
-        //             $_where['tag'] = $_tagarr;
-        //         }else{
-        //             $_where['tag'] = ['LIKE','%'.$_tagstr.'%'];
-        //         }
-        //     }
-        // }
 
         $_where['create_time'] = ['LT', time()];
 
@@ -144,12 +202,22 @@ class Master extends Controller {
             $_infolist[$k]['alltitle'] = $list['title'];
             $_infolist[$k]['url'] = $_content->getContentArea($list)['url'];
             if($titlelen) $_infolist[$k]['title'] = str2sub($list['title'], $titlelen, 0);
+            $_infolist[$k]['create_time'] = date('Y-m-d H:i:s', $list['create_time']);
+            $_infolist[$k]['update_time'] = date('Y-m-d H:i:s', $list['update_time']);
+            $desc = isset($list['desc']) ? $list['desc'] : '';
+            $desc = str_replace("&nbsp;", '', $desc);
+            $desc = strip_tags($desc);
+            $_infolist[$k]['desc'] = $desc;
         }
 
         $json = $this->info($_infolist !== null);
         $json['data'] = $_infolist;
         arr_pic_add_url($json);
-        return $attr['callback'] === null?$json:jsonp($json);
+        $res['status'] = 0;
+        $res['data'] = [];
+        $res['data']['items'] = $json['data'];
+        $res['data']['isEnd'] = count($json['data']) < $limit ? 1 : 0;
+        return $attr['callback'] === null?$res:jsonp($res);
     }
     /**
      * [link 友情链接]
@@ -162,7 +230,15 @@ class Master extends Controller {
         $attr = input();
 
         $type = empty($attr['type']) ? '' : $attr['type'];
-        $orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
+        if (empty($attr['orderby'])) {
+            $orderby = "id DESC";
+        }else{
+            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
+                $orderby = $attr['orderby'];
+            }else{
+                $orderby = "id DESC";
+            }
+        }
         $limit = empty($attr['limit']) ? null : $attr['limit'];
         $flag = empty($attr['flag']) ? '' : intval($attr['flag']);
 
@@ -202,7 +278,15 @@ class Master extends Controller {
         $attr = input();
 
         $type = empty($attr['type']) ? '' : $attr['type'];
-        $orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
+        if (empty($attr['orderby'])) {
+            $orderby = "id DESC";
+        }else{
+            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
+                $orderby = $attr['orderby'];
+            }else{
+                $orderby = "id DESC";
+            }
+        }
         $limit = empty($attr['limit']) ? null : $attr['limit'];
 
         $_type = $type;

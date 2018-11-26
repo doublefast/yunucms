@@ -55,9 +55,15 @@
                         <tbody id="article_list"></tbody>
 					</table>
 				</div>
-                <div id="AjaxPage" style="float: right;margin-top:-10px; "></div>
-                <div class="CountPage" style="float: right;clear:both; margin-right:15px; margin-top:-5px;">
-                    共 {$count} 条 <span id="allpage"></span>
+                <div id="AjaxPage" style="float: right;margin-top:-10px;margin-left:10px;"></div>
+                <div class="CountPage" style="float: right; line-height:30px;">
+                    共 {$count} 条&nbsp;&nbsp;
+                    <select name="list_rows" id="list_rows" class="list_rows">
+                        <option value="10" {if config('sys.admin_list_rows') eq 10}selected{/if}>10 条/页</option>
+                        <option value="20" {if config('sys.admin_list_rows') eq 20}selected{/if}>20 条/页</option>
+                        <option value="50" {if config('sys.admin_list_rows') eq 50}selected{/if}>50 条/页</option>
+                        <option value="100" {if config('sys.admin_list_rows') eq 100}selected{/if}>100 条/页</option>
+                    </select>            
                 </div>
                 <div style="clear:both;"></div>
 			</div>
@@ -99,6 +105,20 @@
                 $(this).addClass('checked');
                 $(this).children('input:checkbox').prop("checked", true);
             }
+        });
+
+        $(document).on('change','#list_rows', function () {
+            var list_rows = $(this).val();
+            $.ajax({
+                url: '{:url("system/listrows")}',
+                dataType: "json",
+                data:{'list_rows':list_rows},
+                type: "POST",
+                success: function(data){
+                    location.href = location.href;
+                    
+                }
+            }); 
         });
 
     });

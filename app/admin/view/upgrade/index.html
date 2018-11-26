@@ -15,14 +15,14 @@
                 </div>
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
 
-
+                {if !$isagent}
                 <div class="ui_prompt">
                     <p class="ui_prompt_tit">温馨提示</p>
                     <p>1、云平台地址 <a href="http://www.yunucms.com" target="_blank" class="mcolor">http://www.yunucms.com</a></p>
                     <p>2、通信正常后可继续操作</p>
                     <p>3、只有绑定了官网云平台帐号，授权认证后可使用在线升级服务</p>
                 </div> 
-
+                {/if}
 
 				<div class="layui-form-item">
                     <label class="layui-form-label">云平台</label>
@@ -147,7 +147,7 @@ layui.use(['form','common'], function(){
 
     $('.cloudBind').on('click', function() {
         layer.open({
-            title:'绑定云平台 / <a href="http://www.yunucms.com/index/index/is_register/1?domain={$_SERVER["SERVER_NAME"]}" target="_blank" class="mcolor">注册云平台</a>',
+            title:'绑定云平台 {if !$isagent}/ <a href="http://www.yunucms.com/index/index/is_register/1?domain={$_SERVER["SERVER_NAME"]}" target="_blank" class="mcolor">注册云平台</a>{/if}',
             id:'popLoginBox',
             area:'380px',
             content:$('#popCloudBind').html(),

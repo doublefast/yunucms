@@ -427,17 +427,21 @@ function mysqlupdate($sql_path, $old_prefix="", $new_prefix="", $separator=";\n"
 }
 
 function send_post($url, $post_data, $header = 'x-www-form-urlencoded') {    
-    $postdata = http_build_query($post_data);    
-    $options = array(    
-        'http' => array(    
-            'method' => 'POST',    
-            'header' => 'Content-type:application/'.$header,    
-            'content' => $postdata,    
-            'timeout' => 15 * 60 // 超时时间（单位:s）    
-        )    
-    );    
-    $context = stream_context_create($options);    
-    $result = file_get_contents($url, false, $context);             
+    $heads = get_headers($url, 1);
+    $result = '';
+    if (stristr($heads[0], "200") && stristr($heads[0], "OK")) {
+        $postdata = http_build_query($post_data);    
+        $options = array(    
+            'http' => array(    
+                'method' => 'POST',    
+                'header' => 'Content-type:application/'.$header,    
+                'content' => $postdata,    
+                'timeout' => 15 * 60 // 超时时间（单位:s）    
+            )    
+        );    
+        $context = stream_context_create($options);    
+        $result = file_get_contents($url, false, $context);             
+    }
     return $result;
 }
 //伪原创
@@ -445,6 +449,15 @@ function create_appsecret($appid, $apikey) {
     return md5($appid.$apikey);
 }
 
+//根据URL获取内容
+function url_get_contents($url) {
+    $heads = get_headers($url, 1);
+    $html = "";
+    if (stristr($heads[0], "200") && stristr($heads[0], "OK")) {
+        $html = file_get_contents($url);
+    }
+    return $html;
+}
 
 //获取首页URL
 function getHomeurl($area){

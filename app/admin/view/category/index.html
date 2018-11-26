@@ -16,6 +16,7 @@
                         <li><a href="{:url('batchaddcategory')}">新增</a></li>
                         <li><a class="do-action" id="doDelete">删除</a></li>
                         <li><a class="do-action doTemplate">设置模板</a></li>
+                        <li><a class="do-action doTdk">设置TDK</a></li>
                         <li><a class="do-action doArea" rel="1">开启地区</a></li>
                         <li><a class="do-action doArea" rel="0">关闭地区</a></li>
                         <li><a class="do-action doNav" rel="1">开启主导航</a></li>
@@ -23,7 +24,7 @@
                     </ul>
                 </div>
             
-                <div class="none" id="template" style="padding:20px;">
+                <div class="none" id="template" style="padding-top:20px;">
                     <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
                         <div class="layui-form-item">
                             <label class="layui-form-label">封面页模版</label>
@@ -58,6 +59,37 @@
                                     <option value="{$v}">{$v}</option>
                                     {/volist}
                                 </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="none" id="tdk" style="padding-top:20px;">
+                    <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO标题</label>
+                            <div class="layui-input-inline w450">
+                                <input class="layui-input w450" type="text" name="seo_title" id="seo_title" placeholder="SEO标题" >
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO关键词</label>
+                            <div class="layui-input-inline w450">
+                                <input class="layui-input w450" type="text" name="seo_keywords" id="seo_keywords" placeholder="SEO关键词" >
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO描述</label>
+                            <div class="layui-input-inline w450">
+                                <textarea name="seo_desc" id="seo_desc" placeholder="SEO描述" class="layui-textarea w450"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">&nbsp;</label>
+                            <div class="layui-input-inline w450">
+                                <font class="font_tip">注：{栏目名称}为栏目通配符，[prov_or_city]为地区通配符，可插入至标题、关键词、描述里</font>
                             </div>
                         </div>
                     </form>
@@ -248,6 +280,43 @@
                         url: '{:url("dotemplate")}',
                         dataType: "json",
                         data:{'ids':c, 'tpl_cover':tpl_cover, 'tpl_list':tpl_list, 'tpl_show':tpl_show},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                });
+                                layer.close(diqulay);
+                            }
+                        }
+                    }); 
+                }
+            });
+        }
+    });
+
+    //批量设置TDK
+    $(document).on('click','.doTdk', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            var diqulay = layer.open({
+                title: '批量设置TDK',
+                type: 1,
+                content: $("#tdk"),
+                skin: 'layer_diqu',
+                area: ['630px','380px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                    var seo_title = $('#seo_title').val();
+                    var seo_keywords = $('#seo_keywords').val();
+                    var seo_desc = $('#seo_desc').val();
+
+                    $.ajax({
+                        url: '{:url("dotdk")}',
+                        dataType: "json",
+                        data:{'ids':c, 'seo_title':seo_title, 'seo_keywords':seo_keywords, 'seo_desc':seo_desc},
                         type: "POST",
                         success: function(data){
                             if(data.code == 1){

@@ -6,7 +6,7 @@
 			{foreach name="menu" item="v"}
 			<li><a href="{$v.tophref}" {if $menu_child.id eq $v.id}class="v-link-active"{/if}><i class="{$v.icon}"></i>{$v.title}</a></li>
 			{/foreach}
-            {if strpos($copy_sysname, '云优') !== false}
+            {if !$isagent}
             <li><a href="http://www.yunucms.com/handbook/" target="_blank"><i class="fa fa-book"></i>标签手册</a></li>
             <li><a href="http://www.yunucms.com/Help/index.html" target="_blank"><i class="fa fa-book"></i>帮助手册</a></li>
             {/if}

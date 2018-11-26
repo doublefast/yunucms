@@ -15,15 +15,20 @@ function sitelink($con){
                 $url = $catemodel->getCategoryUrl($category);
             }
         }
-
-        $astr = "<a href='".$url."' target='".$v['otype']."' title='".$v['name']."'><strong>".$v['name']."</strong></a>";
-        $v['num'] = $num>0 ? $num : (empty($v['num']) ? -1 : $v['num']);
+        if ($v['areapre'] && session('sys_areainfo')) {
+            $area = session('sys_areainfo');
+            $newname = $area['stitle'].$v['name'];
+        }else{
+            $newname = $v['name'];
+        }
+        $astr = "<a href='".$url."' target='".$v['otype']."' title='".$newname."'><strong>".$newname."</strong></a>";
+        $v['num'] = $num > 0 ? $num : (empty($v['num']) ? -1 : $v['num']);
         $con = preg_replace( '|(<img\b[^>]*?)('.$v['name'].')([^>]*?\=)([^>]*?)('.$v['name'].')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);
         $con = preg_replace( '|(<img\b[^>]*?)('.$v['name'].')([^>]*?>)|U', '$1%&&&&&%$3', $con);
         $con = preg_replace( '|(<a\b[^>]*?)('.$v['name'].')([^>]*?>)(<[^<]*?)('.$v['name'].')([^>]*?>)|U', '$1%&&&&&%$3$4%&&&&&%$6', $con);
 
         $con = str_replace_limit($v['name'], $astr, $con, $v['num']);
-        $con = str_replace('%&&&&&%', $v['name'], $con);
+        $con = str_replace('%&&&&&%', $newname, $con);
     }
     return $con;
 }
@@ -199,4 +204,36 @@ function getTagurl($tag){
     }
     $url = config('sys.site_protocol')."://".$url;
     return $url;
+}
+function get_pcurl($url){
+    $area = session('sys_areainfo');
+    switch (config('sys.url_model')) {
+        case '1'://动态
+            $url = $url == "/index.php/wap" ? '/' : $url;
+            if (config('sys.wap_levelurl')) {
+                $url = str_replace('/index.php/', '/index.php/index/', $url);
+            }else{
+                $url = str_replace('/index.php/wap/', '/index.php/index/', $url);
+            }
+
+            if ($area['isurl']) {
+                $url = config('sys.site_protocol')."://".$area['etitle'].'.'.config('sys.site_levelurl').$url;
+            }else{
+                $url = config('sys.site_protocol')."://".config('sys.site_url').$url;
+            }
+            break;
+        case '3'://伪静态
+            if (!config('sys.wap_levelurl')) {
+                $url = str_replace('/m/', '/', $url);
+            }
+            if ($area['isurl']) {
+                $url = str_replace("/".$area['etitle']."_", '/', $url);
+                $url = config('sys.site_protocol')."://".$area['etitle'].'.'.config('sys.site_levelurl').$url;
+            }else{
+                $url = config('sys.site_protocol')."://".config('sys.site_url').$url;
+            }
+            
+            break;
+    }
+    return $url;   
 }

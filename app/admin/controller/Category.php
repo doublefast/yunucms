@@ -225,6 +225,23 @@ class Category extends Common
         return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
     }
 
+    public function dotdk()
+    {
+        $ids = input('param.ids');
+        $seo_title = input('param.seo_title');
+        $seo_keywords = input('param.seo_keywords');
+        $seo_desc = input('param.seo_desc');
+        $db = Db::name('category');
+        $flag = $db->where(['id'=>['IN', $ids]])->select();
+        foreach ($flag as $k => $v) {
+            $new_seo_title = str_replace("{栏目名称}", $v['title'], $seo_title);
+            $new_seo_keywords = str_replace("{栏目名称}", $v['title'], $seo_keywords);
+            $new_seo_desc = str_replace("{栏目名称}", $v['title'], $seo_desc);
+            $db->where(['id'=>$v['id']])->setField(['seo_title'=>$new_seo_title,'seo_keywords'=>$new_seo_keywords,'seo_desc'=>$new_seo_desc]);
+        }
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
+    }
+
     public function statecategory()
     {
         $id = input('param.id');

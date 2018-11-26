@@ -37,20 +37,6 @@ class CategoryModel extends Model
 	    	$catlist[$k] = $this->getCategoryArea($v, [], $isarea);
 	    }
 	    return $catlist;
-
-
-	    /*$where = [];
-	    if ($status) {
-	        $where['status'] = $status;
-	    }
-	    if ($nav) {
-		    $where['nav'] = ($nav == 1 || $nav == 2) ? ['IN', [$nav, 3]] : ['IN', [1, 2, 3]]; 
-	    }
-	    $cate_arr = $this->where($where)->order('sort asc')->select();
-	    foreach ($cate_arr as $k => $v) {
-	    	$cate_arr[$k] = $this->getCategoryArea($v, [], $isarea);
-	    }
-	    return $cate_arr;*/
 	}
 
 	public function clearLink($cate) {
@@ -111,7 +97,7 @@ class CategoryModel extends Model
 		return $arr;
 	}
 
-	public function getCategoryUrl($cate, $area = []) {
+	public function getCategoryUrl($cate, $area = [], $openarea = true) {
 	    $url = '';
 	    //如果是跳转，直接就返回跳转网址
 	    if (!empty($cate['jumpurl'])) {
@@ -122,12 +108,15 @@ class CategoryModel extends Model
 	    	}
 	    }
 	    $cname = $cate['etitle'] ? $cate['etitle'] : $cate['id'];
-	    if (!$area) {
-            $area = session('sys_areainfo');
-        }
+	    //是否要使用地区
+	    if ($openarea) {
+	    	if (!$area) {
+	            $area = session('sys_areainfo');
+	        }
+	    }
 	    switch (config('sys.url_model')) {
 	    	case '1'://动态
-	    		$url = "/index.php/index/category/index?id=".$cate['id'];//url('Category/index', array('id' => $cate['id']));
+	    		$url = "/index.php/index/category/index?id=".$cate['id'];
 	    		if ($area) {
 	    			if ($area['isurl']) {
 		    			$url = $area['etitle'].'.'.config('sys.site_levelurl').$url;
@@ -142,15 +131,21 @@ class CategoryModel extends Model
 	    		# code...
 	    		break;
 	    	case '3'://伪静态
-		        $url = $cate['etitle'] ? $cate['etitle'].'/' : $cate['id'].'/';
+		        $url = $cate['etitle'] ? $cate['etitle'] : $cate['id'];
 		        if ($area) {
 			        if ($area['isurl']) {
-		    			$url = $area['etitle'].'.'.config('sys.site_levelurl')."/".$url;
+		    			$url = $area['etitle'].'.'.config('sys.site_levelurl')."/".$url.'/';
 		    		}else{
-		    			$url = config('sys.site_url')."/".$area['etitle']."_".$url;
+		    			//集权模式
+		    			if (strpos($url, '/')) {
+		    				$url = str_replace_limit("/", "/".$area['etitle']."_", $url, 1);
+		    			}else{
+		    				$url = $area['etitle']."_".$url;
+		    			}
+		    			$url = config('sys.site_url')."/".$url.'/';
 		    		}
 		    	}else{
-		    		 $url = config('sys.site_url')."/".$url;
+		    		 $url = config('sys.site_url')."/".$url.'/';
 		    	}
 	    		break;
 	    }
@@ -163,15 +158,27 @@ class CategoryModel extends Model
         return $this->where(['id'=>$id])->find();
     }
 
-    public function getCategoryArea($cate, $area = [], $isarea = true)
+    public function getCategoryArea($cate, $area = [], $openarea = true)
     {
     	if (!$area) {
     		$area = session('sys_areainfo');
     	}
-        if ($area && $isarea) {
-			$cate['title'] = $cate['isarea'] ? $area['stitle'].$cate['title'] : $cate['title'];
+
+    	//同步主站URL
+    	if ($cate['catmainurl']) {
+			$cate['url'] = $this->getCategoryUrl($cate, [] , false);
+        }else{
+        	if ($area && $openarea) {
+				$cate['title'] = $cate['isarea'] ? $area['stitle'].$cate['title'] : $cate['title'];
+	        }
+			$cate['url'] = $this->getCategoryUrl($cate, $area);
         }
-		$cate['url'] = $this->getCategoryUrl($cate, $area);
+        $cate['target'] = $cate['target'] ? '_blank' : '_self';
+		if (config('sys.wap_mip') && is_mobile()) { 
+			foreach ($cate as $k => $v) {
+	            $cate[$k] = str_replace("<img", '<mip-img', $v);
+	        }
+	    }
         return $cate;
     }
 }
