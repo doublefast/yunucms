@@ -1,4 +1,11 @@
 {include file="public/header" /}
+
+<style type="text/css">
+.layui-input-inline .icheckbox_square-green{display: none;}
+body .seo .font_tip{line-height: 25px;}
+body .autoarea .font_tip{line-height: 38px;margin-left:10px; }
+body .autoarea .layui-form-switch{margin-top:0px;}
+</style>
 </head>
 <body>
 	<div id="main-container">
@@ -15,16 +22,221 @@
                 <div class="btn-group">
                     <button type="button" class="btn dropdown-toggle colorfff" data-toggle="dropdown">批量操作&nbsp;&nbsp;<span class="caret"></span></button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'isopen','val'=>1])}">开通分站</a></li>
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'isopen','val'=>0])}">关闭分站</a></li>
+                        <li><a href="{:url('batchaddarea',['pid'=>$pid])}">批量新增</a></li>
                         <li><a class="do-action" data-type="doDelete" data-href="{:url('delarea')}">批量删除</a></li>
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'istop','val'=>1])}">批量推荐</a></li>
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'istop','val'=>0])}">取消推荐</a></li>
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'isurl','val'=>1])}">开启二级域名</a></li>
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'isurl','val'=>0])}">取消二级域名</a></li>
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'iscon','val'=>1])}">开启独立内容</a></li>
-                        <li><a class="editstatus" rel="{:url('statearea',['type'=>'iscon','val'=>0])}">取消独立内容</a></li>
+                        <li><a class="doopen">批量设置地区</a></li>
+                        
+                        <li><a class="doseo">批量设置组合SEO</a></li>
+                        <li><a class="dozdseo">批量设置指定SEO</a></li>
+                        <li><a class="dodelseo">批量清空SEO</a></li>
+                        <li><a class="showkey" href="{:url('showkey')}" target="_blank">批量导出关键词</a></li>
                     </ul>
+                </div>
+
+                <div class="none" id="open" style="padding-top:20px;">
+                    <form  class="layui-form layui-form-pane" id="formopen" method="post" role="formopen">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">分站</label>
+                            <div class="layui-input-inline w450">
+                                <input type="radio" name="isopen" value="-1" title="原设置" checked>
+                                <input type="radio" name="isopen" value="1" title="开通">
+                                <input type="radio" name="isopen" value="0" title="关闭">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">推荐</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="istop" value="-1" title="原设置" checked>
+                                <input type="radio" name="istop" value="1" title="推荐">
+                                <input type="radio" name="istop" value="0" title="取消">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">独立内容</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="iscon" value="-1" title="原设置" checked>
+                                <input type="radio" name="iscon" value="1" title="开启">
+                                <input type="radio" name="iscon" value="0" title="关闭">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">二级域名</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="isurl" value="-1" title="原设置" checked>
+                                <input type="radio" name="isurl" value="1" title="开启">
+                                <input type="radio" name="isurl" value="0" title="关闭">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">城市级别</label>
+                            <div class="layui-input-inline w450">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="1" title="一级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="2" title="二级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="3" title="三级城市">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="none" id="delseo">
+                    <form  class="layui-form layui-form-pane" id="formopen" method="post" role="formopen">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">城市级别</label>
+                            <div class="layui-input-inline w450">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="1" title="一级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="2" title="二级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="3" title="三级城市">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="none" id="zdseo" style="padding-top:20px;">
+                    <form  class="layui-form layui-form-pane" id="formseo" method="post" role="form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO标题</label>
+                            <div class="layui-input-inline w450">
+                                <input class="layui-input w450" type="text" name="seo_title" id="seo_title" placeholder="SEO标题" >
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO关键词</label>
+                            <div class="layui-input-inline w450">
+                                <input class="layui-input w450" type="text" name="seo_keywords" id="seo_keywords" placeholder="SEO关键词" >
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO描述</label>
+                            <div class="layui-input-inline w450">
+                                <textarea name="seo_desc" id="seo_desc" placeholder="SEO描述" class="layui-textarea w450"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">&nbsp;</label>
+                            <div class="layui-input-inline w450">
+                                <font class="font_tip">注：{区域}为地区通配符，可插入至标题、关键词、描述里</font>
+                            </div>
+                        </div>
+
+                         <div class="layui-form-item">
+                            <label class="layui-form-label">城市级别</label>
+                            <div class="layui-input-inline w450">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="1" title="一级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="2" title="二级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="3" title="三级城市">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="none pt20 seo" id="seo">
+                    <div class="ui_prompt">
+                        <p>· 关键词录入关系效果，不能出现少字、多字、错字等错误，请务必检查仔细。 </p>
+                    </div>
+                    <form  class="layui-form layui-form-pane pt20" id="formseo" method="post" role="formseo">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">主关键词</label>
+                            <div class="layui-input-inline w450">
+                                <textarea name="main_keyword" class="layui-textarea w450"></textarea>
+                                <font class="font_tip">围绕一个类型主关键字展开，相关度一定要高。关键词内容太杂，百度不会收录的。多关键词用英文,分割、不要带有前缀和后缀，至少填写5词，最多填写20词</font>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">前缀关键词</label>
+                            <div class="layui-input-inline w450">
+                                <input class="layui-input" type="text" name="left_keyword">
+                                <font class="font_tip">多关键词用英文,分割，至少填写1词，最多填写5词</font>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">后缀关键词</label>
+                            <div class="layui-input-inline w450">
+                                <input class="layui-input" type="text" name="right_keyword">
+                                <font class="font_tip">多关键词用英文,分割，至少填写1词，最多填写20词</font>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">公司名称</label>
+                            <div class="layui-input-inline w450">
+                                <textarea name="compname" class="layui-textarea w450"></textarea>
+                                <font class="font_tip">1行1条，最少填写1条，最多填写20条，可以在公司名称前加上{区域}，加强公司名称独立性！</font>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">站点描述</label>
+                            <div class="layui-input-inline w450">
+                                <textarea name="description" class="layui-textarea w450"></textarea>
+                                <font class="font_tip">1行1条，最少填写1条，最多填写20条，可以在描述中插入{关键词}，{区域}，加强描述独立性！</font>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">生成设置</label>
+                            <div class="layui-input-inline w450">
+                                <input type="radio" lay-filter="keynum" name="keynum" value="1" title="单词组合" >
+                                <input type="radio" lay-filter="keynum" name="keynum" value="2" title="两词组合（推荐）" checked>
+                                <input type="radio" lay-filter="keynum" name="keynum" value="3" title="三词组合">
+                                <br><font class="font_tip tip">
+                                    <span class="none">标题示范：关键词1-北京某某科技有限公司</span>
+                                    <span class="">标题示范：关键词1-关键词2-北京某某科技有限公司</span>
+                                    <span class="none">标题示范：关键词1-关键词2-关键词3-北京某某科技有限公司</span>
+                                </font>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标题分割符</label>
+                            <div class="layui-input-inline w450">
+                                <input type="radio" name="keyfu" value="1" title="中划线（推荐）" checked>
+                                <input type="radio" name="keyfu" value="2" title="下划线">
+                                <input type="radio" name="keyfu" value="3" title="半角逗号">
+                            </div>
+                        </div>
+                         <div class="layui-form-item">
+                            <label class="layui-form-label">自动区域</label>
+                            <div class="layui-input-inline w450 autoarea">
+                                <input type="checkbox" checked name="autoarea_chk" lay-skin="switch" lay-filter="autoarea">
+                                <input type="hidden" name="autoarea" id="autoarea" value="1">
+                                <font class="font_tip">开启，则在关键词前自动加上城市名称</font>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">顺序模式</label>
+                            <div class="layui-input-inline w450">
+                                <input type="radio" name="shunxu" value="1" title="随机（推荐）" checked>
+                                <input type="radio" name="shunxu" value="2" title="顺序">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">组合模式</label>
+                            <div class="layui-input-inline w450">
+                                <input type="checkbox" lay-skin="primary" name="selzuhe" value="1" checked title="主词">
+                                <input type="checkbox" lay-skin="primary" name="selzuhe" value="2" checked title="主词+后缀">
+                                <input type="checkbox" lay-skin="primary" name="selzuhe" value="3" checked title="前缀+主词">
+                                <input type="checkbox" lay-skin="primary" name="selzuhe" value="4" checked title="前缀+主词+后缀">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">城市级别</label>
+                            <div class="layui-input-inline w450">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="1" checked title="一级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="2" checked title="二级城市">
+                                <input type="checkbox" lay-skin="primary" name="selarea" value="3" checked title="三级城市">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-inline">
+                                <a class="btn mr10 onautoseo" href="javascript:void()">提交</a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
 				<div class="table">
@@ -63,8 +275,9 @@
 		                          	<td><a href="javascript:;" class="change_status" data-id="{$v.id}" data-tp="url"> <div class="layui-unselect layui-form-switch {if condition="$v.isurl eq 1"}layui-form-onswitch{/if}"><i></i></div> </a></td>
 		                          	<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td> 	
 		                            <td>
-		                                <a class="btn" href="{:url('editarea',['id'=>$v['id']])}">编辑</a>
-		                                <a class="btn do-action" data-type="doDelOne" data-href="{:url('delarea')}" data-id="{$v.id}">删除</a>
+		                                <a class="btn btn2" href="{:url('editarea',['id'=>$v['id']])}">编辑</a>
+                                        <a class="btn btn2 do-action change_generate" data-id="{$v.id}">生成</a>
+		                                <a class="btn btn2 do-action" data-type="doDelOne" data-href="{:url('delarea')}" data-id="{$v.id}">删除</a>
 		                            </td>
 		                        </tr>
 		                        {/volist}
@@ -78,6 +291,8 @@
 		</div>
 	</div>
 <script>
+
+
 function showurl(){
     layer.open({
         type: 2,
@@ -88,10 +303,10 @@ function showurl(){
         content: "{:url('showurl')}"
     });
 }
-
 var laytpl,laypage;
-layui.use(['layer', 'laypage','common', 'icheck'], function () {
+layui.use(['form','layer', 'laypage','common', 'icheck'], function () {
     var $ = layui.jquery, layer = layui.layer, common = layui.common;
+    var form = layui.form();
     laypage = layui.laypage;
     //加载单选框样式
     $(("[type='checkbox']")).iCheck({
@@ -190,6 +405,290 @@ layui.use(['layer', 'laypage','common', 'icheck'], function () {
             }
         });
     });
+
+    $(document).on('click','.change_generate', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+            url: '{:url("generate")}',
+            dataType: "json",
+            data:{'id':id},
+            type: "POST",
+            success: function(info){
+                if (info.code == 1) {
+                    var diqulay = layer.open({
+                        title: '提示',
+                        type: 1,
+                        content: info.html,
+                        skin: 'layer_diqu',
+                        area: ['400px','170px'],
+                    });
+                }else {
+                    common.layerAlertE(info.msg, '提示');
+                }
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                alert(ajaxobj.responseText);
+            }
+        });
+    });
+
+    //批量设置SEO
+    $(document).on('click','.doseo', function () {
+        if (1 > $(".layuitable tbody input:checked").size()) {return common.layerAlertE("对不起，请选中您要操作的数据！", "提示");}
+        var diqulay = layer.open({
+            title: '批量设置组合SEO',
+            type: 1,
+            content: $("#seo"),
+            skin: 'layer_diqu',
+            area: ['600px','660px'],
+        });
+    });
+
+    //批量设置seo(指定)
+    $(document).on('click','.dozdseo', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            var diqulay = layer.open({
+                title: '批量设置指定SEO',
+                type: 1,
+                content: $("#zdseo"),
+                skin: 'layer_diqu',
+                area: ['630px','420px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    arr = new Array();
+                    $("#zdseo input:checkbox[name='selarea']:checked").each(function(i){
+                        arr[i] = $(this).val();
+                    });
+                    var selarea = arr.join(",");
+                    if (selarea == "") {return common.layerAlertE("对不起，请选中需要操作的城市级别！", "提示");}
+
+                    for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                    var seo_title = $('#seo_title').val();
+                    var seo_keywords = $('#seo_keywords').val();
+                    var seo_desc = $('#seo_desc').val();
+
+                    $.ajax({
+                        url: '{:url("dozdseo")}',
+                        dataType: "json",
+                        data:{'ids':c, 'seo_title':seo_title, 'seo_keywords':seo_keywords, 'seo_desc':seo_desc, 'selarea':selarea},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                });
+                                layer.close(diqulay);
+                            }
+                        }
+                    }); 
+                }
+            });
+        }
+    });
+
+    $(document).on('click','.onautoseo', function () {
+        var main_keyword = $('#seo textarea[name="main_keyword"] ').val();
+        var left_keyword = $('#seo input[name="left_keyword"] ').val();
+        var right_keyword = $('#seo input[name="right_keyword"] ').val();
+        var description = $('#seo textarea[name="description"] ').val();
+        var compname = $('#seo textarea[name="compname"] ').val();
+
+        if (!main_keyword) {
+            layer.msg("主关键词个数建议在5~20！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+        main_keyword = main_keyword.replace(/，/g, ",");
+        main_keyword = main_keyword.replace(/[(\r\n)]+/g, ",");
+        var str1count = main_keyword.split(',');
+        if (str1count.length < 5 || str1count.length > 20) {
+            layer.msg("主关键词个数建议在5~20！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+
+
+        if (!left_keyword) {
+            layer.msg("前缀关键词个数建议在1~5！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+        left_keyword = left_keyword.replace(/，/g, ",");
+        var str2count = left_keyword.split(',');
+        if (str2count.length < 1 || str2count.length > 5) {
+            layer.msg("前缀关键词个数建议在1~5！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+
+        if (!right_keyword) {
+            layer.msg("后缀关键词个数建议在1~20！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+        right_keyword = right_keyword.replace(/，/g, ",");
+        var str3count = right_keyword.split(',');
+        if (str3count.length < 1 || str3count.length > 20) {
+            layer.msg("后缀关键词个数建议在1~20！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+
+        if (!description) {
+            layer.msg("站点描述建议在1~20条！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+        var str4count = description.split(/[(\r\n)\r\n]+/);
+        if (str4count.length < 1 || str4count.length > 20) {
+            layer.msg("站点描述建议在1~20条！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+
+        if (!compname) {
+            layer.msg("公司名称建议在1~10条！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+        var str5count = compname.split(/[(\r\n)\r\n]+/);
+        if (str5count.length < 1 || str5count.length > 10) {
+            layer.msg("公司名称建议在1~10条！！",{icon:2,time:1500,shade: 0.1,});
+            return;
+        };
+
+        var keynum = $('#seo input[name="keynum"]:checked ').val();
+        var keyfu = $('#seo input[name="keyfu"]:checked ').val();
+        var shunxu = $('#seo input[name="shunxu"]:checked ').val();
+        var autoarea = $("#autoarea").val();
+        
+        var arr = new Array();
+        $("#seo input:checkbox[name='selzuhe']:checked").each(function(i){
+            arr[i] = $(this).val();
+        });
+        var selzuhe = arr.join(",");
+        if (selzuhe == "") {return common.layerAlertE("对不起，请选中需要操作的组合模式！", "提示");}
+
+        arr = new Array();
+        $("#seo input:checkbox[name='selarea']:checked").each(function(i){
+            arr[i] = $(this).val();
+        });
+        var selarea = arr.join(",");
+        if (selarea == "") {return common.layerAlertE("对不起，请选中需要操作的城市级别！", "提示");}
+
+        var c = "";
+        for (c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c = c == "" ? $(d[e]).attr("ids") : c+ ","+$(d[e]).attr("ids"));
+
+            $.ajax({
+                url: '{:url("doseo")}',
+                dataType: "json",
+                data:{'ids':c, 'main_keyword':main_keyword, 'left_keyword':left_keyword, 'right_keyword':right_keyword, 'description':description,'compname':compname, 'keynum':keynum, 'keyfu':keyfu,'shunxu':shunxu, 'autoarea':autoarea, 'selarea':selarea, 'selzuhe':selzuhe},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        parent.layer.alert(data.msg, {
+                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                        });
+                        window.location = window.location;
+                    }
+                }
+            }); 
+    });
+    //批量清空SEO
+    $(document).on('click','.dodelseo', function () {
+        if (1 > $(".layuitable tbody input:checked").size()) {return common.layerAlertE("对不起，请选中您要操作的数据！", "提示");}
+            var diqulay = layer.open({
+                title: '批量清空SEO',
+                type: 1,
+                content: $("#delseo"),
+                skin: 'layer_diqu',
+                area: ['600px','150px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    var arr = new Array();
+                    $("#delseo input:checkbox[name='selarea']:checked").each(function(i){
+                        arr[i] = $(this).val();
+                    });
+                    var selarea = arr.join(",");
+                    if (selarea == "") {return common.layerAlertE("对不起，请选中需要操作的城市级别！", "提示");}
+                    var c = "";
+                    for (c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c = c == "" ? $(d[e]).attr("ids") : c+ ","+$(d[e]).attr("ids"));
+
+                    $.ajax({
+                        url: '{:url("dodelseo")}',
+                        dataType: "json",
+                        data:{'ids':c, 'selarea':selarea},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                },function(){
+                                    layer.close(diqulay);
+                                    window.location = window.location;
+                                });
+                            }else{
+                                layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                            }
+                        }
+                    }); 
+                }
+            });
+    });
+    //批量设置地区
+    $(document).on('click','.doopen', function () {
+        if (1 > $(".layuitable tbody input:checked").size()) {return common.layerAlertE("对不起，请选中您要操作的数据！", "提示");}
+            var diqulay = layer.open({
+                title: '批量设置地区',
+                type: 1,
+                content: $("#open"),
+                skin: 'layer_diqu',
+                area: ['600px','360px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    var isopen = $('#open input[name="isopen"]:checked ').val()
+                    var istop = $('#open input[name="istop"]:checked ').val()
+                    var iscon = $('#open input[name="iscon"]:checked ').val()
+                    var isurl = $('#open input[name="isurl"]:checked ').val()
+                    var arr = new Array();
+                    $("#open input:checkbox[name='selarea']:checked").each(function(i){
+                        arr[i] = $(this).val();
+                    });
+                    var selarea = arr.join(",");
+                    if (selarea == "") {return common.layerAlertE("对不起，请选中需要操作的城市级别！", "提示");}
+                    var c = "";
+                    for (c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c = c == "" ? $(d[e]).attr("ids") : c+ ","+$(d[e]).attr("ids"));
+
+                    $.ajax({
+                        url: '{:url("doopen")}',
+                        dataType: "json",
+                        data:{'ids':c, 'isopen':isopen, 'istop':istop, 'iscon':iscon, 'isurl':isurl, 'selarea':selarea},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                },function(){
+                                    layer.close(diqulay);
+                                    window.location = window.location;
+                                });
+                            }else{
+                                layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                            }
+                        }
+                    }); 
+                }
+            });
+    });
+    form.on('switch(autoarea)', function (data) {
+        if (this.checked) {
+            $("#autoarea").val(1);
+        }else{
+            $("#autoarea").val(0);
+        }
+    });
+
+    form.on('radio(keynum)', function (data) {     
+        $(".tip").children("span").hide();
+        $(".tip").children("span").eq(data.value-1).show();   
+    });
+
 });
 </script>
 </body>

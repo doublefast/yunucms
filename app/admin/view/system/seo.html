@@ -62,7 +62,7 @@
 			            </div> 
 			        </div>
 			        <div class="title_bar mb20">
-						主站默认显示地区&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">如果设置则主站显示该地区独立内容</font>
+						主站默认显示地区&nbsp;&nbsp;&nbsp;&nbsp;<font class="font_tip">设置后请自行检查栏目是否允许地区分站功能，未开启会造成栏目页无法打开</font>
 					</div>
 			        <div class="layui-form-item ">
 			            <label class="layui-form-label">选择地区</label>
@@ -70,7 +70,7 @@
 			                <select name="seo_default_area" id="seo_default_area">
 				            	<option value="0">不选择地区</option>
 				                {foreach name="arealist" id='v' }
-				                <option value="{$v.id}" {if config('sys.seo_default_area') eq $v['id']}selected{/if}>{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+				                <option value="{$v.id}" {if config('sys.seo_default_area') eq $v['id']}selected{/if}>{:lvlstr($v.lvl)}{$v.title}</option>
 				                {/foreach}
 				            </select>
 			            </div>

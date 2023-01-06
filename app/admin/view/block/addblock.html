@@ -41,9 +41,10 @@
                         <label class="layui-form-label">类型</label>
                         <div class="layui-input-inline">
                             <select name="type" lay-filter="seltype">
-                                <option value="1">文字</option>
+                                <option value="1">多行文本</option>
                                 <option value="2">图片</option>
                                 <option value="3">丰富</option>
+                                <option value="4">单行文本</option>
                             </select>
                         </div>
                     </div>
@@ -61,7 +62,7 @@
                             <input id="path1" class="layui-input" type="text" name="content2" ><br>
                             <img id="img_path1" class="defimg"  onerror="javascript:this.style.display='none';">
                         </div>
-                        <div class="layui-input-inline w450">
+                        <div class="layui-input-inline w150">
                             <input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
                             <div class="site-demo-upload upload-img fl ml5">
                                 <div class="site-demo-upbar">
@@ -75,6 +76,13 @@
                         <label class="layui-form-label">内容</label>
                         <div class="layui-input-inline">
                             <textarea name="content3" id="content"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item content content4" style="display:none;">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input w450" type="text" name="content4" placeholder="输入内容" >
                         </div>
                     </div>
 
@@ -101,11 +109,11 @@
     window.UEDITOR_HOME_URL = '__UEDITOR__/';
     window.onload = function() {
         window.UEDITOR_CONFIG.initialFrameWidth=700;
-        window.UEDITOR_CONFIG.initialFrameHeight=300;
+        window.UEDITOR_CONFIG.initialFrameHeight=450;
         UE.getEditor('content');
     }
 </script>
-<script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js?time=20211202"></script>
 <script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>
 
 <script>
@@ -144,7 +152,7 @@ layui.use(['form','layedit','common','upload'], function(){
                 shade: false,
                 anim: 2,
                 area: ['750px', '350px'],
-                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
             });
         });
         
@@ -175,7 +183,7 @@ layui.use(['form','layedit','common','upload'], function(){
                         data: data.field,
                         success: function (info) {
                             if (info.code == 1) {
-                                common.layerAlertSHref(info.msg, '提示', "{:url('block/index')}?cid="+$('#cid').val());
+                                common.layerAlertSHref(info.msg, '提示', "{:url('block/index')}&cid="+$('#cid').val());
                             }
                             else {
                                 common.layerAlertE(info.msg, '提示');

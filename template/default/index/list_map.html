@@ -1,100 +1,448 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="renderer" content="webkit|ie-comp|ie-stand">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta name="keywords" content="<yunu:config name='seo_keywords'>">
-    <meta name="description" content="<yunu:config name='seo_description'>">
-    <title>{$category.title}-<yunu:config name="site_title"></title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://c.mipcdn.com/static/v1/mip.css">
+    <link rel="canonical" href="<yunu:url name='home'/>">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta name="applicable-device" content="pc,mobile">
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <title><if condition="strlen($category['seo_title']) neq 0">{$category.seo_title}<else/>{$category.title}-<yunu:config name="site_title"></if></title>
+    <meta name="keywords" content="<if condition="strlen($category['seo_keywords']) neq 0">{$category.seo_keywords}<else/>{$category.title}</if>">
+    <meta name="description" content="<if condition="strlen($category['seo_desc']) neq 0">{$category.seo_desc|str2sub=160, true}<else/>{$category.desc|str2sub=160, true}</if>">
+    <script type="text/javascript" src="__PUBLIC__/js/jquery-1.12.4.min.js"></script>
     <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
-    <style type="text/css">
-    .clearfix:after{content: ".";display: block;height: 0;clear: both;overflow: hidden;visibility: hidden;}
-    .clearfix{zoom:1}
-    .region{margin-top:10px;border:1px solid #e0e1dc;}
-    .region h3{background:#eee;line-height:30px;padding-left:10px;position:relative;}
-    .region .item{padding:10px;line-height:28px;display:block;}
-    .region .item a{padding-left:15px;padding-right:15px;float:left;}
-    .region .item a:hover{text-decoration:none;background:#3480ce;color:#fff;}
-    .more_region{position:absolute;right:10px;line-height:28px;top:0;font-weight:normal;}
-    #container{width:1200px;margin:0 auto;margin-top:10px;border:1px solid #f4f4f4;}
-    .hot{border-bottom:2px solid #1c4587;padding-bottom:8px;}
-    .hot li{float:left;margin-right:10px;margin-bottom:10px;}
-    .hot li a{display:block;line-height:32px;padding-left:16px;padding-right:16px;background:#f4f4f4;}
-    .hot li a:hover{text-decoration:none;background:#1c4587;color:#fff;}
-    .item{line-height:24px;overflow:hidden;border-bottom:1px solid #f4f4f4;}
-    .item:hover{background-color: #f5f5f5; }
-    .item dt{float:left;font-family:arial;font-size:14px;padding: 5px 10px;color: #333;}
-    .item dd{margin:0 0 0 70px;padding-left:15px;border-left:1px solid #f4f4f4;padding: 5px 10px;}
-    .item dd a{display: block;white-space:nowrap;float:left; margin: 0 12px;}
-    .item dd a:hover{text-decoration:none;color: #ff552e;}
-    .return{position:relative;height:60px;padding:6px;width:1200px;margin:10px auto 0;text-align:left;font:bold 22px/42px "微软雅黑";color:#737372;}
-    .return a{position:absolute;right:10px;top:12px;height:36px;width:100px;text-align: center;display:block;background:#1c4587;color:#fff;line-height: 36px;font-size:12px;font-weight: bold;}
-    .return a:hover{text-decoration:none;background:#f39c11;color:#fff;}
-    .m_text p{width: 1200px; line-height: 60px; display: block; margin-top: 20px;}
-    .m_text .p1 { display: inline-block; float: left; margin-right: 15px; color: #ff552e; line-height: 30px;font-size: 14px; font-weight: bold;}
-    .m_text a { display: inline-block; float: left; margin-right: 15px; color: #666; font-size: 14px;line-height: 30px;}
-    .m_text a:hover {color: #ff552e;}
-    .m_text .p3 {   color: #555;font-size: 16px;font-weight: 800;}
+    <link rel="stylesheet" href="__PUBLIC__/css/swiper.min.css">
+    <script type="text/javascript" src="__PUBLIC__/js/yunu.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/Superslide.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/swiper.min.js"></script>
+    <style mip-custom>
+        *{
+            box-sizing: border-box;
+        }
+        .clearfix{zoom:1;}
+        .clearfix:before,.clearfix:after{display:table;line-height:0;content:"";}
+        .clearfix:after{clear:both;}
+        li {
+            list-style-type: none;
+        }
+        html.mip-i-android-scroll, body.mip-i-android-scroll {
+        }
+        .mip-head {
+            height: 70px;
+            box-shadow: 0px 2px 3px #eee;
+            margin-bottom: 5px;
+            display: block;
+            background: #fff;
+        }
+        .mip-head .logo {
+            width: 350px;
+            height: 70px;
+            display: block;
+            float: left;
+            overflow: hidden;
+        }
+        mip-fixed[type="top"] {
+            overflow: visible;
+        }
+        mip-nav-slidedown #bs-navbar .navbar-nav {
+            margin-top: 0;
+        }
+        .nav li {
+            font-size: 1rem;
+        }
+        mip-nav-slidedown #bs-navbar .navbar-nav li {
+            line-height: 70px;
+        }
+        mip-nav-slidedown #bs-navbar .navbar-nav li ul li {
+            line-height: 50px;
+        }
+        .cpMain {
+            background: #fff;
+        }
+        .clearfix:after {
+            content: ".";
+            display: block;
+            height: 0;
+            clear: both;
+            overflow: hidden;
+            visibility: hidden;
+        }
+        .clearfix {
+            zoom: 1
+        }
+        .region {
+            margin-top: 10px;
+            border: 1px solid #e0e1dc;
+        }
+        .region h3 {
+            background: #eee;
+            line-height: 30px;
+            padding-left: 10px;
+            position: relative;
+        }
+        .region .item {
+            padding: 10px;
+            line-height: 28px;
+            display: block;
+        }
+        .region .item a {
+            padding-left: 15px;
+            padding-right: 15px;
+            float: left;
+        }
+        .region .item a:hover {
+            text-decoration: none;
+            background: #3480ce;
+            color: #fff;
+        }
+        .more_region {
+            position: absolute;
+            right: 10px;
+            line-height: 28px;
+            top: 0;
+            font-weight: normal;
+        }
+        #container {
+            width: 1200px;
+            margin: 0 auto;
+            margin-top: 10px;
+            border: 1px solid #f4f4f4;
+        }
+        .hot {
+            border-bottom: 2px solid #1c4587;
+            padding-bottom: 8px;
+        }
+        .hot li {
+            float: left;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .hot li a {
+            display: block;
+            line-height: 32px;
+            padding-left: 16px;
+            padding-right: 16px;
+            background: #f4f4f4;
+        }
+        .hot li a:hover {
+            text-decoration: none;
+            background: #1c4587;
+            color: #fff;
+        }
+        .item {
+            line-height: 24px;
+            overflow: hidden;
+            border-bottom: 1px solid #f4f4f4;
+        }
+        .item:hover {
+            background-color: #f5f5f5;
+        }
+        .item dt {
+            float: left;
+            font-family: arial;
+            font-size: 14px;
+            padding: 5px 10px;
+            color: #333;
+        }
+        .item dd {
+            margin: 0 0 0 70px;
+            padding-left: 15px;
+            border-left: 1px solid #f4f4f4;
+            padding: 5px 10px;
+        }
+        .item dd a {
+            display: block;
+            white-space: nowrap;
+            float: left;
+            margin: 0 12px;
+        }
+        .item dd a:hover {
+            text-decoration: none;
+            color: #ff552e;
+        }
+        .return {
+            position: relative;
+            height: 60px;
+            padding: 6px;
+            width: 1200px;
+            margin: 10px auto 0;
+            text-align: left;
+            font: bold 22px/42px "微软雅黑";
+            color: #737372;
+        }
+        .return a {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            height: 36px;
+            width: 100px;
+            text-align: center;
+            display: block;
+            background: #1c4587;
+            color: #fff;
+            line-height: 36px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .return a:hover {
+            text-decoration: none;
+            background: #f39c11;
+            color: #fff;
+        }
+        .m_text p {
+            width: 100%;
+            line-height: 60px;
+            display: block;
+            margin-top: 20px;
+        }
+        .m_text .p1 {
+            display: inline-block;
+            float: left;
+            margin-right: 15px;
+            color: #ff552e;
+            line-height: 30px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .m_text a {
+            display: inline-block;
+            float: left;
+            margin-right: 15px;
+            color: #666;
+            font-size: 14px;
+            line-height: 30px;
+        }
+        .m_text a:hover {
+            color: #ff552e;
+        }
+        .m_text .p3 {
+            color: #555;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .mip-footer .mip-footert {
+            width: 100%;
+            background: #333;
+            padding: 2% 3% 3%;
+            box-sizing: border-box;
+        }
+        .mip-footer .mip-container {
+            margin: 16px auto 0;
+        }
+        .mip-footer .mip-footert .mip-text {
+            width: 10%;
+            margin-right: 10%;
+            float: left;
+        }
+        .mip-footer .mip-footert .mip-text .tt a {
+            font-size: 16px;
+            color: #888;
+            display: block;
+            border-bottom: 1px solid #484848;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .mip-footer .mip-footert .mip-text ul li a {
+            display: block;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .mip-footer .mip-footert .mip-text:last-child {
+            width: 37%;
+            margin-right: 0;
+        }
+        .mip-footer .mip-footert .mip-text .contact {
+            position: relative;
+        }
+        .mip-footer .mip-footert .mip-text .contact p {
+            font-size: 25px;
+            color: #ff9801;
+        }
+        .mip-footer .mip-footert .mip-text .contact span {
+            font-size: 14px;
+            display: inline-block;
+            color: #666;
+            margin: 3% 0 3%;
+        }
+        .mip-footer .mip-footert .mip-text .contact mip-img {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 153px;
+        }
+        .mip-footer .mip-footert .mip-text .contact a {
+            display: block;
+            box-sizing: border-box;
+            width: 186px;
+            height: 40px;
+            line-height: 40px;
+            color: #fff;
+            background: #3f3f3f;
+            border-radius: 6px;
+        }
+        .mip-footer .mip-footert .mip-text .contact a mip-img {
+            position: relative;
+            top: 0;
+            right: 0;
+            width: 22px;
+            float: left;
+            margin-left: 40px;
+            margin-right: 10px;
+            margin-top: 9px;
+        }
+        .mip-footerb {
+            background: #222;
+            padding: 0 3%;
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            font-size: 14px;
+            color: #666;
+        }
+        .mip-head .mip-container {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+        .mip-container {
+            max-width: 1200px;
+            margin: 16px auto;
+        }
+        .mip-footer .mip-container {
+            max-width: 1920px;
+        }
+        @media screen and (max-width: 1920px) {
+          .mip-head {
+            padding: 0 1%;
+          }
+          #container {
+            width: 100%;
+          }
+          .mip-container {
+            padding: 0 1%;
+          }
+        }
+
+        @media screen and (max-width: 768px) {
+          .mip-wap{display: block;}
+          .mip-pc{display: none;}
+          .fb {
+                display: block!important;
+                width: 100%;
+                background: #000;
+                color: #fff;
+                height: 56px;
+            }
+          .fb a {
+                width: 33.3%;
+                display: block;
+                height: 56px;
+                float: left;
+                text-align: center;
+                color: #fff;
+                padding: 5px 0;
+                font-size: 12px;
+                line-height: 1;
+            }
+            .fb a i {
+                display: block;
+                height: 28px;
+                background: no-repeat center;
+                background-size: contain;
+                margin-bottom: 5px;
+            }
+            .fb a i.i1 {
+                background-image: url(__PUBLIC__/img/f_ico1.png);
+            }
+            .fb a i.i3 {
+                background-image: url(__PUBLIC__/img/f_ico3.png);
+            }
+            .fb a i.i4 {
+                background-image: url(__PUBLIC__/img/f_ico4.png);
+            }
+          #container {
+            width: 100%;
+          }
+          .mip-img-container .mip-carousel-indicator-wrapper {
+            position: relative;
+            bottom: 20px;
+          }
+          .mip-nav-wrapper .navbar-toggle {
+            margin: 20px 0;
+          }
+          html.mip-i-android-scroll, body.mip-i-android-scroll {
+          }
+
+          .mip-footer .mip-footert .mip-text {
+            width: 100%;
+            margin-right: 0;
+            text-align: center;
+          }
+          .mip-footer .mip-footert .mip-text:last-child {
+            width: 100%;
+          }
+          .mip-footer .mip-footert .mip-text .contact a {
+            display: block;
+            margin: 0 auto 20px;
+          }
+          .mip-footer .mip-footert .mip-text .contact mip-img {
+            position: relative;
+            display: block;
+            margin: 0 auto;
+          }
+          .mip-footerb {
+            font-size: 12px;
+            height: auto;
+            text-align: center;
+            margin-bottom: 56px;
+          }
+          .mip-head .logo {
+            width: 270px;
+            height: 70px;
+          }
+        }
     </style>
 </head>
-
 <body>
-    <div class="header">
-        <div class="center">
-            <div class="head_top_content">
-                <div class="head_logo fl">
-                    <img src="<yunu:config name='site_logo'/>" alt="">
-                    <div class="head_tit fl">
-                        <h4><yunu:config name="site_title"/></h4>
-                        <yunu:block name='head_text1' />
-                    </div>
-                    <div class="head_text fl">
-                        <yunu:block name='head_text2' />
+    <!--头部开始-->
+    <include file="public:header" />
+    <!--main start-->
+    <div class="cpMain">
+        <div class="mip-container">
+            <div class="center">
+                <div class="m_text clearfix container">
+                    <p class="clearfix">
+                        <span class="p1">热门城市</span>
+                        <yunu:area type="level" top="1" conurl="1" limit="50">
+                            <a href="{$area.url}">{$area.title}</a>
+                        </yunu:area>
+                    </p>
+                    <p class="p3">按省份选择</p>
+                </div>
+                <div id="container">
+                    <div class="city_list clearfix">
+                        <yunu:area pid="0" limit="50" conurl="1">
+                            <dl class="item clearfix">
+                                <dt class="clearfix"><a href="{$area.url}">{$area.title}</a></dt>
+                                <dd class="clearfix">
+                                    <yunu:area pid="$area['id']" conurl="1" limit="50">
+                                        <a href="{$area.url}">{$area.title}</a>
+                                    </yunu:area>
+                                </dd>
+                            </dl>
+                        </yunu:area>
                     </div>
                 </div>
-                <div class="fr">
-                    <img src="__PUBLIC__/img/ren.png" alt="">
-                    <yunu:block name='head_text3' />
-                </div>
             </div>
-            <div class="head_nav">
-                <ul>
-                    <li><a href="<yunu:url name='home'/>" <if condition="!isset($cid)">class="active"</if>>网站首页</a></li>
-                    <yunu:nav typeid='1'>
-                    <li><a href="{$nav.url}" <eq name="$nav['id']" value="$cid">class="active"</eq> target="{$nav.target}">{$nav.title}</a></li>
-                    </yunu:nav>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="center">
-        <div class="m_text clearfix">
-            <p class="clearfix">
-                <span class="p1">热门城市</span>
-                <yunu:area type="level" top="1" conurl="1">
-                    <a href="{$area.url}">{$area.title}</a>
-                </yunu:area>
-            </p>
-            <p class="p3">按省份选择</p>
-        </div>
-        <div id="container">
-            <div class="city_list clearfix">
-                <yunu:area pid="0" limit="50" conurl="1">
-                    <dl class="item clearfix">
-                        <dt class="clearfix"><a href="{$area.url}">{$area.title}</a></dt>
-                        <dd class="clearfix">
-                            <yunu:area pid="$area['id']" conurl="1" limit="50">
-                                <a href="{$area.url}">{$area.title}</a>
-                            </yunu:area>
-                        </dd>
-                    </dl>
-                </yunu:area>
-            </div>
+            <div class="clear"> </div>
         </div>
     </div>
     <include file="public:footer" />
 </body>
-
 </html>
+    <script src="https://c.mipcdn.com/static/v1/mip.js"></script>
+    <script src="https://c.mipcdn.com/static/v1/mip-nav-slidedown/mip-nav-slidedown.js"></script>
+    <script src="https://c.mipcdn.com/static/v1/mip-vd-tabs/mip-vd-tabs.js"></script>

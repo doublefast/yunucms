@@ -4,187 +4,474 @@
 	<div id="main-container">
 		{include file="public/menu" /}
 		<div class="main">
-			<div class="notice"></div>
 			<div class="main_content">
-				<div class="ui_prompt">提示：尊敬的 {:session('admin_username')}（{:session('rolename')}），欢迎您的使用，您的上次登录时间为 {:session('last_login_time')}，登录IP为 {:session('last_login_ip')}&nbsp;&nbsp;{$cloudstr}</div>
-				<div class="clearfix">
-					<div class="index_block index_block_info">
-						<a href="{:url('content/index')}">
-						<i class="fa fa-file"></i>
-						<div class="fr">
-							<p>信息总数</p>
-							<strong>{$content_count}</strong>
-						</div>
-						</a>
-					</div>
-					<div class="index_block index_block_column">
-						<a href="{:url('category/index')}">
-						<i class="fa fa-align-justify"></i>
-						<div class="fr">
-							<p>栏目总数</p>
-							<strong>{$category_count}</strong>
-						</div>
-						</a>
-					</div>
-					<div class="index_block index_block_admin">
-						<a href="{:url('diyform/index')}">
-						<i class="fa fa-book"></i>
-						<div class="fr">
-							<p>留言数</p>
-							<strong>{$diyform_count}</strong>
-						</div>
-						</a>
-					</div>
-					<div class="index_block index_block_visit">
-						<i class="fa fa-th"></i>
-						<div class="fr">
-							<p>访问总数</p>
-							<strong>3</strong>
-						</div>
-					</div>
-				</div>
-				<div class="index_box">
-					<div class="index_box_tit">网站访问统计</div>
-					<div class="index_box_content">
-						<div class="index_highcharts"></div>
-						<script type="text/javascript" src="__ADM_PUBLIC__/js/highcharts.js"></script>
-						<script type="text/javascript">
-							var data = [{$daycount}];
-							var today = new Date();
-							today.setHours(8 - 24*(data.length-1));
-							today.setMinutes(0);
-							today.setSeconds(0);
-							today.setMilliseconds(0);
-							$('.index_highcharts').highcharts({
-						        chart: {
-						            type: 'areaspline'
-						        },
-						        title: {
-						            text: ''
-						        },
-						        legend: {
-						            layout: 'vertical',
-						            align: 'left',
-						            verticalAlign: 'top',
-						            x: 150,
-						            y: 100,
-						            floating: true,
-						            borderWidth: 1,
-						            backgroundColor: '#FFFFFF'
-						        },
-						        xAxis: {
-						            allowDecimals: false,
-						            type: 'datetime',
-						            dateTimeLabelFormats: {
-						                day: '%b-%e'
-						            },
-						            labels:{
-						            	maxStaggerLines :3
-						            }
-						        },
-						        yAxis: {
-						            allowDecimals: false,
-						            //tickPixelInterval: 200,
-						            labels:{
-						            	maxStaggerLines :3
-						            },
-						            title: {
-						                text: ''
-						            }
-						        },
-						        tooltip: {
-						            pointFormat: '访问量: {point.y}次'
-						        },
-						        credits: {
-						            enabled: false //禁用版权信息
-						        },
-						        plotOptions: {
-						            areaspline: {
-						                fillOpacity: 0.5
-						            }
-						        },
-						        series: [{
-						            name: '',
-						            showInLegend: false,
-						            data: data,
-						            pointStart: Date.parse(today),
-						            pointInterval: 24 * 3600 * 1000
-						        }]
-						    });
-						</script>
-					</div>
-				</div>
-				{notempty name="mainkeywords"}
-				<div class="index_box">
-					<div class="index_box_tit">关键词监控</div>
-					<div class="index_box_content" style="min-height:200px;">
-						<div class="key_table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <td class="th">网站名称</td>
-                                        <td class="th">授权域名</td>
-                                        <td class="th">收录</td>
-                                        <td class="th">关键词数量</td>
-                                        <td class="th">达标率</td>
-                                        <td class="th">创建时间</td>
-                                        <td class="th">状态</td>
-                                        <td class="th">操作</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{$mainkeywords.name}</td>
-                                        <td>{$mainkeywords.domain}</td>
-                                        <td>{$mainkeywords.collect}</td>
-                                        <td>{$mainkeywords.count}</td>
-                                        <td>{$mainkeywords.standard_rate}%</td>
-                                        <td>{$mainkeywords.create_time}</td>
-                                        <td>
-                                            {if condition="$mainkeywords['state'] == 1"}
-                                                <span class="color">监控中</span>
-                                            {else/}
-                                                关闭
-                                            {/if}
-                                        </td>
-                                        <td>
-                                            <a class="history btn1" style="background:url(__ADM_PUBLIC__/img/history.png);" href="http://ranking.yunucms.com/index.php/keyword/id/{$mainkeywords.id}/type/0/year/{:date('Y')}/month/{:date('n')}" target="_blank" title="历史排名"></a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="table_info">
-                                <ul>
-                                    <li class="time color">
-                                        排名更新时间   {$mainkeywords.time}
-                                    </li>
-                                    {volist name="mainkeywords['list']" id="vo"}
-                                    <li>
-                                        <span class="kname"><a href="http://www.baidu.com/s?rn=50&wd={$vo.keyword}" target="_blank">{$vo.keyword}</a></span>
-                                        <span class="krank">排名：{$vo.rank}
-	                                        {if condition="$vo['rank_prev'] eq '' || $vo['rank'] eq $vo['rank_prev']"}
-	                                        	<i>-</i>
-	                                        {elseif condition="(int)$vo['rank'] lt (int)$vo['rank_prev']"/}
-	                                        	<i>↑</i>
-	                                        {else/}
-	                                        	<i class="green">↓</i>
-	                                        {/if}
-                                        </span>
-                                    </li>
-                                    {/volist}
-                                </ul>
-                                <div style="clear:both;"></div>
+				<div class="none" id="dellog" style="padding-top:20px;">
+                    <form class="layui-form layui-form-pane" id="formdellog" method="post" role="form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label w100">保留：</label>
+                            <div class="layui-input-inline w450">
+                                <input type="radio" name="logtime" value="1" title="6个月">
+                                <input type="radio" name="logtime" value="2" title="3个月">
+                                <input type="radio" name="logtime" value="3" title="1个月" checked>
+                                <input type="radio" name="logtime" value="4" title="全部删除">
                             </div>
                         </div>
-                        
+                    </form>
+                </div>
+
+				<div class="ui_prompt">提示：尊敬的 {:session('admin_username')}（{:session('rolename')}），您的上次登录时间为 {:session('last_login_time')}，登录IP为 {:session('last_login_ip')}&nbsp;&nbsp;{$cloudstr}</div>
+				<div class="lr_index clearfix">
+					<div class="fl">
+						<div class="lr_index_box1 mt20 lr_border clearfix">
+							<div class="lr_pub_tit"><span>常用功能</span></div>
+							<div class="lr_box1_list clearfix">
+								<ul>
+									<li>
+										<a href="index.php?s=/admin/content/index">
+											<img src="__ADM_PUBLIC__/img/lric1.png">
+											<span>发布信息</span>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/category/index">
+											<img src="__ADM_PUBLIC__/img/lric2.png">
+											<span>栏目设置</span>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/system/basic">
+											<img src="__ADM_PUBLIC__/img/lric3.png">
+											<span>基础设置</span>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/block/blocklist">
+											<img src="__ADM_PUBLIC__/img/lric4.png">
+											<span>自定义块</span>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/banner/index">
+											<img src="__ADM_PUBLIC__/img/lric5.png">
+											<span>幻灯片设置</span>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/wap/index">
+											<img src="__ADM_PUBLIC__/img/lric6.png">
+											<span>WAP设置</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="lr_index_box2 mt20 lr_border clearfix">
+							<div class="lr_pub_tit"><span>上线前设置</span></div>
+							<div class="lr_box2_list clearfix">
+								<ul>
+									<li>
+										<a href="index.php?s=/admin/system/seo">
+											<span>首页SEO设置</span>
+											<p>建议三个主词+品牌/公司名</p>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/url/index">
+											<span>URL设置</span>
+											<p>建议设置伪静态</p>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/sitelink/index">
+											<span>站内锚文本</span>
+											<p>建议添加主词+长尾词</p>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/tagurl/index">
+											<span>TAG设置</span>
+											<p>建议设置主词+长尾词</p>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="lr_index_box3 mt20 lr_border clearfix">
+							<div class="lr_pub_tit"><span>上线后设置</span></div>
+							<div class="lr_box3_list clearfix">
+								<ul>
+									<li>
+										<a href="index.php?s=/admin/system/sitemap">
+											<span>地图生成</span>
+											<p>一键生成网站地图</p>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/area/index">
+											<span>城市分站</span>
+											<p>初期上线建议开启少量分站</p>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/system/interapi">
+											<span>百度API</span>
+											<p>百度主动及被动推送接口</p>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/link/index">
+											<span>自动换链</span>
+											<p>权重收录友链对等交换</p>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="lr_index_box4 mt20 lr_border clearfix">
+							<div class="lr_pub_tit"><span>运营数据</span></div>
+							<div class="lr_box4_list clearfix">
+								<ul>
+									<li>
+										<a href="index.php?s=/admin/diyform/index">
+											<img src="__ADM_PUBLIC__/img/lric7.png">
+											<div class="text">
+												<span>询盘管理<i>未读{$diyform_count}</i></span>
+												<p>一键查看未读询盘</p>
+											</div>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/datacount/pmjkhq">
+											<img src="__ADM_PUBLIC__/img/lric8.png">
+											<div class="text">
+												<span>主词排名</span>
+												<p>查看您的主词排名</p>
+											</div>
+										</a>
+									</li>
+									<li>
+										{if $rankurl}<a href="{$rankurl}"  target="_blank">{else/}<a href="javascript:alert('暂无报表可查')">{/if}
+											<img src="__ADM_PUBLIC__/img/lric9.png">
+											<div class="text">
+												<span>综合报表</span>
+												<p>查看您的综合排名</p>
+											</div>
+										</a>
+									</li>
+									<li>
+										<a href="index.php?s=/admin/datacount/baidutj">
+											<img src="__ADM_PUBLIC__/img/lric10.png">
+											<div class="text">
+												<span>百度统计</span>
+												<p>查看百度访问统计</p>
+											</div>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="fr">
+						<div class="lr_index_box5 mt20 lr_border clearfix">
+							<div class="lr_pub_tit clearfix"><span>流量详情</span><p class="doDellog">清空流量日志</p></div>
+							<div class="lr_box5_list clearfix">
+								<ul>
+									<li><p>今日浏览：<span><em>{$browse.d}</em>次</span></p></li>
+									<li><p>本月流量：<span><em>{$browse.m}</em>次</span></p></li>
+									<li><p>本周流量：<span><em>{$browse.w}</em>次</span></p></li>
+									<li><p>总计流量：<span><em>{$browse.a}</em>次</span></p></li>
+								</ul>
+							</div>
+						</div>
+						<div class="lr_index_box6 mt20 lr_border clearfix">
+							<div class="lr_pub_tit"><span>系统信息</span></div>
+							<div class="lr_box6_list clearfix">
+								<ul>
+									<li>
+										<span>登录IP：</span>
+										<p>{:session('last_login_ip')}</p>
+									</li>
+									<li>
+										<span>上次登录时间：</span>
+										<p>{:session('last_login_time')}</p>
+									</li>
+									<li>
+										<span>程序版本：</span>
+										<p>V{:config('yunucms.version')}</p>
+									</li>
+									<li>
+										<span>服务器系统：</span>
+										<p>{$sys_os}</p>
+									</li>
+									<li>
+										<span>服务器软件：</span>
+										<p>{$sys_ser}</p>
+									</li>
+									<li>
+										<span>MySQL版本：</span>
+										<p>{$sys_mysql}</p>
+									</li>
+									<li>
+										<span>上传许可：</span>
+										<p>{$sys_upfile}</p>
+									</li>
+								</ul>
+							</div>
+						</div>
 					</div>
 				</div>
-				{/notempty}
+				<style type="text/css">
+					.lr_index {
+						width: 100%;
+						overflow: hidden;
+					}
+					.lr_index .fl {
+						width: 76%;
+					}
+					.lr_index .fr {
+						width: 22%;
+					}
+					.lr_border {
+						border: 1px solid #eaeaea;
+					}
+					.lr_index_box1 {
+						width: 100%;
+					}
+					.lr_pub_tit {
+						background: #f7f7f7;
+						border-bottom: 1px solid #eaeaea;
+					}
+					.lr_pub_tit span {
+						padding-left: 20px;
+						line-height: 38px;
+						font-size: 14px;
+						color: #666;
+						display: block;
+					}
+					.lr_box1_list {
+						padding: 0px 20px 20px 20px;
+					}
+					.lr_box1_list li {
+						width: 25%;
+						margin-top: 24px;
+						float: left;
+					}
+					.lr_box1_list li img {
+						float: left;
+						width: 30px;
+					}
+					.lr_box1_list li span {
+						float: left;
+						font-size: 14px;
+						color: #000;
+						line-height: 30px;
+						padding-left: 10px;
+					}
+					.lr_box2_list {
+						padding: 20px 20px;
+					}
+					.lr_box2_list li {
+						width: 24%;
+						float: left;
+						padding: 26px 0;
+						border-radius: 5px;
+						margin-left: 1.333%;
+					}
+					.lr_box2_list li:first-child {
+						margin-left: 0;
+					}
+					.lr_box2_list li span {
+						font-size: 16px;
+						display: block;
+						text-align: center;
+						color: #fff;
+					}
+					.lr_box2_list li p {
+						font-size: 14px;
+						display: block;
+						text-align: center;
+						color: #fff;
+						margin-top: 15px;
+					}
+					.lr_box2_list li:first-child {
+						background: #03a9f4;
+					}
+					.lr_box2_list li:first-child +li {
+						background: #8bc34a;
+					}
+					.lr_box2_list li:first-child +li +li {
+						background: #e84e40;
+					}
+					.lr_box2_list li:first-child +li +li +li {
+						background: #9c27b0;
+					}
+
+					.lr_box3_list {
+						padding: 20px 20px;
+					}
+					.lr_box3_list li {
+						width: 24%;
+						float: left;
+						padding: 26px 0;
+						border-radius: 5px;
+						margin-left: 1.333%;
+						background: #f7f7f7;
+					}
+					.lr_box3_list li span {
+						font-size: 16px;
+						display: block;
+						text-align: center;
+						color: #666;
+					}
+					.lr_box3_list li p {
+						font-size: 14px;
+						display: block;
+						text-align: center;
+						color: #666;
+						margin-top: 15px;
+					}
+					.lr_box3_list li:first-child {
+						margin-left: 0;
+					}
+
+					.lr_box4_list {
+						padding: 20px 20px;
+					}
+					.lr_box4_list li {
+						width: 25%;
+						float: left;
+						position: relative;
+					}
+					.lr_box4_list li img {
+						width: 39px;
+						float: left;
+						position: absolute;
+						left: 0;
+						top: 0;
+					}
+					.lr_box4_list li .text {
+						float: left;
+						width: 100%;
+						padding-left: 52px;
+					}
+					.lr_box4_list li .text span {
+						font-size: 14px;
+						color: #000;
+						line-height: 20px;
+						display: block;
+					}
+					.lr_box4_list li .text span i {
+						font-style: normal;
+						color: #e84e40;
+						padding-left: 8px;
+					}
+					.lr_box4_list li .text p {
+						font-size: 14px;
+						color: #999;
+						line-height: 20px;
+						display: block;
+					}
+
+					.lr_box5_list {
+						padding: 6px 20px;
+					}
+					.lr_box5_list li {
+						width: 50%;
+						float: left;
+					}
+					.lr_box5_list li p {
+						font-size: 14px;
+						color: #000;
+						display: block;
+						line-height: 36px;
+					}
+					.lr_box5_list li p span em {
+						font-style: normal;
+						color: #06a5ea;
+						padding-right: 3px;
+					}
+
+					.lr_box6_list {
+						padding: 6px 20px;
+					}
+					.lr_box6_list li {
+						width: 100%;
+						float: left;
+						padding: 12px 0;
+						border-top: 1px solid #f0f0f0;
+					}
+					.lr_box6_list li:first-child {
+						border-top: none;
+					}
+					.lr_box6_list li span {
+						width: 50%;
+						float: left;
+						font-size: 14px;
+						color: #000;
+						line-height: 24px;
+					}
+					.lr_box6_list li p {
+						width: 50%;
+						float: left;
+						font-size: 14px;
+						color: #000;
+						line-height: 24px;
+					}
+
+					.lr_index_box5 .lr_pub_tit span {
+						float: left;
+						padding-left: 20px;
+					}
+					.lr_index_box5 .lr_pub_tit p {
+						float: right;
+						font-size: 14px;
+						color: #e84e40;
+						line-height: 38px;
+						padding-right: 20px;
+					}
+				</style>
 				<div class="copy">
-					Powered By <a href="http://{$copy_url}" target="_blank">{$copy_url}</a> @ 2018 {$copy_name} Inc.
+					Powered By <a href="http://{$copy_url}" target="_blank">{$copy_url}</a> @ 2020 {$copy_name} Inc.
 				</div>
 			</div>
 		</div>
 	</div>
+<script>
+    var laytpl,laypage;
+    layui.use(['form','layer', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common,$form = $('form');
+        var form = layui.form();
+    });
+
+    //删除访问记录
+    $(document).on('click','.doDellog', function () {
+            var diqulay = layer.open({
+                title: '清空流量日志',
+                type: 1,
+                content: $("#dellog"),
+                skin: 'layer_diqu',
+                area: ['600px','180px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    var logtime = $('#dellog input[name="logtime"]:checked ').val()
+
+                    $.ajax({
+                        url: '{:url("dodellog")}',
+                        dataType: "json",
+                        data:{'logtime':logtime},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                });
+                                layer.close(diqulay);
+                            }
+                        }
+                    }); 
+                }
+            });
+    });
+</script>
 </body>
 </html>

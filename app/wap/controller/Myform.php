@@ -10,8 +10,7 @@ class Myform extends Common
 		$returntype = isset($param['__returntype__']) && $param['__returntype__'] == 'json' ? 'json' : 'default';
 		if (!isset($param['__formid__']) || !isset($param['__token__'])) {
 			$info = ['status'=>'error','msg'=>'参数异常请不要非法操作!'];
-			return $this->onresponse($info, $returntype);
-			exit();
+			return $this->onresponse($info, $returntype); exit();
 		}
 		/*if ($param['__token__'] != session('__token__')) {
 			$info = ['status'=>'error','msg'=>'令牌验证验证失败!'];
@@ -22,8 +21,7 @@ class Myform extends Common
 		$info = $diyform->getOnediyform($param['__formid__']);
 		if (!$info) {
 			$info = ['status'=>'error','msg'=>'表单类别不存在!'];
-			return $this->onresponse($info, $returntype);
-			exit();
+			return $this->onresponse($info, $returntype); exit();
 		}
 		$info = $diyform->insertForm($param,$info['id']);
 		return $this->onresponse($info, $returntype);

@@ -9,7 +9,7 @@ class AreaModel extends Model
 
     public function getAllAreaByPid($id)
     {
-        $infolist = $this->where(['pid'=>$id])->order('sort,id asc')->select();
+        $infolist = $this->where(['pid'=>$id])->orderRaw('sort,id asc')->select();
         return $infolist;
     }
 
@@ -23,9 +23,24 @@ class AreaModel extends Model
         return $ids;
     }
 
+    public function getIdByLevel($ids, $level)
+    {
+        $idslevel2 = $this->where(['pid'=>['IN', $ids]])->column('id');
+        $idslevel2str = implode(',', $idslevel2);
+        if($level == 2){
+            return $idslevel2str;
+        }
+        $idslevel3 = $this->where(['pid'=>['IN', $idslevel2str]])->column('id');
+        $idslevel3str = implode(',', $idslevel3);
+        if($level == 3){
+            return $idslevel3str;
+        }
+    }
+
+
     public function getAllArea($where = [])
     {
-        return $this->where($where)->order('sort asc')->column(['id','title','pid','iscon']);
+        return $this->where($where)->orderRaw('sort asc')->column(['id','title','pid','iscon']);
     }
 
     public function getAreaCount($id)
@@ -62,7 +77,15 @@ class AreaModel extends Model
             $param['iscon'] = array_key_exists("iscon", $param) ? 1 : 0;
             $param['isurl'] = array_key_exists("isurl", $param) ? 1 : 0;
 
-            $result = $this->save($param);
+            if ($param['isopen'] && config("sys.openarea")) {
+                return ['code' => -1, 'data' => '', 'msg' => '请先关闭主站缓存提速，再开通地区'];
+            }
+            $validate = validate('AreaValidate');
+            if (!$validate->check($param)) {
+                return ['code' => -1, 'data' => '', 'msg' => $validate->getError()];
+            }
+
+            $result = $this->validate('AreaValidate')->allowField(true)->insert($param);
             if(false === $result){            
                 return ['code' => -1, 'data' => '', 'msg' => $this->getError()];
             }else{
@@ -81,8 +104,19 @@ class AreaModel extends Model
             $param['iscon'] = array_key_exists("iscon", $param) ? 1 : 0;
             $param['isurl'] = array_key_exists("isurl", $param) ? 1 : 0;
             
-            
-            $result =  $this->save($param, ['id' => $param['id']]);
+            if ($param['isopen']) {
+                if (config("sys.openarea")) {
+                    return ['code' => -1, 'data' => '', 'msg' => '请先关闭主站缓存提速，再开通地区'];
+                }
+                if (!config('cloud.grant')) {
+                    $opencount = $this->where(['isopen'=>1])->count();
+                    if ($opencount >= 3) {
+                        return ['code' => -1, 'data' => '', 'msg' => '请绑定授权域名后再开启'];
+                    }
+                }
+            }
+
+            $result =  $this->validate('AreaValidate')->save($param, ['id' => $param['id']]);
             if(false === $result){            
                 return ['code' => 0, 'data' => '', 'msg' => $this->getError()];
             }else{

@@ -16,7 +16,7 @@
 		                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required">
 		                    <option selected="selected" value="0">默认顶级</option>
 		                    {foreach name="admin_rule" item="v"}
-		                        <option value="{$v.id}" {if $v.id eq $info['pid']}selected="selected"{/if}{if $v.id eq $info['id']}disabled{/if}>{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+		                        <option value="{$v.id}" {if $v.id eq $info['pid']}selected="selected"{/if}{if $v.id eq $info['id']}disabled{/if}>{:lvlstr($v.lvl)}{$v.title}</option>
 		                    {/foreach}
 		                </select>
 		            </div>
@@ -47,11 +47,17 @@
 		                <input name="sort" lay-verify="number" autocomplete="off" value="{$info.sort}" placeholder="输入顺序" class="layui-input w300" type="text">
 		            </div>
 		        </div>
+		        				<div class="layui-form-item">
+		            <label class="layui-form-label">跳转链接</label>
+		            <div class="layui-input-block">
+		                <input name="jumpurl" autocomplete="off" value="{$info.jumpurl}" placeholder="跳转链接" class="layui-input w300" type="text">
+		            </div>
+		        </div>
 
 		        <div class="layui-form-item">
 		            <label class="layui-form-label">是否启用</label>
 		            <div class="layui-input-block">
-		                <input checked="checked" name="status" {if $info.status eq 1}checked{/if} lay-skin="switch" lay-filter="switchTest" title="是" type="checkbox">
+		                <input type="checkbox" name="status" {if $info.status eq 1}checked{/if} lay-skin="switch" lay-filter="switchTest" title="是">
 		            </div>
 		        </div>
 		        <div class="layui-form-item">

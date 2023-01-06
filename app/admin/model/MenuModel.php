@@ -1,5 +1,4 @@
 <?php
-
 namespace app\admin\model;
 use think\Model;
 
@@ -11,7 +10,7 @@ class MenuModel extends Model
 
     public function getAllMenu()
     {
-        return $this->order('sort asc')->select();       
+        return $this->orderRaw('sort asc')->select();       
     }
 
     public function insertMenu($param)
@@ -63,5 +62,4 @@ class MenuModel extends Model
             return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
         }
     }
-
 }

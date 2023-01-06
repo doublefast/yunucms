@@ -7,6 +7,24 @@
 <script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
 <link rel="stylesheet" href="__ADM_PUBLIC__/css/webuploader.css">
 <script type="text/javascript" src="__ADM_PUBLIC__/js/webuploader.js"></script>
+<link rel="stylesheet" href="__ADM_PUBLIC__/css/formSelects-v4.css">
+<style>
+.main_parent{
+	padding: 25px 17px 67px 17px;
+    height: 100%;
+    overflow-x:hidden;
+}
+.content_box{
+	padding: 0px;
+    height: 100%;position: relative;}
+.submitbtn{
+	position: absolute;
+	left: 0;
+	text-align: center; 
+	bottom: 0px; 
+	width: 100%;
+}
+</style>
 </head>
 <body>
 	<div id="main-container">
@@ -20,7 +38,7 @@
 					{notempty name="catlist"}
 		            {volist name="catlist" id="v"}
 		            <li data-pid="{$v['pid']}">
-                        <a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
+                        <a href="{:url('content/index',['cid'=>$v['id']])}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
                             {if $v.pid eq 0}
                                 <i data-id="{$v['id']}" ></i>
                             {else}
@@ -82,6 +100,7 @@
             </script>
 
 			<div class="content_box">
+				<div class="main_parent">
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
 					<!--area_start-->
                     <div class="layui-form check_diqu" id="diqu">
@@ -143,7 +162,7 @@
 										<input id="path1" class="layui-input" type="text" name="pic" value="{$info.pic}" ><br>
 										<img id="img_path1" class="defimg" src="{$info.pic}" onerror="javascript:this.style.display='none';">
 				                    </div>
-				                    <div class="layui-input-inline w450">
+				                    <div class="layui-input-inline w150">
 						            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
 						            	<div class="site-demo-upload upload-img fl ml5">
 							                <div class="site-demo-upbar">
@@ -160,6 +179,15 @@
 						            </div>
 						        </div>
 
+						        {if config('sys.qiniu') eq 1}
+								<div class="layui-form-item">
+						            <label class="layui-form-label">微信采集</label>
+						            <div class="layui-input-inline w450">
+						                <input class="layui-input w300 fl" type="text" id="wxurl" placeholder="微信文章完整URL">
+						                <input type="button" id="wxcaiji" value="采集" class="fl file_btn ml10" />
+						            </div>
+						        </div>
+								{/if}
 						        <!--内容设置-->
 								{$fieldhtml['html']}
 						    </div>
@@ -190,7 +218,7 @@
 						        <div class="layui-form-item">
 						            <label class="layui-form-label">TAG标签</label>
 						            <div class="layui-input-inline">
-						                <input class="layui-input w700" type="text" name="tag" id="tag" value="{$info.tag}" placeholder="标签1，标签2，标签3(全角逗号间隔)" >
+						                <input class="layui-input w700" type="text" name="tag" id="tag" value="{$info.tag}" placeholder="标签1,标签2,标签3(逗号间隔)" >
 						            </div>
 						        </div>
 
@@ -248,11 +276,37 @@
 						        {/notempty}
 						        {/if}
 
+								<div class="layui-form-item">
+						            <label class="layui-form-label">附加栏目</label>
+						           	<div class="layui-input-inline w450">
+						                <select name="addcid" xm-select="select1" xm-select-search="" xm-select-height="38px">
+						                	{notempty name="addcatelist"}
+		                    				{volist name="addcatelist" id="v"}
+							                <option value="{$v.id}" {if $info.addcid}{if $v.idsel}selected{/if}{/if}>{$v.title} [ID:{$v.id}]</option>
+							                {/volist}
+							                {/notempty}
+							            </select>
+						            </div>
+						        </div>
+
+						   		<div class="layui-form-item">
+						            <label class="layui-form-label">独立模板</label>
+						            <div class="layui-input-inline w300">
+						                <select data-val="true" lay-filter="tpl_show" name="tpl_show">
+						                	<option selected="selected" value="选择模板">选择模板</option>
+						                    {volist name="showfile" id="v"}
+						                    <option value="{$v}" {if $info.tpl_show eq $v}selected{/if}>{$v}</option>
+						                    {/volist}
+						                </select>
+						            </div>
+						        </div>
+
 						        <div class="layui-form-item">
 						            <label class="layui-form-label">外部链接</label>
 						           	<div class="layui-input-inline">
 						                <input class="layui-input" type="text" name="jumpurl" value="{$info.jumpurl}" placeholder="http://">
 						            </div>
+						            <font class="font_tip">可使用“@其他栏目ID”链接栏目，外链填写完整URL“http://~~”</font>
 						        </div>
 
 								<div class="layui-form-item">
@@ -264,16 +318,17 @@
 						    </div>
 						</div>
 					</div>
-
 					<div class="layui-form-item">
 	                    <label class="layui-form-label"></label>
 	                    <div class="layui-input-inline">
-			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('editcontent')}'>提交</button>
-			              
+			              	<button class="btn gdbtn" lay-submit="" lay-filter="save" data-href='{:url('editcontent')}'>提交</button>
 	                    </div>
 			        </div>
-				
 				</form>
+				</div>
+				<div class="submitbtn">
+					<div><button class="btn fdbtn">提交</button></div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -284,17 +339,17 @@
         'paragraph', 'fontfamily', 'fontsize', '|',
         'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
         'link', 'unlink',
-    ]],initialFrameHeight:100};
+    ]],initialFrameWidth:'100%',initialFrameHeight:100};
     window.UEDITOR_HOME_URL = '__UEDITOR__/';
     window.onload = function() {
         window.UEDITOR_CONFIG.initialFrameWidth=700;
-        window.UEDITOR_CONFIG.initialFrameHeight=300;
+        window.UEDITOR_CONFIG.initialFrameHeight=450;
         {$fieldhtml['ueditor']}
     }
 </script>
-<script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js?time=20211202"></script>
 <script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>
-
+<script type="text/javascript" src="__ADM_PUBLIC__/js/formSelects-v4.js"></script>
 <script>
 function updateimg(node,name){
 	var num = $('.'+node);
@@ -340,7 +395,7 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
 			    shade: false,
 			    anim: 2,
 			    area: ['750px', '350px'],
-			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
 			});
 		});
       
@@ -393,7 +448,9 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
             }
             return false;
         });
-
+        $(".fdbtn").on('click',function(){
+        	$(".gdbtn").click();
+        });
         $("#tiqutag").on('click',function(){
         	$tiqutitle = $('#tiqutitle').val();
         	if ($tiqutitle == '') {
@@ -418,6 +475,32 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
             });
         });
 
+        $("#wxcaiji").on('click',function(){
+        	$wxurl = $('#wxurl').val();
+        	if ($wxurl == '') {
+        		common.layerAlertE("请先填写微信文章完整URL", '提示');
+        		return;
+        	}
+        	$.ajax({
+                url: "{:url('Content/wxcaiji')}",
+                type: 'post',
+                dataType: 'json',
+                data: {'wxurl':$wxurl},
+                success: function (info) {
+                	if (info.code) {
+                		$('#tiqutitle').val(info.title);
+           
+							UE.getEditor('content').setContent(info.content);
+				
+                	}else{
+                		common.layerAlertE(info.msg, '提示');
+                	}
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    common.layerAlertE(textStatus, '提示');
+                }
+            });
+        });
 
         $('#open_diqu').on('click', function(){
         	area_select($("#diqu input:checkbox"));

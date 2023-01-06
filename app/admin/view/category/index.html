@@ -1,4 +1,7 @@
 {include file="public/header" /}
+<style type="text/css">
+.layui-input-inline .icheckbox_square-green{display: none;}
+</style>
 </head>
 <body>
 	<div id="main-container">
@@ -15,17 +18,15 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="{:url('batchaddcategory')}">新增</a></li>
                         <li><a class="do-action" id="doDelete">删除</a></li>
-                        <li><a class="do-action doTemplate">设置模板</a></li>
-                        <li><a class="do-action doTdk">设置TDK</a></li>
-                        <li><a class="do-action doArea" rel="1">开启地区</a></li>
-                        <li><a class="do-action doArea" rel="0">关闭地区</a></li>
-                        <li><a class="do-action doNav" rel="1">开启主导航</a></li>
-                        <li><a class="do-action doNav" rel="0">关闭主导航</a></li>
+                        <li><a class="do-action doTemplate">模板设置</a></li>
+                        <li><a class="do-action doSeo">SEO设置</a></li>
+                        <li><a class="do-action doQita">其他设置</a></li>
+                        <li><a class="do-action doArea">分站设置</a></li>
                     </ul>
                 </div>
             
                 <div class="none" id="template" style="padding-top:20px;">
-                    <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <form  class="layui-form layui-form-pane" id="formtemplate" method="post" role="form">
                         <div class="layui-form-item">
                             <label class="layui-form-label">封面页模版</label>
                             <div class="layui-input-inline w300">
@@ -64,8 +65,8 @@
                     </form>
                 </div>
 
-                <div class="none" id="tdk" style="padding-top:20px;">
-                    <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                <div class="none" id="seo" style="padding-top:20px;">
+                    <form  class="layui-form layui-form-pane" id="formseo" method="post" role="form">
                         <div class="layui-form-item">
                             <label class="layui-form-label">SEO标题</label>
                             <div class="layui-input-inline w450">
@@ -95,6 +96,93 @@
                     </form>
                 </div>
 
+                <div class="none" id="qita" style="padding-top:20px;">
+                    <form  class="layui-form layui-form-pane" id="formqita" method="post" role="formqita">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">栏目属性</label>
+                            <div class="layui-input-inline w450">
+                                <input type="radio" name="cover" value="0" title="列表(允许发表文档)" checked>
+                                <input type="radio" name="cover" value="1" title="频道(不允许发表文档)">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">是否显示</label>
+                            <div class="layui-input-inline">
+                                <input type="checkbox" name="status_chk" lay-skin="switch" lay-filter="status">
+                                <input type="hidden" name="status" id="status" value="0">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新窗口打开</label>
+                            <div class="layui-input-inline">
+                                <input type="checkbox" name="target_chk" lay-skin="switch" lay-filter="target">
+                                <input type="hidden" name="target" id="target" value="0">
+                            </div>
+                        </div>
+                                
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">导航栏显示</label>
+                            <div class="layui-input-inline w450">
+                                <input type="radio" name="nav" value="0" title="不显示" checked>
+                                <input type="radio" name="nav" value="1" title="主导航">
+                                <input type="radio" name="nav" value="2" title="尾导航">
+                                <input type="radio" name="nav" value="3" title="都显示">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="none" id="area" style="padding-top:20px;">
+                    <form  class="layui-form layui-form-pane" id="formarea" method="post" role="formarea">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width:150px">开启地区分站</label>
+                            <div class="layui-input-inline w60">
+                                <input type="checkbox" name="isarea_chk" lay-skin="switch" lay-filter="isarea">
+                                <input type="hidden" name="isarea" id="isarea" value="0">
+                            </div>
+                            <font class="font_tip">如果关闭以下设置均不生效</font>
+                        </div>
+                        
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width:150px">栏目显示地区名称</label>
+                            <div class="layui-input-inline w60">
+                                <input type="checkbox" name="areatitle_chk" lay-skin="switch" lay-filter="areatitle">
+                                <input type="hidden" name="areatitle" id="areatitle" value="0">
+                            </div>
+                            <font class="font_tip">开启后栏目名称会加上城市名称，操作后右上角更新缓存</font>
+                        </div>
+                        
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width:150px">内容显示地区名称</label>
+                            <div class="layui-input-inline w60">
+                                <input type="checkbox" name="areacontitle_chk" lay-skin="switch" lay-filter="areacontitle">
+                                <input type="hidden" name="areacontitle" id="areacontitle" value="0">
+                            </div>
+                            <font class="font_tip">开启后内容标题会加上城市名称，操作后右上角更新缓存</font>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width:150px">栏目URL同步主站</label>
+                            <div class="layui-input-inline w60">
+                                <input type="checkbox" name="catmainurl_chk" lay-skin="switch" lay-filter="catmainurl">
+                                <input type="hidden" name="catmainurl" id="catmainurl" value="0">
+                            </div>
+                            <font class="font_tip">开启后该栏目链接同步主站URL</font>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width:150px">内容URL同步主站</label>
+                            <div class="layui-input-inline w60">
+                                <input type="checkbox" name="conmainurl_chk" lay-skin="switch" lay-filter="conmainurl">
+                                <input type="hidden" name="conmainurl" id="conmainurl" value="0">
+                            </div>
+                            <font class="font_tip">开启后该栏目添加新内容时“链接同步主站”默认为“开启”</font>
+                        </div>
+                    </form>
+                </div>
+
 				<div class="table">
 					<table>
 						<thead>
@@ -106,7 +194,7 @@
 								<th class="sort" width="80"><span>所属模型</span></th>
 								<th class="sort" width="80"><span>导航栏</span></th>
 								<th class="sort" width="60"><span>排序</span></th>
-								<th width="200"><span>操作</span></th>
+								<th width="150"><span>操作</span></th>
 							</tr>
 						</thead>
 						<tbody class="layuitable">
@@ -118,7 +206,7 @@
 									<td align="left">
 										{if $v.pid neq 0}
 				                    		<span style="display:inline-block;width:{$v.leftpin}px;"></span>├  
-				                    	{/if} <a href="{$v['preview']}" target="_blank">{$v.title}</a>
+				                    	{/if} <input class="edittitle" type="text" data-id="{$v.id}" title="{$v.title}" value="{$v.title}"/>
 									</td>
                                     <td>
                                         <input class="etitle" type="text" data-id="{$v.id}" value="{$v.etitle}"/>
@@ -131,9 +219,9 @@
 									<td>{$v.tname}</td>
 									<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td>
 									<td>
-                                        <a class="btn" href="{if $v.cover eq 1}javascript:void(){else}{:url('content/index', ['cid'=>$v['id']])}{/if}" {if $v.cover eq 1}disabled{/if}>内容</a>
-                                        <a class="btn do-action" data-type="doEdit" data-href="{:url('editcategory')}" data-id="{$v.id}">编辑</a>
-		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delcategory',['ids'=>$v['id']])}">删除</a>
+                                        <a class="btn btn2" href="{if $v.cover eq 1}javascript:void(){else}{:url('content/index', ['cid'=>$v['id']])}{/if}" {if $v.cover eq 1}disabled{/if}>内容</a>
+                                        <a class="btn btn2 do-action" data-type="doEdit" data-href="{:url('editcategory')}" data-id="{$v.id}">编辑</a>
+		                            	<a class="btn btn2 do-action" data-type="doDelOne" data-href="{:url('delcategory',['ids'=>$v['id']])}">删除</a>
 									</td>
 								</tr>
 								{/volist}
@@ -152,7 +240,8 @@
 <script>
     var laytpl,laypage;
     layui.use(['form','layer', 'common', 'icheck'], function () {
-        var $ = layui.jquery, layer = layui.layer, common = layui.common,$form = $('form');;
+        var $ = layui.jquery, layer = layui.layer, common = layui.common,$form = $('form');
+        var form = layui.form();
         laypage = layui.laypage;
         //加载单选框样式
         $(("[type='checkbox']")).iCheck({
@@ -165,8 +254,80 @@
         $('.check-all').on('ifUnchecked', function (event) {
             $('input[name="ids[]"]').iCheck('uncheck');
         });
+
+        form.on('switch(isarea)', function (data) {
+            if (this.checked) {
+                $("#isarea").val(1);
+            }else{
+                $("#isarea").val(0);
+            }
+        });
+
+        form.on('switch(areatitle)', function (data) {
+            if (this.checked) {
+                $("#areatitle").val(1);
+            }else{
+                $("#areatitle").val(0);
+            }
+        });
+        form.on('switch(areacontitle)', function (data) {
+            if (this.checked) {
+                $("#areacontitle").val(1);
+            }else{
+                $("#areacontitle").val(0);
+            }
+        });
+
+        form.on('switch(catmainurl)', function (data) {
+            if (this.checked) {
+                $("#catmainurl").val(1);
+            }else{
+                $("#catmainurl").val(0);
+            }
+        });
+
+        form.on('switch(conmainurl)', function (data) {
+            if (this.checked) {
+                $("#conmainurl").val(1);
+            }else{
+                $("#conmainurl").val(0);
+            }
+        });
+
+        form.on('switch(status)', function (data) {
+            if (this.checked) {
+                $("#status").val(1);
+            }else{
+                $("#status").val(0);
+            }
+        });
+
+        form.on('switch(target)', function (data) {
+            if (this.checked) {
+                $("#target").val(1);
+            }else{
+                $("#target").val(0);
+            }
+        });
     });
 
+    $(document).on('blur','.edittitle', function () {
+        var id = $(this).attr('data-id');
+        var obs = $(this);
+        $.ajax({
+            url: '{:url("edittitle")}',
+            dataType: "json",
+            data:{'id':id,'title':obs.val()},
+            type: "POST",
+            success: function(data){
+            },
+            error:function(ajaxobj)
+            {
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
+            }
+        });
+    });
     $(document).on('click','.change_status', function () {
         var id=$(this).attr('data-id');
         var obs=$(this);
@@ -192,67 +353,29 @@
         if (1 > $(".layuitable input:checked").size()){
             layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
         }else{
-            for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
-            $.ajax({
-                url: '{:url("delcategory")}',
-                dataType: "json",
-                data:{'ids':c},
-                type: "POST",
-                success: function(data){
-                    if(data.code == 1){
-                        parent.layer.alert(data.msg, {
-                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
-                        }, function () {
-                            location.href = location.href;
-                        });
-                    }
-                }
-            });
-        }
-    });
-
-    //一键开启地区/一键关闭地区
-    $(document).on('click','.doArea', function () {
-        if (1 > $(".layuitable input:checked").size()){
-            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
-        }else{
-            for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
-            $.ajax({
-                url: '{:url("doisarea")}',
-                dataType: "json",
-                data:{'ids':c,'isarea':$(this).attr('rel')},
-                type: "POST",
-                success: function(data){
-                    if(data.code == 1){
-                        parent.layer.alert(data.msg, {
-                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
-                        }, function () {
-                            location.href = location.href;
-                        });
-                    }
-                }
-            });
-        }
-    });
-    //一键开启主导航/一键关闭主导航
-    $(document).on('click','.doNav', function () {
-        if (1 > $(".layuitable input:checked").size()){
-            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
-        }else{
-            for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
-            $.ajax({
-                url: '{:url("doisnav")}',
-                dataType: "json",
-                data:{'ids':c,'isnav':$(this).attr('rel')},
-                type: "POST",
-                success: function(data){
-                    if(data.code == 1){
-                        parent.layer.alert(data.msg, {
-                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
-                        }, function () {
-                            location.href = location.href;
-                        });
-                    }
+            layer.confirm("此操作不可逆，请再次确认是否要操作。", {
+                title: "确认删除这些信息？",
+                btnAlign: 'c',
+                resize: false,
+                icon: 3,
+                btn: ['确定删除', '我再想想'],
+                yes: function () {
+                    for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                    $.ajax({
+                        url: '{:url("delcategory")}',
+                        dataType: "json",
+                        data:{'ids':c},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                }, function () {
+                                    location.href = location.href;
+                                });
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -264,7 +387,7 @@
             layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
         }else{
             var diqulay = layer.open({
-                title: '批量设置模板',
+                title: '批量模板设置',
                 type: 1,
                 content: $("#template"),
                 skin: 'layer_diqu',
@@ -295,17 +418,17 @@
         }
     });
 
-    //批量设置TDK
-    $(document).on('click','.doTdk', function () {
+    //批量设置seo
+    $(document).on('click','.doSeo', function () {
         if (1 > $(".layuitable input:checked").size()){
             layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
         }else{
             var diqulay = layer.open({
-                title: '批量设置TDK',
+                title: '批量SEO设置',
                 type: 1,
-                content: $("#tdk"),
+                content: $("#seo"),
                 skin: 'layer_diqu',
-                area: ['630px','380px'],
+                area: ['630px','420px'],
                 btn: '确定',
                 yes: function(index, layero){
                     for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
@@ -314,9 +437,86 @@
                     var seo_desc = $('#seo_desc').val();
 
                     $.ajax({
-                        url: '{:url("dotdk")}',
+                        url: '{:url("doseo")}',
                         dataType: "json",
                         data:{'ids':c, 'seo_title':seo_title, 'seo_keywords':seo_keywords, 'seo_desc':seo_desc},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                });
+                                layer.close(diqulay);
+                            }
+                        }
+                    }); 
+                }
+            });
+        }
+    });
+
+    //批量其他设置
+    $(document).on('click','.doQita', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            var diqulay = layer.open({
+                title: '批量其他设置',
+                type: 1,
+                content: $("#qita"),
+                skin: 'layer_diqu',
+                area: ['630px','320px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                    var cover = $('#qita input[name="cover"]:checked ').val()
+                    var status = $('#status').val()
+                    var target = $('#target').val()
+                    var nav = $('#qita input[name="nav"]:checked ').val()
+
+                    $.ajax({
+                        url: '{:url("doqita")}',
+                        dataType: "json",
+                        data:{'ids':c, 'cover':cover, 'status':status, 'target':target, 'nav':nav},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                });
+                                layer.close(diqulay);
+                            }
+                        }
+                    }); 
+                }
+            });
+        }
+    });
+
+    //批量分站设置
+    $(document).on('click','.doArea', function () {
+        if (1 > $(".layuitable input:checked").size()){
+            layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+        }else{
+            var diqulay = layer.open({
+                title: '批量分站设置',
+                type: 1,
+                content: $("#area"),
+                skin: 'layer_diqu',
+                area: ['630px','360px'],
+                btn: '确定',
+                yes: function(index, layero){
+                    for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                    var isarea = $("#isarea").val();
+                    var areatitle = $("#areatitle").val();
+                    var areacontitle = $("#areacontitle").val();
+                    var catmainurl = $("#catmainurl").val();
+                    var conmainurl = $("#conmainurl").val();
+
+                    $.ajax({
+                        url: '{:url("doarea")}',
+                        dataType: "json",
+                        data:{'ids':c, 'isarea':isarea, 'areatitle':areatitle,'areacontitle':areacontitle, 'catmainurl':catmainurl, 'conmainurl':conmainurl},
                         type: "POST",
                         success: function(data){
                             if(data.code == 1){
@@ -360,7 +560,9 @@
             data:{'id':id,'etitle':obs.val()},
             type: "POST",
             success: function(data){
-                //window.location = window.location;
+                if(data.code != 1){
+                    layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                }
             },
             error:function(ajaxobj)
             {

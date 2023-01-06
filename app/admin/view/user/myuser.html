@@ -9,6 +9,13 @@
                 <div class="title">
                     <span>{$position.name}</span>
                 </div>
+                {if $passstr}
+                <div class="ui_prompt mb20">
+                    <p class="ui_prompt_tit">温馨提示</p>
+                    <p>· {$passstr}</p>
+                </div>
+                {/if}
+
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
                 <input type="hidden" name="id" value="{$info.id}">
                 <input type="hidden" name="status" value="{$info.status}">

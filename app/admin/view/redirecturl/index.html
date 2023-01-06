@@ -1,0 +1,92 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<div class="ui_prompt">
+	                <p class="ui_prompt_tit">温馨提示</p>
+	                <p>1、需填写来源URL以及目标URL,必须一一对应关系</p>
+	                <p>2、网站改版时，此功能可以把老网站被搜索引擎收录的URL，重定向给新的URL</p>
+	                <p>3、使用此功能，站点需支持伪静态</p>
+	                <p>4、暂不支持.php后缀跳转</p>
+	                <p>5、注：nginx环境如需使用301跳转需修改nginx配置文件：error_page 404/404.htm;</p>
+	            </div>
+	            <br>
+				<a class="btn mr10" href="{:url('addredirecturl')}">添加</a><a class="btn do-action mr10" data-type="doDelete" data-href="{:url('delredirecturl')}">删除</a><a class="btn cateredirecturl">一键导入栏目跳转</a>
+				<div class="table" v-el:table>
+					<form id="export-form" method="post" action="{:url('index')}">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
+								<th class="sort" width="50"><span>ID</span></th>
+								<th><span>来源URL</span></th>
+								<th><span>目标URL</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody id="article_list">
+							{notempty name="infolist"}
+		                    	{volist name="infolist" id="v"}
+								<tr>
+									<td><input class="ids i-checks" type="checkbox" name="ck" ids="{$v.id}"></td>
+									<td>{$v.id}</td>
+									<td align="left">{$v.source_url}</td>
+									<td align="left">{$v.target_url}</td>
+									<td>
+										<a class="btn do-action" data-type="doEdit" data-href="{:url('editredirecturl')}" data-id="{$v.id}">编辑</a>
+		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delredirecturl',['ids'=>$v['id']])}">删除</a>
+									</td>
+								</tr>
+								{/volist}
+		                    {else /}
+		                        <td colspan="5" class="text-center"> 暂未发现数据! </td>
+		                    {/notempty}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    layui.use(['layer', 'form', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common, form = layui.form(),box = '#diqu';
+        laypage = layui.laypage;
+        //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+        //全选的实现
+        $('.check-all').on('ifChecked', function (event) {
+            $('input[name="ck"]').iCheck('check');
+        });
+        $('.check-all').on('ifUnchecked', function (event) {
+            $('input[name="ck"]').iCheck('uncheck');
+        });
+
+        $(document).on('click','.cateredirecturl', function () {
+	        $.ajax({
+	            url: '{:url("cateredirecturl")}',
+	            dataType: "json",
+	            data:{},
+	            type: "POST",
+	            success: function(data){
+	                if(data.code == 1){
+	                    location.reload();
+	                }else{
+	                    layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+	                }
+	            },
+	        });
+	    });
+    });
+</script>
+</body>
+</html>

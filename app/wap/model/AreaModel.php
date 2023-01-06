@@ -11,14 +11,30 @@ class AreaModel extends Model
 	    $url = '';
 	    switch (config('sys.url_model')) {
 	    	case '1'://动态
-	    		$urlqz = config('sys.sys_levelurl') == 'm' ? '' : '/wap'; //url前缀
-	    		$url = "/index.php".$urlqz."?area=".$area['etitle'];
+	    		if (config('sys.sys_levelurl') == WAP_PRE) {
+	    			$url = "/index.php?area=".$area['etitle'];
+	    		}else{
+	    			$url = "/index.php?s=wap&area=".$area['etitle'];
+	    		}
 	    		break;
 	    	case '3'://伪静态
-	    		$urlqz = config('sys.sys_levelurl') == 'm' ? '' : '/m'; //url前缀
+	    		$urlqz = config('sys.sys_levelurl') == WAP_PRE ? '' : '/m'; //url前缀
 	    		$url = $urlqz.'/'.$area['etitle'].".html";
 	    		break;
 	    }
 	    return $url;
 	}
+	public function getDefArea(){
+		if (!cache('defareaetitle')) {
+			$etitle = $this->where(['id'=>config('sys.seo_default_area')])->value('etitle');
+			cache('defareaetitle', $etitle, 7200);
+		}else{
+			$etitle = cache('defareaetitle');
+		}
+		return $etitle;
+	}
+
+	public function getInfo($where=[], $field='*'){
+        return $this->where($where)->field($field)->find();
+    }
 }

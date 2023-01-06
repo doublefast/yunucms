@@ -15,7 +15,24 @@ class CategoryModel extends Model
         $catlist = $role->getCatlistById($groupid);
 
         $where = $catlist ? ['id'=>['IN',$catlist]] : 1;
-        return $this->where($where)->order('sort asc')->select();
+        return $this->where($where)->orderRaw('sort asc')->select();
+    }
+
+    public function getCategoryAddCon($cid, $mid)
+    {
+        $groupid = db('admin')->where(['id'=>session('admin_uid')])->value('groupid');
+        $role = new UserType();
+        $catlist = $role->getCatlistById($groupid);
+
+        $where = [];
+        if ($catlist) {
+            $where['id'] = [['IN', $catlist],['NOT IN', $cid]];
+        }else{
+            $where['id'] = ['NOT IN', $cid];
+        }
+        $where['cover'] = 0;
+        $where['mid'] = $mid;
+        return $this->where($where)->orderRaw('sort asc')->select();
     }
 
     public function getNodeInfo($id)
@@ -50,7 +67,7 @@ class CategoryModel extends Model
     {
         try{
             if (empty($param['etitle'])) {
-                $param['etitle'] = get_pinyin(iconv('utf-8', 'gb2312//ignore', $param['title']), 0);
+                $param['etitle'] = get_pinyin(iconv('utf-8', 'gbk//IGNORE', $param['title']), 0);
             }
             
             if (in_array($param['etitle'], $this->sysfield)) {
@@ -61,15 +78,20 @@ class CategoryModel extends Model
             $param['tpl_show'] = $param['tpl_show'] == "选择模板" ? '' : $param['tpl_show'];
 
             $param['isarea'] = array_key_exists("isarea", $param) ? 1 : 0;
+            $param['areatitle'] = array_key_exists("areatitle", $param) ? 1 : 0;
+            $param['areacontitle'] = array_key_exists("areacontitle", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $param['target'] = array_key_exists("target", $param) ? 1 : 0;
             $param['catmainurl'] = array_key_exists("catmainurl", $param) ? 1 : 0;
             $param['conmainurl'] = array_key_exists("conmainurl", $param) ? 1 : 0;
 
             $result = $this->validate('Category')->allowField(true)->save($param);
-            if(false === $result){            
+            if(false === $result){
                 return ['code' => -1, 'data' => '', 'msg' => $this->getError()];
             }else{
+                $catid = $this->getLastInsID();
+                $role = new UserType();
+                $role->editCatlist($catid);
                 return ['code' => 1, 'data' => '', 'msg' => '添加栏目成功'];
             }
         }catch( PDOException $e){
@@ -125,12 +147,35 @@ class CategoryModel extends Model
             $param['tpl_show'] = $param['tpl_show'] == "选择模板" ? '' : $param['tpl_show'];
 
             $param['isarea'] = array_key_exists("isarea", $param) ? 1 : 0;
+            $param['areatitle'] = array_key_exists("areatitle", $param) ? 1 : 0;
+            $param['areacontitle'] = array_key_exists("areacontitle", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $param['target'] = array_key_exists("target", $param) ? 1 : 0;
             $param['catmainurl'] = array_key_exists("catmainurl", $param) ? 1 : 0;
             $param['conmainurl'] = array_key_exists("conmainurl", $param) ? 1 : 0;
             
             $result =  $this->validate('Category')->allowField(true)->save($param, ['id' => $param['id']]);
+            if(false === $result){            
+                return ['code' => 0, 'data' => '', 'msg' => $this->getError()];
+            }else{
+                return ['code' => 1, 'data' => '', 'msg' => '编辑栏目成功'];
+            }
+        }catch( PDOException $e){
+            return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
+        }
+    }
+
+    public function editCategorytitle($id, $etitle)
+    {
+        try{
+            if (in_array($etitle, $this->sysfield)) {
+                return ['code' => -1, 'data' => '', 'msg' => "分类别名不能为系统关键字,关键字列表：".implode(' , ', $this->sysfield)];
+            }
+            if ($this->where(['id'=>['neq', $id],'etitle'=>$etitle])->find()) {
+                return ['code' => -1, 'data' => '', 'msg' => "已存在重名栏目"];
+            }
+
+            $result =  $this->where(['id'=>$id])->setField(['etitle'=>$etitle]);
             if(false === $result){            
                 return ['code' => 0, 'data' => '', 'msg' => $this->getError()];
             }else{
@@ -162,7 +207,7 @@ class CategoryModel extends Model
         $catlist = $role->getCatlistById($groupid);
 
         $where = $catlist ? ['id'=>['IN',$catlist],'pid'=>$pid] : ['pid'=>$pid];
-        return $this->where($where)->order('sort asc')->select();
+        return $this->where($where)->orderRaw('sort asc')->select();
     }
 
     public function getChildsId($cate, $pid, $flag = 0) {

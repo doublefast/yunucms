@@ -40,7 +40,7 @@
 						                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required">
 						                    <option selected="selected" value="0">默认顶级</option>
 						                    {volist name="catelist" id="v"}
-						                    <option value="{$v.id}">{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+						                    <option value="{$v.id}">{:lvlstr($v.lvl)}{$v.title}</option>
 						                    {/volist}
 						                </select>
 						            </div>
@@ -59,7 +59,7 @@
 										<input id="path1" class="layui-input" type="text" name="pic" readonly="true"><br>
 										<img id="img_path1" class="defimg" onerror="javascript:this.style.display='none';">
 				                    </div>
-				                    <div class="layui-input-inline w450">
+				                    <div class="layui-input-inline w150">
 						            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
 						            	<div class="site-demo-upload upload-img fl ml5">
 							                <div class="site-demo-upbar">
@@ -125,14 +125,14 @@
 									内容设置
 								</div>
 
-						    	<div class="layui-form-item">
+						    	<div class="layui-form-item layui-form-item-flex">
 						            <label class="layui-form-label">栏目简介</label>
 						            <div class="layui-input-inline">
 						                <textarea name="desc" id="desc"></textarea>
 						            </div>
 						        </div>
 
-						        <div class="layui-form-item">
+						        <div class="layui-form-item layui-form-item-flex">
 			                        <label class="layui-form-label">栏目内容</label>
 			                        <div class="layui-input-inline">
 			                            <textarea name="content" id="content"></textarea>
@@ -179,7 +179,7 @@
 						            <div class="layui-input-inline">
 						                <input class="layui-input" type="text" name="jumpurl" placeholder="外部链接">
 						            </div>
-						            <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
+						            <font class="font_tip">内部链接可使用“@其他栏目ID”进行内链，外链填写完整URL“http://~~”</font>
 						        </div>
 
 						        <div class="layui-form-item">
@@ -218,15 +218,33 @@
 						    <div class="layui-tab-item">
 						    	<!--分站设置-->
 						    	<div class="layui-form-item">
-			                        <label class="layui-form-label" style="width:150px">地区分站</label>
-			                        <div class="layui-input-inline w150">
+			                        <label class="layui-form-label" style="width:150px">开启地区分站</label>
+			                        <div class="layui-input-inline w60">
 			                            <input type="checkbox" checked="" name="isarea" lay-skin="switch" lay-filter="switchTest">
 			                        </div>
+			                        <font class="font_tip">如果关闭以下设置均不生效</font>
+			                    </div>
+
+			                    <div class="layui-form-item">
+			                        <label class="layui-form-label" style="width:150px">栏目显示地区名称</label>
+			                        <div class="layui-input-inline w60">
+			                            <input type="checkbox" checked="" name="areatitle" lay-skin="switch" lay-filter="switchTest">
+			                        </div>
+			                        <font class="font_tip">开启后栏目名称会加上城市名称，操作后右上角更新缓存</font>
+			                    </div>
+								
+								<div class="layui-form-item">
+			                        <label class="layui-form-label" style="width:150px">内容显示地区名称</label>
+			                        <div class="layui-input-inline w60">
+			                            <input type="checkbox" checked name="areacontitle" lay-skin="switch" lay-filter="switchTest" title="开关">
+			                            <div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
+			                        </div>
+			                        <font class="font_tip">开启后内容标题会加上城市名称，操作后右上角更新缓存</font>
 			                    </div>
 
 			                    <div class="layui-form-item">
 			                        <label class="layui-form-label" style="width:150px">栏目URL同步主站</label>
-			                        <div class="layui-input-inline w100">
+			                        <div class="layui-input-inline w60">
 			                            <input type="checkbox" name="catmainurl" lay-skin="switch" lay-filter="switchTest">
 			                        </div>
 			                        <font class="font_tip">开启后该栏目链接同步主站URL</font>
@@ -234,7 +252,7 @@
 
 			                    <div class="layui-form-item">
 			                        <label class="layui-form-label" style="width:150px">内容URL同步主站</label>
-			                        <div class="layui-input-inline w100">
+			                        <div class="layui-input-inline w60">
 			                            <input type="checkbox" name="conmainurl" lay-skin="switch" lay-filter="switchTest">
 			                        </div>
 			                        <font class="font_tip">开启后该栏目添加新内容时“附加设置”-“链接同步主站”默认状态为“开启”</font>
@@ -261,19 +279,19 @@
         'paragraph', 'fontfamily', 'fontsize', '|',
         'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
         'link', 'unlink',
-    ]],initialFrameHeight:100};
+    ]],initialFrameWidth:'100%',initialFrameHeight:100};
 
     window.UEDITOR_HOME_URL = '__UEDITOR__/';
     window.onload = function() {
         window.UEDITOR_CONFIG.initialFrameWidth=700;
-        window.UEDITOR_CONFIG.initialFrameHeight=300;
+        window.UEDITOR_CONFIG.initialFrameHeight=450;
         UE.getEditor('desc',option);
-        UE.getEditor('content');
+        UE.getEditor('content',{initialFrameWidth:'100%'});
 
     }
 </script>
-<script type="text/javascript" src="__UEDITOR__/ueditor.config.js"></script>
-<script type="text/javascript" src="__UEDITOR__/ueditor.all.js"></script>  
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js?time=20211202"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script> 
 
 <script>
 layui.use(['form','common','upload'], function(){
@@ -311,7 +329,7 @@ layui.use(['form','common','upload'], function(){
 			    shade: false,
 			    anim: 2,
 			    area: ['750px', '350px'],
-			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
 			});
 		});
 

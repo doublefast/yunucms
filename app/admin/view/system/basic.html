@@ -15,6 +15,7 @@
 			            <div class="layui-input-inline">
 			                <input class="layui-input" type="text" name="site_title" value="{:config('sys.site_title')}" placeholder="一般填写公司名称">
 			            </div>
+			            <font class="font_tip">请正确填写您的公司全称</font>
 			        </div>
 
 			        <div class="layui-form-item">
@@ -22,6 +23,7 @@
 			            <div class="layui-input-inline">
 			                <input class="layui-input" type="text" name="site_url" value="{:config('sys.site_url')}" placeholder="例：www.baidu.com" >
 			            </div>
+			            <font class="font_tip">请正确填写网站主域名，非主域名建议用301重定向</font>
 			        </div>
 
 			        <div class="layui-form-item">
@@ -37,7 +39,14 @@
 			            <div class="layui-input-inline">
 			                <input class="layui-input" type="text" name="site_protocol" value="{:config('sys.site_protocol')}" placeholder="http / https" >
 			            </div>
-			            <font class="font_tip">请正确填写URL协议，否则页面将无法访问</font>
+			            <font class="font_tip">请正确填写URL协议，未申请证书填写http，申请证书填写https</font>
+			        </div>
+
+			        <div class="layui-form-item">
+			            <label class="layui-form-label">后台路径</label>
+			            <div class="layui-input-inline">
+			                <input class="layui-input" type="text" name="login_url" value="{:config('sys.login_url')}">
+			            </div>
 			        </div>
 			        
 					<div class="layui-form-item">
@@ -46,7 +55,7 @@
 							<input id="path1" class="layui-input" type="text" name="site_logo" value="{:config('sys.site_logo')}"><br>
 							<img id="img_path1" class="defimg" src="{:config('sys.site_logo')}" onerror="javascript:this.style.display='none';">
 	                    </div>
-	                    <div class="layui-input-inline w450">
+	                    <div class="layui-input-inline w150">
 			            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
 			            	<div class="site-demo-upload upload-img fl ml5">
 				                <div class="site-demo-upbar">
@@ -61,7 +70,7 @@
 	                    <div class="layui-input-inline">
 							<input id="ico1" class="layui-input" type="text" name="site_ico" value="{:config('sys.site_ico')}"><br>
 	                    </div>
-	                    <div class="layui-input-inline w450">
+	                    <div class="layui-input-inline w150">
 			            	<div class="site-demo-upload upload-img fl ml5">
 				                <div class="site-demo-upbar">
 				                    <input type="file" name="ico" class="layui-upload-file" id="upload-ico">
@@ -79,32 +88,36 @@
 
 			        <div class="layui-form-item">
 	                    <label class="layui-form-label">后台滑动验证</label>
-	                    <div class="layui-input-inline">
+	                    <div class="layui-input-inline w60">
 	                        <input type="checkbox" {if config('sys.site_slide') eq 1}checked{/if} name="site_slide" lay-skin="switch" lay-filter="switchTest">
-	                        <font class="font_tip">如无特殊需求，建议开启</font>
 	                    </div>
-
+						<div class="layui-input-inline">
+	                    	<font class="font_tip">如无特殊需求，建议开启</font>
+	                    </div>
+	                </div>
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">站点调试模式</label>
+	                    <div class="layui-input-inline w60">
+	                        <input type="checkbox" {if config('app_debug')}checked{/if} name="app_debug" lay-skin="switch" lay-filter="switchTest">
+	                    </div>
 	                </div>
 					{if $indexdef}
 					<div class="layui-form-item">
 	                    <label class="layui-form-label">引导页</label>
-	                    <div class="layui-input-inline w700">
+	                    <div class="layui-input-inline w60">
 	                        <input type="checkbox" {if config('sys.site_guide') eq 1}checked{/if} name="site_guide" lay-skin="switch" lay-filter="switchTest">
 	                    </div>
 	                </div>
 	                {/if}
-
-	                <!-- <div class="layui-form-item">
-	                    <label class="layui-form-label">多图上传</label>
-	                    <div class="layui-input-inline w700">
-	                    	<input type="hidden" name="imglist" id="imglist">
-	                							<div id="upload_imagelist" >上传多图</div>
-	                							<div class="picture_tip"></div>
-	                				    		<div id="picture_show"></div>
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">模板文件管理</label>
+	                    <div class="layui-input-inline w60">
+	                        <input type="checkbox" {if config('sys.site_tplfun') eq 1}checked{/if} name="site_tplfun" lay-skin="switch" lay-filter="switchTest">
 	                    </div>
-	                </div> -->
-
-
+	                    <div class="layui-input-inline w450">
+	                    	<font class="font_tip">开启模板文件管理功能可能存在非必要的安全风险，建议使用后进行关闭！</font>
+	                    </div>
+	                </div>
 					<div class="layui-form-item">
 	                    <label class="layui-form-label"></label>
 	                    <div class="layui-input-inline">
@@ -116,9 +129,6 @@
 			</div>
 		</div>
 	</div>
-<!-- <link rel="stylesheet" href="__ADM_PUBLIC__/css/webuploader.css">
-<script type="text/javascript" src="__ADM_PUBLIC__/js/webuploader.js"></script> -->
-
 <script>
 layui.use(['form','common','upload'], function(){
         var $ = layui.jquery;
@@ -173,7 +183,7 @@ layui.use(['form','common','upload'], function(){
 			    shade: false,
 			    anim: 2,
 			    area: ['750px', '350px'],
-			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+			    content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
 			});
 		});
 

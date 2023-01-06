@@ -8,7 +8,7 @@ return [
     ],
     // URL伪静态后缀
     'url_html_suffix'        => 'html',
-    'default_filter'         => 'strip_tags,htmlspecialchars',
+    'default_filter'         => 'addslashes,strip_tags,htmlspecialchars',
     'template'               => [
         // 模板引擎类型 支持 php think 支持扩展
         'type'         => 'Think',

@@ -1,0 +1,631 @@
+{include file="public/header" /}
+<style>
+	.crumbs_search {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        justify-content: space-between;
+        -ms-align-items: center;
+        align-items: center;
+    }
+    .search .search_btn {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 31px;
+        line-height: 31px;
+    }
+    .sel_type{line-height: 45px;margin-top:5px; }
+    .ui_prompt{margin-top:8px; }
+    .ui_prompt span{color: #0099cc; font-weight: bold;}
+    .intro a{ color: #0099cc; font-weight: bold;}
+    .btndef{color: #0099cc; background-color: #fff;}
+
+    .clearfix:after {
+            content: " ";
+            display: block;
+            height: 0;
+            clear: both;
+            visibility: hidden;
+        }
+        .zffix_wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99;
+        }
+        .zf_fixbg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(0,0,0,.5);
+        }
+        .zf_fix_text {
+            width: 100%;
+            height: 100%;
+            -ms-flex-align: center;
+            align-items: center;
+            -ms-flex-line-pack: center;
+            align-content: center;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-pack: center;
+        }
+        .zf_fix_box {
+            width: 660px;
+            height: 580px;
+            position: relative;
+            z-index: 111;
+            background: #fff;
+            margin: 0 auto;
+        }
+        .zf_fixtit{
+            background: #f7f7f7;
+            position: relative;
+        }
+        .zf_fixtit span {
+            background: #f7f7f7;
+            line-height: 40px;
+            display: block;
+            font-size: 14px;
+            color: #333;
+            padding-left: 20px;
+            font-weight: bold;
+        }
+        .zftext {
+            padding: 30px 30px 0 30px;
+        }
+        .zftext h4 {
+            font-size: 18px;
+            color: #838383;
+            display: block;
+            margin: 0;
+            text-align: center;
+        }
+        .pay_checkbox label {
+            float: left;
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+        }
+        .pay_checkbox input {
+            width: 100%;
+            border: 1px solid #d9e1e5;
+            outline: 0;
+            border-radius: 2px;
+            padding-left: 40px;
+            color: #8d979c;
+            font-size: 14px;
+            margin: 0;
+            height: 13px;
+            margin-top: -10px;
+        }
+        .pay_checkbox span {
+            float: left;
+            line-height: 22px;
+            font-size: 14px;
+            color: #838383;
+        }
+        .pay_checkbox {
+            display: inline-block;
+            margin-bottom:-5px; 
+        }
+        .moneylist {
+            margin-top: 18px;
+            text-align: center;
+        }
+        .moneylist p {
+            font-size: 14px;
+            color: #838383;
+            margin: 0;
+            line-height: 40px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+        .moneylist p i {
+            font-style: normal;
+            color: #fb3838;
+            font-size: 20px;
+        }
+        .zfewmlist {
+            text-align: center;
+            padding-top: 30px;
+        }
+        .zfewmlist p {
+            width: 200px;
+            display: inline-block;
+            margin: 0 20px;
+        }
+        .zfewmlist p a {
+            text-decoration: none;
+        }
+        .zfewmlist p span {
+            text-align: center;
+            line-height: 180px;
+            overflow: hidden;
+            padding: 10px;
+            margin: 0 auto;
+            border: 1px solid #eee;
+            display: block;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, .1);
+        }
+        .zfewmlist p img {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .zfewmlist p:first-child i {
+            background: url('__ADM_PUBLIC__/img/zhuanma_3.png') no-repeat left center;
+        }
+        .zfewmlist p:first-child +p i {
+            background: url('__ADM_PUBLIC__/img/zhuanma_4.png') no-repeat left center;
+        }
+        .zfewmlist p i {
+            font-size: 14px;
+            color: #838383;
+            font-style: normal;
+            padding: 15px 0;
+            padding-left: 37px;
+        }
+        .zfewmlist p:hover span {
+            box-shadow: 0 5px 25px rgba(0, 0, 0, .3);
+        }
+        .zfewmlist p:hover i {
+            color: #00a2e9;
+        }
+        .zffix_btn {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .zffix_btn span {
+            font-size: 14px;
+            color: #838383;
+            display: block;
+        }
+        .zffix_btn p {
+            margin-top: 20px;
+        }
+        .zffix_btn p a {
+            width: 120px;
+            height: 36px;
+            line-height: 36px;
+            border: 1px solid #00a2e9;
+            outline: 0;
+            color: #8d979c;
+            font-size: 14px;
+            background: #00a2e9;
+            color: #fff;
+            display: inline-block;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .zffix_btn p a:first-child +a {
+            border-color: #ccc;
+            color: #999;
+            background: #fff;
+        }
+        .zffix_btn p a:hover {
+            background: #1dbaff;
+            border-color: #1dbaff;
+        }
+        .zffix_btn p a:first-child +a:hover {
+            background: #00a2e9;
+            border-color: #00a2e9;
+            color: #fff;
+        }
+
+
+</style>
+</head>
+<body>
+{:runhook('system_admin_tips')}
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<div class="crumbs_search">
+                    <form id="searchform" action="" method="post">
+                    <input type="hidden" name="seltype" id="seltype" value="{$seltype}">
+                    <input type="hidden" name="seltag" id="seltag" value="{$seltag}">
+                    <input type="hidden" name="selstatus" id="selstatus" value="{$selstatus}">
+                    <div class="search">
+                        <input type="text" id="seltitle" name="seltitle" value="{$seltitle}" placeholder="请输入插件名称" >
+                        <button class="btn search_btn" type="submit">搜索</button>
+                    </div>
+                    </form>
+                </div>
+				<div class="sel_type">
+					类别：
+                    {volist name="typelist" id="vo" key="k"}
+                        <a class="btn mr10 {if condition="$seltype neq $k-1"}btndef{/if} seltype" rel="{$k-1}">{$vo['typename']}&nbsp;({$vo['tnum']})</a>
+                    {/volist}
+					<br>
+					标签：
+                    {volist name="taglist" id="vo" key="k"}
+                        <a class="btn mr10 {if condition="$seltag neq $k-1"}btndef{/if} seltag" rel="{$k-1}">{$vo['tagname']}&nbsp;({$vo['tnum']})</a>
+                    {/volist}
+                    <br>
+                    状态：
+                    {volist name="statuslist" id="vo" key="k"}
+                        <a class="btn mr10 {if condition="$selstatus neq $k-1"}btndef{/if} selstatus" rel="{$k-1}">{$vo['tname']}&nbsp;({$vo['tnum']})</a>
+                    {/volist}
+				</div>
+                
+				<div class="ui_prompt">
+					<p>{$authorizestr}</p>
+				</div>
+
+                <div class="table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="150"><span>插件名称</span></th>
+                                <th width="80"><span>类别</span></th>
+                                <th width="150"><span>版本</span></th>
+                                <th><span>描述</span></th>
+                                <th width="80"><span>安装时间</span></th>
+                                <th width="60"><span>价格</span></th>
+                                <th width="80"><span>插件状态</span></th>
+                                <th width="180"><span>操作</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="layuitable">
+                            {volist name="infolist" id="vo"}
+                            <tr>
+                                <td style="text-align:left;padding-left:10px;">{$vo['title']}</td>
+                                <td>{$vo['typename']}</td>
+                                <td>{$vo['myversion']}{if condition="$vo['isupgrade']"}&nbsp;&nbsp;<a class="varupgrade" style="font-weight:bold;color:red;" data-id="{$vo.id}" data-rel="{$vo.update_log}">[ 新版本更新 ]</a>{/if}</td>
+
+                                <td style="text-align:left;padding-left:10px;" class="intro">{$vo['intro']}</td>
+                                <td>{$vo['starttime']}</td>
+                                <td>{$vo['moneytext']}</td>
+                                <td>
+                                    <div class="showstatus"><a href="javascript:;" class="change_status" data-name="{$vo['name']}"> <div class="layui-unselect layui-form-switch {if condition="$vo['status'] eq 2"}layui-form-onswitch{/if}"><i></i></div> </a></div>
+                                </td>
+                                <td>
+                                    <center>
+                                        {switch name="vo['status']"}
+                                            {case value="0"}
+                                                {if condition="isset($vo['check_download']) && $vo['check_download']"}
+                                                    <a class="btn btn2 install" data-id="{$vo.id}" rel="{$vo['title']}">安装</a>
+                                                {else/}
+                                                    {if condition="$vo['type'] eq 3"}
+                                                        <a class="btn btn2 buy" data-id="{$vo.id}" rel="{$vo['title']}">购买</a>
+                                                    {else/}
+                                                        <a class="btn btn2 authorbuy" data-id="{$vo.id}" data-type="{$vo.type}" rel="{$vo['title']}">安装</a>
+                                                    {/if}
+                                                {/if}
+                                            {/case}
+                                            {case value="1"}
+                                                {if condition="$vo['admin']"}
+                                                    <a class="btn btn2 mr10" href="{:url('plugins/manage',['name'=>$vo['name']])}">管理</a>
+                                                {/if}
+                                                {if condition="$vo['isconfig']"}
+                                                    <a class="btn btn2 mr10" href="{:url('plugins/setting',['name'=>$vo['name']])}">配置</a>
+                                                {/if}
+                                                <a class="btn btn2 uninstall" data-name="{$vo.name}">卸载</a>
+                                            {/case}
+                                            {case value="2"}
+                                                {if condition="$vo['admin']"}
+                                                    <a class="btn btn2 mr10" href="{:url('plugins/manage',['name'=>$vo['name']])}">管理</a>
+                                                {/if}
+                                                {if condition="$vo['isconfig']"}
+                                                    <a class="btn btn2 mr10" href="{:url('plugins/setting',['name'=>$vo['name']])}">配置</a>
+                                                {/if}
+                                                <a class="btn btn2 uninstall" data-name="{$vo.name}">卸载</a>
+                                            {/case}
+                                            {default /}
+                                        {/switch}
+                                    </center>
+                                </td>
+                            </tr>
+                            {/volist}
+                        </tbody>
+                    </table>
+                </div>
+
+			</div>
+		</div>
+	</div>
+<script>
+    var timer = null;
+    var laytpl,laypage;
+    layui.use(['layer', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common;
+        // 执行购买插件
+        $(document).on('click', '.buy', function(){  
+            var that = $(this);
+            var laymsg = layer.msg('购买验证中....',{time:500000});
+            $.ajax({
+                type: "POST",
+                url: '{:url("checkbuy")}',
+                data: 'pid='+that.attr('data-id'),
+                success: function(res) {
+
+                    if (res.code == 1) {
+                        layer.close(laymsg);
+                        layopen = layer.open({
+                            id:1,
+                            type: 1,
+                            title:'密码验证',
+                            content: "<div style='margin:10px 18px;width:300px;'>请输入平台密码：<br><br><input type='password' id='userpass' name='userpass' class='layui-input'></div>",
+                            btn:['提交'],
+                            yes:function (index,layero) {
+                                var userpass = top.$("#userpass").val() || $("#userpass").val();
+                                if(userpass){
+                                    laymsg = layer.msg('帐号密码验证中...', {time:50000});
+                                    $.ajax({
+                                        type: "POST",
+                                        url: '{:url("balancebuy")}',
+                                        data: 'userpass='+userpass+'&pid='+that.attr('data-id')+'&ptype=1',
+                                        success: function(passres) {
+                                            if (passres.code == 1) {
+                                                if (res.balance == 1) {
+                                                    layer.close(layopen);
+                                                    layer.close(laymsg);
+                                                    layer.confirm("您当前余额 <b style='color:red;'>"+passres.yemoney+"元</b>，购买插件需要付费 <b style='color:red;'>"+passres.money+"元</b>，确认购买此插件吗？", {icon: 3, title:'购买确认',btn: ['确定','取消']}, function(){
+                                                        var loadindex = layer.load(1, {shade: [0.1,'#fff']});
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            url: '{:url("balancebuy")}',
+                                                            data: 'userpass='+userpass+'&pid='+that.attr('data-id')+'&ptype=0',
+                                                            success: function(passres2) {
+                                                                layer.close(loadindex);
+                                                                layer.msg(passres2.msg, {}, function() {
+                                                                    location.href= '{:url()}';
+                                                                });
+                                                            }
+                                                        });
+                                                    });
+                                                }else{
+                                                    layer.close(layopen);
+                                                    layer.close(laymsg);
+                                                    moneystr = "";
+                                                    if (res.data.yemoney) {
+                                                        yfmoney = parseFloat(res.data.yemoney) + parseFloat(res.data.sjmoney);
+                                                        moneystr = "<p>应付金额：<i>"+yfmoney.toFixed(2)+"</i>元</p><p>余额抵扣：<i>"+parseFloat(res.data.yemoney).toFixed(2)+"</i>元</p><p>实际支付：<i>"+parseFloat(res.data.sjmoney).toFixed(2)+"</i>元</p><div class='pay_checkbox mb15 clearfix'><label><input id='tjcheck1' class='checkbox2' name='checkbox' type='checkbox' onclick='return false;' checked='checked'></label><span>使用余额</span></div>";
+                                                    }else{
+                                                        moneystr = "<p>实际支付：<i>"+parseFloat(res.data.sjmoney).toFixed(2)+"</i>元</p><div class='pay_checkbox mb15 clearfix'><label><input id='tjcheck1' class='checkbox2' name='checkbox' type='checkbox' onclick='return false;'></label><span>使用余额</span></div>";
+                                                    }
+                                                    
+
+                                                    layer.open({
+                                                        id:2,
+                                                        type: 1,
+                                                        skin: 'layerewm', 
+                                                        area:["660px","550px"],
+                                                        title:'帐户余额不足',
+                                                        btn: ['充值成功','考虑一下'],
+                                                        content: "<div class='zftext clearfix'><h4>您正在购买 "+that.attr('rel')+" 插件</h4><div class='moneylist clearfix'>"+moneystr+"</div></div><div class='zfewmlist clearfix'><p><span><img src='"+res.data.src+"' width='182' height='174'></span><i>使用微信扫码付款</i></p><p><a href='http://www.yunucms.com/about/pay/' target='_blank'><span><img src='__ADM_PUBLIC__/img/zhuanma_2.png'></span><i>查看对公转账</i></a></p></div><div class='zffix_btn clearfix'><span>请在10分钟内完成支付，如果超时请关闭重新打开再进行支付！</span></div>",//<p><a href='{:url("index")}'>充值成功</a><a href='javascript:;'>充值失败</a></p>
+                                                        yes: function(index, layero){
+                                                            location.href = '{:url("index")}';  
+                                                        },
+                                                    });
+
+                                                    clearInterval(timer);
+                                                    timer = setInterval(function(){
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            url: '{:url("wxqueryorder")}',
+                                                            data: 'paynumber='+res.data.number+'&pid='+that.attr('data-id'),
+                                                            success: function(buyres) {
+                                                                if (buyres.code == 1) {
+                                                                    layer.msg("微信支付成功", {}, function() {
+                                                                        location.href= '{:url()}';
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                    }, 2000);
+                                                }
+                                            }else{
+                                                layer.alert(passres.msg, {
+                                                    title: "提示", icon: 2, resize: false, zIndex: layer.zIndex
+                                                });
+                                            }
+                                        }
+                                    });
+                                }else{
+                                    alert("帐号密码不能为空！");
+                                }
+
+                            },
+                        });
+                    } else {
+                        if (res.msg == "您当前未绑定帐号，请先绑定！") {
+                            laymsg = layer.confirm("您当前未绑定帐号，请先绑定！", {icon: 3, title:'购买确认',btn: ['前往绑定']}, function(){
+                                location.href = '{:url("upgrade/index",["openbind"=>1])}';  
+                            });
+                        }else{
+                            if (res.msg == "您当前站点域名未授权，请先购买授权并前往绑定！") {
+                                laymsg = layer.confirm("您当前站点域名未授权，请先购买授权并前往绑定！", {icon: 3, title:'购买确认',btn: ['前往绑定']}, function(){
+                                    location.href = '{:url("upgrade/index",["openbind"=>1])}';  
+                                });
+                            }else{
+                                laymsg = layer.msg(res.msg, {}, function(){
+                                    location.href= res.data ? res.data : '{:url()}';
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+            return false;
+        });
+        // 执行安装插件
+        $(document).on('click', '.install', function(){
+            var that = $(this);
+            layer.confirm("你确定安装"+that.attr('rel')+"插件吗？", {icon: 3, title:'安装确认',btn: ['确定','取消']}, function(){
+                layer.msg('正在获取插件安装包....',{time:500000});
+                $.ajax({
+                    type: "POST",
+                    url: '{:url("download")}',
+                    data: 'pid='+that.attr('data-id'),
+                    success: function(res) {
+                        if (res.code == 1) {
+                            layer.msg('插件包获取成功，正在安装...', {time:50000});
+                            $.ajax({
+                                type: "POST",
+                                url: '{:url("install")}',
+                                data: 'file='+res.msg+'&pid='+that.attr('data-id'),
+                                success: function(nres) {
+                                    layer.msg(nres.msg, {}, function() {
+                                        location.href= nres.data ? res.data : '{:url()}';
+                                    });
+                                }
+                            });
+                        } else {
+                            layer.msg(res.msg, {}, function(){
+                                location.href= res.data ? res.data : '{:url()}';
+                            });
+                        }
+                    }
+                });
+            });
+            return false;
+        });
+
+        $(document).on('click', '.authorbuy', function(){
+            var that = $(this);
+            var usertype = "{$usertype}";
+            var authorizestr = "{$authorizestr}";
+            var identifier = "{:config('cloud.identifier')}";
+            var grant = "{:config('cloud.grant')}";
+            if (identifier == "") {
+                laymsg = layer.confirm("您当前未绑定帐号，请先绑定！", {icon: 3, title:'安装确认',btn: ['前往绑定']}, function(){
+                    location.href = '{:url("upgrade/index",["openbind"=>1])}';  
+                });
+                return false;
+            };
+
+            if (grant == "" && authorizestr != 99) {
+                laymsg = layer.confirm("您当前站点域名未授权，请先购买授权并前往绑定！", {icon: 3, title:'安装确认',btn: ['前往绑定']}, function(){
+                    location.href = '{:url("upgrade/index")}';  
+                });
+                return false;
+            };
+
+
+            if (usertype == 1) {
+                laymsg = layer.confirm("您当前站点为标准授权，需要升级高级版授权？", {icon: 3, title:'安装确认',btn: ['前往升级','取消']}, function(){
+                    window.open("http://u.yunucms.com/User/Business/myempower.html");  
+                    layer.close(laymsg);
+                });
+            }else{
+                laymsg = layer.confirm("您当前站点为标准授权，需要升级高级版授权？", {icon: 3, title:'安装确认',btn: ['我知道了']}, function(){
+                    layer.close(laymsg);
+                });
+            }
+            return false;
+        });
+        
+        // 执行更新插件
+        $(document).on('click', '.varupgrade', function(){
+            var that = $(this);
+            layer.confirm(that.attr('data-rel'), {icon: 3, title:'更新确认？',btn: ['确定','取消']}, function(){
+                layer.msg('正在获取插件更新包....',{time:500000});
+                $.ajax({
+                    type: "POST",
+                    url: '{:url("vardownload")}',
+                    data: 'pid='+that.attr('data-id'),
+                    success: function(res) {
+                        if (res.code == 1) {
+                            layer.msg('插件更新包获取成功，正在更新...', {time:50000});
+                            $.ajax({
+                                type: "POST",
+                                url: '{:url("varinstall")}',
+                                data: 'file='+res.msg+'&pid='+that.attr('data-id'),
+                                success: function(res) {
+                                    layer.msg(res.msg, {}, function() {
+                                        location.href= '{:url()}';
+                                    });
+                                }
+                            });
+                        } else {
+                            layer.msg(res.msg, {}, function(){
+                                location.href= '{:url()}';
+                            });
+                        }
+                    }
+                });
+            });
+            return false;
+        });
+
+        $(document).on('click','.change_status', function () {
+            var name=$(this).attr('data-name');
+            var obs=$(this);
+            $.ajax({
+                url: '{:url("status")}',
+                dataType: "json",
+                data:{'name':name},
+                type: "POST",
+                success: function(data){
+                    if(data.code == 1){
+                        obs.find('div').removeClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:2,time:1500,shade: 0.1,});
+                    }else{
+                        obs.find('div').addClass('layui-form-onswitch');
+                        layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+                    }
+                },
+                error:function(ajaxobj)
+                {
+                    if(ajaxobj.responseText!='')
+                        alert(ajaxobj.responseText);
+                }
+            });
+        });
+
+        $(document).on('click','.uninstall', function () {
+            var name = $(this).attr('data-name');
+            layer.confirm('是否确定卸载？', {icon: 3, title:'卸载确认',btn: ['确定','取消']}, function(){
+                $.ajax({
+                    url: '{:url("uninstall")}',
+                    dataType: "json",
+                    data:{'name':name},
+                    type: "POST",
+                    success: function(data){
+                        if(data.code == 1){
+                            layer.alert(data.msg, {
+                                title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                            }, function () {
+                                location.href= '{:url()}';
+                            });
+                        }else{
+                            layer.alert(data.msg, {
+                                title: "提示", icon: 2, resize: false, zIndex: layer.zIndex
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+        $(document).on('click','.seltype', function () {
+            $("#seltype").val($(this).attr('rel'));
+            $("#searchform").submit();
+        });
+        $(document).on('click','.seltag', function () {
+            $("#seltag").val($(this).attr('rel'));
+            $("#searchform").submit();
+        });
+        $(document).on('click','.selstatus', function () {
+            $("#selstatus").val($(this).attr('rel'));
+            $("#searchform").submit();
+        });
+    });
+</script>
+</body>
+</html>

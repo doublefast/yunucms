@@ -15,16 +15,14 @@ define('WEBSITE_HOST', $http_type . $_SERVER['HTTP_HOST']);
 
 class Master extends Controller {
     public function _initialize() {
-        config('sys.sys_area', session('sys_area'));
+        config('sys.sys_area', session('sys_areainfo') ? session('sys_areainfo')['etitle'] : "");
         config('sys.sys_levelurl', session('sys_levelurl'));
     }
     public function _empty($name) {
         // 空操作
         $apiName = 'api_'.$name;
         if (!method_exists($this, $apiName)) {
-            // 方法不存在
-            return $this->error();
-            exit();
+            return $this->error(); exit();
         }
         return $this->$apiName();
     }
@@ -32,9 +30,7 @@ class Master extends Controller {
         // 空控制器
         $apiName = 'api_'.$request->controller();
         if (!method_exists($this, $apiName)) {
-            // 方法不存在
-            return $this->error();
-            exit();
+            return $this->error(); exit();
         }
         return $this->$apiName();
     }
@@ -62,11 +58,22 @@ class Master extends Controller {
      */
     public function api_config() {
         $attr = input();
-        $confstr = config('sys.'.$attr['name']);
-        $json = $this->info($confstr !== null);
-        $json['data'] = $confstr;
+        if (strpos($attr['name'],'*') !== false) {
+            $strlist = explode("*", $attr['name']);
+            $data = [];
+            foreach ($strlist as $k => $v) {
+                $data[$v] = config('sys.'.$v);
+            }
+            $json = $this->info($data !== null);
+            $json['data'] = $data;
+        }else{
+            $confstr = config('sys.'.$attr['name']);
+            $json = $this->info($confstr !== null);
+            $json['data'] = $confstr;
+        }
+
         arr_pic_add_url($json);
-        return $attr['callback'] === null?$json:jsonp($json);
+        return $attr['callback'] === null ? $json : jsonp($json);
     }
     /**
      * [list 内容列表]
@@ -88,11 +95,7 @@ class Master extends Controller {
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-                $orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         
         $keyword = empty($attr['keyword']) ? '' : trim($attr['keyword']);
@@ -100,12 +103,15 @@ class Master extends Controller {
         $pages = empty($attr['pages']) || $attr['pages'] < 1 ? 1 : intval($attr['pages']);
         $flag = empty($attr['flag']) ? '' : intval($attr['flag']);
         $top = empty($attr['top']) ? '' : intval($attr['top']);
+        $area = empty($attr['area']) ? '' : intval($attr['area']);
+
 
         $_cid = $cid;
         $_keyword = $keyword;
         $_flag = $flag;
         $_top = $top;
         $_tag = $tag;
+        $_areaid = $area;
 
         if($_cid == -1) $_cid = input('cid');
         if ($_cid > 0 || substr($_cid, 0, 1) == '$') {
@@ -125,11 +131,27 @@ class Master extends Controller {
         if ($_top) {
             $_where['top'] = $_top;
         }
-
         $_where['create_time'] = ['LT', time()];
+        if ($_areaid) {
+            $_arealist = explode(',', $_areaid);
+            $_areawhere = [];
+            foreach ($_arealist as $key => $value) {
+                if ($value) {
+                    $_areawhere[] = ['LIKE','%,'.$value.',%'];
+                }
+            }
+            if (count($_areawhere) > 1) {
+                $_areawhere[] = 'or';
+                $_where['area'] = $_areawhere;
+            }else{
+                $_where['area'] = $_areawhere[0];
+            }
+        }else{
+            $_where['area'] = [['=', 'null'],['eq',''],['eq',',,'],['LIKE','%,88888888,%'], 'or'];
+        }
 
-        $_infolist = db('content')->where($_where)->order("$orderby")->limit(($pages-1)*$limit,$limit)->select();
-
+        $_infolist = db('content')->where($_where)->orderRaw("$orderby")->limit(($pages-1)*$limit,$limit)->select();
+        $_count = db('content')->where($_where)->count();
         $_content = new \app\index\model\ContentModel();
 
         foreach ($_infolist as $k => $list) {
@@ -141,29 +163,28 @@ class Master extends Controller {
 
         $json = $this->info($_infolist !== null);
         $json['data'] = $_infolist;
+        $json['countpage'] = $limit ? ceil($_count/$limit) : $_count;
         arr_pic_add_url($json);
         return $attr['callback'] === null? $json : jsonp($json);
     }
 
     public function api_listmip() {
         $attr = input();
+        sleep(1);
 
         $cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : $attr['cid'];
         $titlelen = empty($attr['titlelen']) ? 0 : intval($attr['titlelen']);
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-                $orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         $keyword = empty($attr['keyword']) ? '' : trim($attr['keyword']);
         $limit = empty($attr['limit']) ? null : $attr['limit'];
         $pages = empty($attr['pageNum']) || $attr['pageNum'] < 1 ? 1 : intval($attr['pageNum']);
         $flag = empty($attr['flag']) ? '' : intval($attr['flag']);
         $top = empty($attr['top']) ? '' : intval($attr['top']);
+        
         // $tag = empty($attr['tag']) ? '' : trim($attr['tag']);
 
         $_cid = $cid;
@@ -171,6 +192,7 @@ class Master extends Controller {
         $_flag = $flag;
         $_top = $top;
         $_tag = $tag;
+        
 
         if($_cid == -1) $_cid = input('cid');
         if ($_cid > 0 || substr($_cid, 0, 1) == '$') {
@@ -193,18 +215,20 @@ class Master extends Controller {
 
         $_where['create_time'] = ['LT', time()];
 
-        $_infolist = db('content')->where($_where)->order("$orderby")->limit(($pages-1)*$limit,$limit)->select();
+        $_infolist = db('content')->where($_where)->orderRaw("$orderby")->limit(($pages-1)*$limit,$limit)->select();
 
         $_content = new \app\index\model\ContentModel();
 
         foreach ($_infolist as $k => $list) {
             $_infolist[$k] = $_content->getContentByCon($list);
             $_infolist[$k]['alltitle'] = $list['title'];
-            $_infolist[$k]['url'] = $_content->getContentArea($list)['url'];
+            $infodata = $_content->getContentArea($list);
+            $_infolist[$k]['url'] = $infodata['url'];
+            $_infolist[$k]['title'] = $infodata['title'];
             if($titlelen) $_infolist[$k]['title'] = str2sub($list['title'], $titlelen, 0);
             $_infolist[$k]['create_time'] = date('Y-m-d H:i:s', $list['create_time']);
             $_infolist[$k]['update_time'] = date('Y-m-d H:i:s', $list['update_time']);
-            $desc = isset($list['desc']) ? $list['desc'] : '';
+            $desc = isset($_infolist[$k]['desc']) ? $_infolist[$k]['desc'] : '';
             $desc = str_replace("&nbsp;", '', $desc);
             $desc = strip_tags($desc);
             $_infolist[$k]['desc'] = $desc;
@@ -233,11 +257,7 @@ class Master extends Controller {
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-                $orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         $limit = empty($attr['limit']) ? null : $attr['limit'];
         $flag = empty($attr['flag']) ? '' : intval($attr['flag']);
@@ -257,11 +277,11 @@ class Master extends Controller {
         //地区独立内容
         $_area = config('sys.sys_area') ? db('area')->where('etitle', config('sys.sys_area'))->find() : [];
         if ($_area) {
-            $_where['area'] = [['exp',' is NULL'],['eq',''], ['LIKE','%,'.$_area['id'].',%'], 'or'];
+            $_where['area'] = [['=', 'null'],['eq',''], ['LIKE','%,'.$_area['id'].',%'], 'or'];
         }
 
         $_limit = "$limit";
-        $_infolist = db('link')->where($_where)->order("$orderby")->limit($_limit)->select();
+        $_infolist = db('link')->where($_where)->orderRaw("$orderby")->limit($_limit)->select();
 
         $json = $this->info($_infolist !== null);
         $json['data'] = $_infolist;
@@ -276,19 +296,13 @@ class Master extends Controller {
      */
     public function api_banner() {
         $attr = input();
-
         $type = empty($attr['type']) ? '' : $attr['type'];
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-                $orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         $limit = empty($attr['limit']) ? null : $attr['limit'];
-
         $_type = $type;
 
         $_where = [];
@@ -297,7 +311,7 @@ class Master extends Controller {
         }
 
         $_limit = "$limit";
-        $_infolist = db('banner')->where($_where)->order("$orderby")->limit($_limit)->select();
+        $_infolist = db('banner')->where($_where)->orderRaw("$orderby")->limit($_limit)->select();
 
         $json = $this->info($_infolist !== null);
         $json['data'] = $_infolist;
@@ -396,7 +410,7 @@ class Master extends Controller {
         $json = $this->info($_catlist !== null);
         $json['data'] = $_catlist;
         arr_pic_add_url($json);
-        return $attr['callback'] === null?$json:jsonp($json);
+        return $attr['callback'] === null ? $json : jsonp($json);
     }
     /**
      * [nav 导航]
@@ -415,19 +429,32 @@ class Master extends Controller {
         $_category = new \app\index\model\CategoryModel();
         $_navlist = $_category->getCategory('', $_typeid);
 
-        $_navlist  = $_category->unlimitedForLayer($_navlist);
 
-        foreach($_navlist as $autoindex => $nav) {
+        $_navlist  = $_category->unlimitedForLayer($_navlist);
+  
+
+
+        foreach($_navlist as $k => $v) {
             $_limit_list = explode(',', $_limit);
             if(count($_limit_list) > 1){
-                if(($autoindex < $_limit_list[0]) || ($autoindex > $_limit_list[1])) unset($_navlist[$autoindex]);
+                if(($k < $_limit_list[0]) || ($k > $_limit_list[1])) unset($_navlist[$k]);
             } else{
-                if($autoindex >= $_limit) unset($_navlist[$autoindex]);
+                if($k >= $_limit) unset($_navlist[$k]);
             }
-            $_navlist[$autoindex]['target'] = $nav['target'] ? '_blank' : '_self';
-            $_navlist[$autoindex]['url'] = $_category->getCategoryUrl($nav);
+            if(!empty($v['jumpurl']) && substr($v['jumpurl'], 0,1) == '@'){
+                $_navlist[$k]['id'] = substr($v['jumpurl'], 1);
+            } else {
+                $_navlist[$k]['id'] = $v['id'];
+            }
+            $_navlist[$k]['child'] = $v['child'];
+            $_navlist[$k]['title'] = $v['title'];
+            $_navlist[$k]['etitle'] = $v['etitle'];
+            $_navlist[$k]['subtitle'] = $v['subtitle'];
+            $_navlist[$k]['mid'] = $v['mid'];
+            $_navlist[$k]['pid'] = $v['pid'];
+            $_navlist[$k]['target'] = $v['target'] ? '_blank' : '_self';
+            $_navlist[$k]['url'] = $_category->getCategoryUrl($v);
         }
-
         $json = $this->info($_navlist !== null);
         $json['data'] = $_navlist;
         arr_pic_add_url($json);
@@ -490,11 +517,11 @@ class Master extends Controller {
         }
 
         $_limit = "$limit";
-        $_infolist = db('area')->where($_where)->order("sort asc")->limit($_limit)->select();
+        $_infolist = db('area')->where($_where)->orderRaw("sort asc")->limit($_limit)->select();
         if (empty($_infolist)) {
             if ($_area) {
                 $_where['pid'] = $_area['pid'];
-                $_infolist = db('area')->where($_where)->order("sort asc")->limit($_limit)->select();
+                $_infolist = db('area')->where($_where)->orderRaw("sort asc")->limit($_limit)->select();
             }
         }
 
@@ -609,8 +636,7 @@ class Master extends Controller {
             $id = (int)$etitle;
         }
         if (empty($id) && empty($etitle)) {
-            return $this->error('参数错误');
-            exit();
+            return $this->error('参数错误'); exit();
         }
         if ($etitle) {
             $where = ['etitle'=>$etitle];
@@ -620,24 +646,23 @@ class Master extends Controller {
         }
 
         $content = db('content')->where($where)->find();
-        //非正常独立内容链接不显示
 
+        //非正常独立内容链接不显示
         if ($content['area'] != '') {
             $area = config('sys.sys_area') ? db('area')->where(['etitle' => config('sys.sys_area')])->find() : [];
             if ($area) {
                 if (!strstr($content['area'], ','.$area['id'].',')) {
-                    return $this->error('非正常独立内容链接不显示');
-                    exit();
+                    return $this->error('当前内容所属区域不正确，无法显示'); exit();
                 }
             }else{
-                return $this->error('非正常独立内容链接不显示');
-                exit();
+                if (!strstr($content['area'], ',88888888,')) {
+                    $this->error('当前内容所属区域不正确，无法显示'); exit();
+                }
             }
         }
 
         if (empty($content)) {
-            return $this->error('内容不存在');
-            exit();
+            return $this->error('内容不存在'); exit();
         }
         db('content')->where(['id' => $content['id']])->setInc('click');//增加浏览
 
@@ -645,13 +670,11 @@ class Master extends Controller {
         $category = $catemodel->getOneCategory($content['cid']);
 
         if (empty($category)) {
-            return $this->error('栏目不存在');
-            exit();
+            return $this->error('栏目不存在'); exit();
         }
 
         if ($category['tpl_show'] == '') {
-            return $this->error('模版不存在');
-            exit();
+            return $this->error('模版不存在'); exit();
         }
         $conmodel = new \app\index\model\ContentModel();
         $content = $conmodel->getContentByCon($content);
@@ -697,5 +720,13 @@ class Master extends Controller {
         $json['state'] = $info['status'] === 'success'?200:400;
         $json['info'] = $info['msg']?$info['msg']:'请求失败，请参见API文档';
         return $attr['callback'] === null?$json:jsonp($json);
+    }
+    public function checkorderstr($orderstr){
+        $orderstr = strtolower(str_replace(" ","",$orderstr));
+        if (preg_match("/^[a-z]*$/", $orderstr)) {
+            return true;
+        }else{
+            return false;
+        }
     }
 }

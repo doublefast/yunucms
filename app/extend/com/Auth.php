@@ -181,7 +181,6 @@ class Auth{
         $map=array(
             'id'=>array('in',$ids),
             'type'=>$type,
-            'status'=>1,
         );
         //读取用户组所有权限规则
         $rules = \think\Db::table($this->_config['auth_rule'])->where($map)->field('condition,name')->select();

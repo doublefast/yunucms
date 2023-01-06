@@ -1,13 +1,98 @@
     <div class="footer">
         <div class="center clearfix">
             <div class="fl">
-                <yunu:block name='logo2' />
+                <a href="<yunu:url name='home'/>"><yunu:block name='logo2' /></a>
                 <div class="foot_contact">
-<yunu:config name="site_copyright"/>
+                    <p>TEL：<yunu:block name='dianhua' /></p>   
+                    <p>MOB:<yunu:block name='shouji' /></p>  
+                    <p>EMAIL：<yunu:block name='email' /></p>
+                    <p>公司地址：<yunu:block name='dizhi' /></p>
+                    <yunu:config name="site_copyright"/>
                 </div>
             </div>
             <div class="fr">
                 <yunu:block name='ewm' />
+                <span>微信二维码</span>
             </div>
         </div>
     </div>
+
+    <div class="right_fix">
+        <div class="text clearfix">
+            <ul>
+                <li>
+                    <div class="pic">
+                        <img class="img1" src="__PUBLIC__/img/fix1.png">
+                        <img class="img2" src="__PUBLIC__/img/fix1.png">
+                        <span>产品搜索</span>
+                    </div>
+                    <div class="text1">
+                        <div class="search clearfix">
+                            <form  action="<yunu:url name='search'/>" method="post">
+                                <input class="inp1" type="text" name="key" placeholder="请输入产品名称">
+                                <input class="btn_sub" type="submit" name="" value="">
+                            </form>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="pic">
+                        <a target="blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=<yunu:block name='qq' />&amp;site=qq&amp;menu=yes">
+                            <img class="img1" src="__PUBLIC__/img/fix2.png">
+                            <img class="img2" src="__PUBLIC__/img/fix2.png">
+                            <span>在线咨询</span>
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <div class="pic">
+                        <img class="img1" src="__PUBLIC__/img/fix3.png">
+                        <img class="img2" src="__PUBLIC__/img/fix3.png">
+                        <span>二维码</span>
+                    </div>
+                    <div class="text">
+                        <yunu:block name='ewm' />
+                    </div>
+                </li>
+                <li class="btntop">
+                    <div class="pic">
+                        <img class="img1" src="__PUBLIC__/img/fix4.png">
+                        <img class="img2" src="__PUBLIC__/img/fix4.png">
+                        <span>返回顶部</span>
+                    </div>
+                </li>
+                <script type="text/javascript">
+                    $('.btntop').click(function(){
+                        $('body,html').animate({ scrollTop: 0 },500);
+                    })
+                </script>
+            </ul>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.imgauto img').imgAuto();
+        })
+    </script>
+    <script type="text/javascript">
+        var browser=navigator.appName 
+        var b_version=navigator.appVersion 
+        var version=b_version.split(";"); 
+        var trim_Version=version[1].replace(/[ ]/g,""); 
+        if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE6.0") { 
+            $('.iet').show();
+        }else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE7.0") { 
+            $('.iet').show();
+        }else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE8.0") { 
+            $('.iet').show(); 
+        }else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE9.0") { 
+            $('.iet').hide(); 
+        } else {
+            $('.iet').hide();
+        }
+
+    </script>
+<yunu:block name="bdsq-code1" />
+<yunu:block name="js-code2" />
+<yunu:block name="tj-code3" />

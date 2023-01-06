@@ -89,7 +89,11 @@ layui.use(['jquery', 'layer', 'laytpl'], function(){
     getTpl();
     // 执行升级，
     $(document).on('click', '.doUpgrade', function(){
-        var that = $(this);
+        layer.msg('请从官网平台-产品管理-模板管理-程序下载，下载模板整包进行安装', {time:5000}, function(){});
+        
+
+
+        /*var that = $(this);
         layer.msg('正在下载 '+that.attr('data-number')+' 模版....',{time:500000});
         $.ajax({
             type: "POST",
@@ -106,7 +110,7 @@ layui.use(['jquery', 'layer', 'laytpl'], function(){
                     });
                 }
             }
-        });
+        });*/
         return false;
     });
 

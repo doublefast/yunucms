@@ -56,6 +56,7 @@
                         <div class="layui-input-inline">
                             <input class="layui-input" type="text" name="url" placeholder="链接地址" lay-verify="required">
                         </div>
+                        <font class="font_tip">链接地址请填写完整http://或https://开头</font>
                     </div>
 
                     <div class="layui-form-item">
@@ -64,7 +65,7 @@
                             <input id="path1" class="layui-input" type="text" name="pic"><br>
                             <img id="img_path1" class="defimg" src="" onerror="javascript:this.style.display='none';">
                         </div>
-                        <div class="layui-input-inline w450">
+                        <div class="layui-input-inline w150">
                             <input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
                             <div class="site-demo-upload upload-img fl ml5">
                                 <div class="site-demo-upbar">
@@ -147,7 +148,7 @@ layui.use(['form','common','upload'], function(){
                 shade: false,
                 anim: 2,
                 area: ['750px', '350px'],
-                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
             });
         });
 
@@ -186,7 +187,7 @@ layui.use(['form','common','upload'], function(){
             return false;
         });
 
-         $('#open_diqu').on('click', function(){
+        $('#open_diqu').on('click', function(){
             area_select($("#diqu input:checkbox"));
             layer.open({
                 title: '选择地区',

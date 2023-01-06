@@ -1,2 +1,112 @@
-"use strict";!function(e){e.fn.kxbdMarquee=function(t){var r=e.extend({},e.fn.kxbdMarquee.defaults,t);return this.each(function(){function t(){var e="left"==r.direction||"right"==r.direction?"scrollLeft":"scrollTop";if(r.loop>0&&(d+=r.scrollAmount)>a*r.loop)return n[e]=0,clearInterval(f);if("left"==r.direction||"up"==r.direction)(t=n[e]+r.scrollAmount)>=a&&(t-=a),n[e]=t;else{var t=n[e]-r.scrollAmount;t<=0&&(t+=a),n[e]=t}}var l=e(this),n=l.get(0),i=l.width(),o=l.height(),c=l.children(),u=c.children(),a=0,s="left"==r.direction||"right"==r.direction?1:0;if(c.css(s?"width":"height",1e4),r.isEqual?a=u[s?"outerWidth":"outerHeight"]()*u.length:u.each(function(){a+=e(this)[s?"outerWidth":"outerHeight"]()}),!(a<(s?i:o))){c.append(u.clone()).css(s?"width":"height",2*a);var d=0,f=setInterval(t,r.scrollDelay);l.hover(function(){clearInterval(f)},function(){clearInterval(f),f=setInterval(t,r.scrollDelay)})}})},e.fn.kxbdMarquee.defaults={isEqual:!0,loop:0,direction:"left",scrollAmount:1,scrollDelay:20},e.fn.kxbdMarquee.setDefaults=function(t){e.extend(e.fn.kxbdMarquee.defaults,t)}}(jQuery);
+"use strict";
+
+/**
+ * @classDescription 模拟Marquee，无间断滚动内容
+ * @author Lyc 修改
+ * @DOM
+ *  	<div id="marquee">
+ *  		<ul>
+ *   			<li></li>
+ *   			<li></li>
+ *  		</ul>
+ *  	</div>
+ * @CSS
+ *  	#marquee {overflow:hidden;width:200px;height:50px;}
+ * @Usage
+ *  	$("#marquee").kxbdMarquee(options);
+ * @options
+ *		isEqual:true,		//所有滚动的元素长宽是否相等,true,false
+ *  	loop:0,				//循环滚动次数，0时无限
+ *		direction:"left",	//滚动方向，"left","right","up","down"
+ *		scrollAmount:1,		//步长
+ *		scrollDelay:20		//时长
+ */
+(function ($) {
+	$.fn.kxbdMarquee = function (options) {
+		var opts = $.extend({}, $.fn.kxbdMarquee.defaults, options);
+
+		return this.each(function () {
+			var $marquee = $(this); //滚动元素容器
+			var _scrollObj = $marquee.get(0); //滚动元素容器DOM
+			var scrollW = $marquee.width(); //滚动元素容器的宽度
+			var scrollH = $marquee.height(); //滚动元素容器的高度
+			var $element = $marquee.children(); //滚动元素
+			var $kids = $element.children(); //滚动子元素
+			var scrollSize = 0; //滚动元素尺寸
+
+			//滚动类型，1左右，0上下
+			var _type = opts.direction == "left" || opts.direction == "right" ? 1 : 0;
+
+			//防止滚动子元素比滚动元素宽而取不到实际滚动子元素宽度
+			$element.css(_type ? "width" : "height", 10000);
+
+			//获取滚动元素的尺寸
+			if (opts.isEqual) {
+				scrollSize = $kids[_type ? "outerWidth" : "outerHeight"]() * $kids.length;
+			} else {
+				$kids.each(function () {
+					scrollSize += $(this)[_type ? "outerWidth" : "outerHeight"]();
+				});
+			};
+
+			//滚动元素总尺寸小于容器尺寸，不滚动
+			if (scrollSize < (_type ? scrollW : scrollH)) {
+				return;
+			};
+
+			//克隆滚动子元素将其插入到滚动元素后，并设定滚动元素宽度
+			$element.append($kids.clone()).css(_type ? "width" : "height", scrollSize * 2);
+
+			var numMoved = 0;
+			function scrollFunc() {
+				var _dir = opts.direction == "left" || opts.direction == "right" ? "scrollLeft" : "scrollTop";
+				if (opts.loop > 0) {
+					numMoved += opts.scrollAmount;
+					if (numMoved > scrollSize * opts.loop) {
+						_scrollObj[_dir] = 0;
+						return clearInterval(moveId);
+					};
+				};
+
+				if (opts.direction == "left" || opts.direction == "up") {
+					var newPos = _scrollObj[_dir] + opts.scrollAmount;
+					if (newPos >= scrollSize) {
+						newPos -= scrollSize;
+					}
+					_scrollObj[_dir] = newPos;
+				} else {
+					var newPos = _scrollObj[_dir] - opts.scrollAmount;
+					if (newPos <= 0) {
+						newPos += scrollSize;
+					};
+					_scrollObj[_dir] = newPos;
+				};
+			};
+
+			//滚动开始
+			var moveId = setInterval(scrollFunc, opts.scrollDelay);
+
+			//鼠标划过停止滚动
+			$marquee.hover(function () {
+				clearInterval(moveId);
+			}, function () {
+				clearInterval(moveId);
+				moveId = setInterval(scrollFunc, opts.scrollDelay);
+			});
+		});
+	};
+
+	$.fn.kxbdMarquee.defaults = {
+		isEqual: true, //所有滚动的元素长宽是否相等,true,false
+		loop: 0, //循环滚动次数，0时无限
+		direction: "left", //滚动方向，"left","right","up","down"
+		scrollAmount: 1, //步长
+		scrollDelay: 20 //时长
+
+	};
+
+	$.fn.kxbdMarquee.setDefaults = function (settings) {
+		$.extend($.fn.kxbdMarquee.defaults, settings);
+	};
+})(jQuery);
 //# sourceMappingURL=jquery.kxbdMarquee.js.map

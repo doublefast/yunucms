@@ -10,18 +10,23 @@ class DiyformModel extends Model
 
     public function getAlldiyform()
     {
-        return $this->order('id desc')->select();
+        return $this->orderRaw('id desc')->select();
     }
 
     public function insertForm($param, $mid){
         try{
-            $dbfield = DB::name('diyfield');
+            $diyformmodel = new DiyformModel();
+            $diyfieldmodel = new DiyfieldModel();
+            $diyformcon = $diyformmodel->where(['id'=>$mid])->find();
+            if (!$diyformcon) {
+                return ['status' => 'error', 'msg' => "表单不存在"];
+            }
             foreach ($param as $k => $v) {
                 if (is_array($v)) {
                     $param[$k] = implode(',', $v);
                 }
                 //验证必填
-                $fielddata = $dbfield->where(['field'=>$k,'mid'=>$mid])->find();
+                $fielddata = $diyfieldmodel->where(['field'=>$k,'mid'=>$mid])->find();
                 if ($fielddata) {
                     if ($fielddata['isnotnull'] == 1) {
                         if (!$v) {
@@ -29,17 +34,22 @@ class DiyformModel extends Model
                         }
                     }
                 }
+
+                $param[$k] = addslashes(strip_tags(htmlspecialchars($param[$k])));
             }
 
             //验证验证码
+            if ($diyformcon['yzcode'] == 1) {
+                if (!isset($param['__captcha'.$mid."__"])) {
+                    return ['status' => 'error', 'msg' => "验证码不存在"];
+                }
+            }
             if (isset($param['__captcha'.$mid."__"])) {
                 $captcha = new \tpcaptcha\Captcha();
                 if (!$captcha->check($param['__captcha'.$mid."__"], $mid)) {
                 	return ['status' => 'error', 'msg' => "验证错误"];
                 }
             }
-
-            $diyformcon = DB::name('diyform')->where(['id'=>$mid])->find();
 
             $param['fid'] = $mid;
             $param['vid'] = DB::name('form_'.$diyformcon['tabname'])->strict(false)->insertGetId($param);
@@ -80,7 +90,7 @@ class DiyformModel extends Model
                         writelog('','','前台发送邮件提醒失败',2);
                     }
                 }
-            	
+            	runhook('sys_index_myform');
                 return ['status' => 'success', 'msg' => '提交成功'];
             }
         }catch( PDOException $e){

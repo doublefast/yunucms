@@ -4,46 +4,82 @@
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
-    <meta name="description" content="<yunu:config name='seo_description'/>">
-    <title>{$title}-<yunu:config name="site_title"/></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta name="applicable-device" content="pc,wap">
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <title><if condition="isset($tag['seo_title'])">{$tag.seo_title}<else/><if condition="$title">{$title}-tag标签列表<else/>tag标签列表</if>-<yunu:config name="site_title"/></if></title>
+    <meta name="keywords" content="<if condition="strlen($tag['seo_keywords']) neq 0">{$tag.seo_keywords}<else/><yunu:config name='seo_keywords'/></if>">
+    <meta name="description" content="<if condition="strlen($tag['seo_description']) neq 0">{$tag.seo_description|str2sub=160, true}<else/><yunu:config name='seo_description'/></if>">
+    <script type="text/javascript" src="__PUBLIC__/js/jquery-1.12.4.min.js"></script>
     <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/swiper.min.css">
+    <script type="text/javascript" src="__PUBLIC__/js/yunu.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/Superslide.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/swiper.min.js"></script>
 </head>
 <body>
-<include file="public:header" />
+    <include file="public:header" />
+
+    <div class="page_banner">
+        <img src="__PUBLIC__/img/pagebanner.jpg">
+    </div>
+
     <div class="main container">
-        <div class="center">
-<include file="public:left" />
+    	<div class="center">
+    		<div class="main_l fl" id="mhide">
+                <p>
+                    <yunu:type typeid='21' type="parent">
+                        <span>{$type.title}</span>
+                        <i>{$type.subtitle}</i>   
+                    </yunu:type>            
+                </p>
+                <ul>
+                    <yunu:catlist cid="21" type="parent">
+                        <li><a href="{$catlist.url}"><span>{$catlist.title}</span></a></li>
+                    </yunu:catlist>
+                </ul>
+                <div class="liuyan">
+                    <b>
+                        <yunu:type typeid='30'>
+                            <a href="{$type.url}">
+                                <img src="__PUBLIC__/img/lxa1.jpg" alt="图片名">
+                                <img src="__PUBLIC__/img/lxa2.jpg" alt="图片名">
+                            </a>
+                        </yunu:type>
+                    </b>
+                    <b>
+                        <yunu:type typeid='73'>
+                            <a href="{$type.url}">
+                                <img src="__PUBLIC__/img/lya1.jpg" alt="图片名">
+                                <img src="__PUBLIC__/img/lya2.jpg" alt="图片名">
+                            </a>
+                        </yunu:type>
+                    </b>
+                </div>
+            </div>
             <div class="main_r fr">
                 <div class="crumbs">
-                    <p>
-                        <a href="javascript:void();">您的当前位置：TAG结果页</a>
-                    </p>
+                    <p>您的当前位置：TAG结果页</p>
                 </div>
-                
-                <div class="flink mt10">
-                    <div class="flink_tit">
-                        <p></p>
-                        <span>推荐产品</span>
-                    </div>
-                    <div class="pro_list">
-                        <ul>
-                            <yunu:list tag="$title" cid="21" limit="4" orderby="sort asc" >
+                <div class="pro_list">
+                    <ul>
+                        <yunu:list cid="21" tag="$title" orderby="sort asc" pagesize="100">
                             <li>
                                 <a href="{$list.url}">
-                                    <img src="{$list.pic}" alt="{$list.title}">
+                                    <div class="imgauto"><img src="{$list.pic}" alt="{$list.title}"></div>
                                     <span>{$list.title}</span>
                                 </a>
                             </li>
-                            </yunu:list>
-                        </ul>
-                    </div>
+                        </yunu:list>
+                    </ul>
                 </div>
 
             </div>
-        </div>
+    	</div>
     </div>
-<include file="public:footer" />
-</div>
+
+    <include file="public:footer" />
 </body>
 </html>

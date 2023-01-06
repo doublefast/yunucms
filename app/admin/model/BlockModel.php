@@ -12,7 +12,7 @@ class BlockModel extends Model
         //return $this->where($where)->select();
 
         return $this->field(config('database.prefix').'block.*,'.config('database.prefix').'block_category.title as cname')->join(config('database.prefix').'block_category', config('database.prefix').'block.cid = '.config('database.prefix').'block_category.id')
-            ->where($where)->page($Nowpage, $limits)->select();//->page($Nowpage, $limits)->order('id desc')
+            ->where($where)->page($Nowpage, $limits)->select();//->page($Nowpage, $limits)->orderRaw('id desc')
 
     }
 

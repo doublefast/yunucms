@@ -1,0 +1,126 @@
+{include file="public/header" /}
+<script type="text/javascript" src="__ADM_PUBLIC__/js/mydate/WdatePicker.js"></script>
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+				<div class="ui_prompt">
+					<p class="ui_prompt_tit">温馨提示</p>
+                    <p>· <b>管理员密码验证规则说明</b></p>
+                    <p>· 不限制：密码不限制任何规则，安全较弱</p>
+                    <p>· 规则1：管理员账号新增和修改不低于8位数字+大小写英文+特殊符号</p>
+                    <p>· 规则2：管理员账号新增和修改不低于12位数字+大小写英文+特殊符号</p>
+                    <p>· 规则3：管理员账号新增和修改不低于16位数字+大小写英文+特殊符号</p><p>· <b>IP锁定设置说明</b></p>
+                    <p>· 输入错误则锁定IP，600秒不得登录</p>
+				</div>
+
+				<div class="layui-form-item">
+                    <label class="layui-form-label">管理员密码验证</label>
+                    <div class="layui-input-inline w700">
+                        <input type="radio" name="pass_model" id="pass_model" {if (config('sys.pass_model') eq 1) or (!config('sys.pass_model'))}checked{/if} value="1" lay-filter="passmode" title="不限制" >
+                        <input type="radio" name="pass_model" {if config('sys.pass_model') eq 2}checked{/if} value="2" lay-filter="passmode" title="规则1">
+                        <input type="radio" name="pass_model" {if config('sys.pass_model') eq 3}checked{/if} value="3" lay-filter="passmode" title="规则2">
+                        <input type="radio" name="pass_model" {if config('sys.pass_model') eq 4}checked{/if} value="4" lay-filter="passmode" title="规则3">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">IP锁定设置</label>
+                    <div class="layui-input-inline w700">
+                        <input type="radio" name="passip_model" id="passip_model" {if (config('sys.passip_model') eq 1) or (!config('sys.passip_model'))}checked{/if} value="1" lay-filter="passipmode" title="不限制">
+                        <input type="radio" name="passip_model" {if config('sys.passip_model') eq 2}checked{/if} value="2" lay-filter="passipmode" title="3次">
+                        <input type="radio" name="passip_model" {if config('sys.passip_model') eq 3}checked{/if} value="3" lay-filter="passipmode" title="5次">
+                        <input type="radio" name="passip_model" {if config('sys.passip_model') eq 4}checked{/if} value="4" lay-filter="passipmode" title="10次">
+                    </div>
+                </div>
+                
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-inline">
+                        <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('index')}'>提交</button>
+                    </div>
+                </div>
+
+				</form>
+			</div>
+			
+		</div>
+	</div>
+<script>
+
+layui.use(['form','common','laydate'], function(){
+    var $ = layui.jquery;
+    $form = $('form');
+    var form = layui.form(),layer = layui.layer, common=layui.common,laydate = layui.laydate;
+    //监听提交
+    form.on('submit(save)', function(data){
+        var sub = true;
+        var url = $(this).data('href');
+        if(url){
+            if(sub){
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    dataType: 'json',
+                    data: data.field,
+                    success: function (info) {
+                        if (info.code == 1) {
+                            common.layerAlertSHref(info.msg, '提示', "{:url('security/index')}");
+                        }else {
+                            common.layerAlertE(info.msg, '提示');
+                            $(data.elem).removeAttr("disabled").text("提交");
+                        }
+                    }
+                });
+            }
+        }
+        return false;
+    });
+    
+    form.on('radio(passmode)', function(data){
+	  	if (data.value > 1) {
+            $.ajax({
+                url: '{:url('checkIndexHtml')}',
+                type: 'post',
+                dataType: 'json',
+                data: {},
+                success: function (info) {
+                    info = JSON.parse(info);
+                    if (info.state == 1) {
+                        common.layerAlertE(info.msg, '提示');
+                        $("#pass_model").prop("checked",true);
+                        form.render();
+                    }
+                }
+            });         	
+	  	}
+	});  
+    form.on('radio(passipmode)', function(data){
+        if (data.value > 1) {
+            $.ajax({
+                url: '{:url('checkIndexHtml')}',
+                type: 'post',
+                dataType: 'json',
+                data: {},
+                success: function (info) {
+                    info = JSON.parse(info);
+                    if (info.state == 1) {
+                        common.layerAlertE(info.msg, '提示');
+                        $("#passip_model").prop("checked",true);
+                        form.render();
+                    }
+                }
+            });             
+        }
+    });  
+});
+</script>
+</body>
+</html>

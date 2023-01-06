@@ -7,7 +7,7 @@ return [
     // 应用命名空间
     'app_namespace'          => 'app',
     // 应用调试模式
-    'app_debug'              => false,
+    'app_debug'              => APP_DEBUG,
     // 应用Trace
     'app_trace'              => false,
     // 应用模式状态
@@ -17,7 +17,7 @@ return [
     // 入口自动绑定模块
     'auto_bind_module'       => false,
     // 注册的根命名空间
-    'root_namespace'         => [],
+    'root_namespace'         => ['plugins' => ROOT_PATH. 'plugins/'],
     // 扩展函数文件
     'extra_file_list'        => [THINK_PATH . 'helper' . EXT],
     // 默认输出类型

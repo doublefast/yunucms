@@ -4,106 +4,336 @@
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
-    <meta name="description" content="<yunu:config name='seo_description'/>">
-    <title>{$content.title}-<yunu:config name="site_title"/></title>
-	<link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta name="applicable-device" content="pc,wap">
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <title><if condition="strlen($content['seo_title']) neq 0">{$content.seo_title}<else/>{$content.title}-<yunu:config name="site_title"></if></title>
+    <meta name="keywords" content="<if condition="strlen($content['seo_keywords']) neq 0">{$content.seo_keywords}<else/>{$content.title}</if>">
+    <meta name="description" content="<if condition="strlen($content['seo_desc']) neq 0">{$content.seo_desc|str2sub=160, true}<else/>{$content.content|str2sub=160, true} </if>">
+    <script type="text/javascript" src="__PUBLIC__/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/swiper.min.css">
+    <script type="text/javascript" src="__PUBLIC__/js/yunu.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/Superslide.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/swiper.min.js"></script>
 </head>
 <body>
-<include file="public:header" />
+    <include file="public:header" />
+
+    <div class="page_banner">
+        <img src="__PUBLIC__/img/pagebanner.jpg">
+    </div>
+
     <div class="main container">
     	<div class="center">
-<include file="public:left" />
+    		<div class="main_l fl" id="mhide">
+                <p>
+                    <yunu:type typeid='$cid' type="parent">
+                        <span>{$type.title}</span>
+                        <i>{$type.subtitle}</i>   
+                    </yunu:type>            
+                </p>
+                <ul>
+                    <yunu:catlist cid="$category['id']" type="parent">
+                        <li <if condition="$catlist['id'] eq $cid || $catlist['id'] eq $category['pid']">class="on"</if>><a href="{$catlist.url}"><span>{$catlist.title}</span></a></li>
+                    </yunu:catlist>
+                </ul>
+                <div class="liuyan">
+                    <b>
+                        <yunu:type typeid='30'>
+                            <a href="{$type.url}">
+                                <img src="__PUBLIC__/img/lxa1.jpg" alt="图片名">
+                                <img src="__PUBLIC__/img/lxa2.jpg" alt="图片名">
+                            </a>
+                        </yunu:type>
+                    </b>
+                    <b>
+                        <yunu:type typeid='73'>
+                            <a href="{$type.url}">
+                                <img src="__PUBLIC__/img/lya1.jpg" alt="图片名">
+                                <img src="__PUBLIC__/img/lya2.jpg" alt="图片名">
+                            </a>
+                        </yunu:type>
+                    </b>
+                </div>
+            </div>
             <div class="main_r fr">
                 <div class="crumbs">
                     <p>
                         <yunu:position cid="$cid" delimiter="&gt;&gt;" />
                     </p>
                 </div>
-                <div class="content_tit">
-                    <h3>{$content.title}</h3>
-                    <p>
-                        <span>发布时间：{$content.create_time|date='Y-m-d',###}  <yunu:url name='host'/></span>
-                    </p>
-                </div>
-                <div class="content_des">
-                    <p>{$content.desc}</p>
-                </div>
-                <div class="content">
-                    <div class="show_img">
-                        <ul>
-                            <li><img src="{$content.pic}" alt=""></li>
-                        </ul>
+                <div class="pro_content clearfix">
+                    <div class="pro_pic clearfix">
+                        <div class="pc-slide clearfix">
+                            <div class="view clearfix">
+                                <div class="swiper-container swiper-container-horizontal">
+                                    <div class="swiper-wrapper">
+                                        <div class="swiper-slide img-center">
+                                            <div class="imgauto"><img src="{$content.pic}" rel="{$content.pic}" class="jqzoom" ></div>
+                                        </div>
+                                        <volist name="$content.piclist|str2arr='***'" id="v">
+                                            <div class="swiper-slide img-center">
+                                                <div class="imgauto"><img src="{$v}" rel="{$v}" class="jqzoom" ></div>
+                                            </div>
+                                        </volist>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preview clearfix">
+                                <a class="arrow-left" href="javascript:;"></a>
+                                <a class="arrow-right" href="javascript:;"></a>
+                                <div class="swiper-container swiper-container-horizontal">
+                                    <div class="swiper-wrapper">
+                                        <div class="swiper-slide">
+                                            <div class="imgauto"><img src="{$content.pic}"></div>
+                                        </div>
+                                        <volist name="$content.piclist|str2arr='***'" id="v">
+                                            <div class="swiper-slide">
+                                                <div class="imgauto"><img src="{$v}"></div>
+                                            </div>
+                                        </volist>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script src="__PUBLIC__/js/swiper.min3.js"></script>
+                        <script>
+                            $('.preview .swiper-slide').eq(0).addClass('active-nav');
+                            var viewSwiper = new Swiper('.view .swiper-container', {
+                                onSlideChangeStart: function() {
+                                        updateNavPosition()
+                                }
+                            })
+
+                            $('.view .arrow-left,.preview .arrow-left').on('click', function(e) {
+                                e.preventDefault()
+                                if (viewSwiper.activeIndex == 0) {
+                                    viewSwiper.slideTo(viewSwiper.slides.length - 1, 1000);
+                                    return
+                                }
+                                viewSwiper.slidePrev()
+                            })
+                            $('.view .arrow-right,.preview .arrow-right').on('click', function(e) {
+                                e.preventDefault()
+                                if (viewSwiper.activeIndex == viewSwiper.slides.length - 1) {
+                                    viewSwiper.slideTo(0, 1000);
+                                    return
+                                }
+                                viewSwiper.slideNext()
+                            })
+
+                            var previewSwiper = new Swiper('.preview .swiper-container', {
+                                //visibilityFullFit: true,
+                                slidesPerView: 'auto',
+                                allowTouchMove: false,
+                                onTap: function() {
+                                        viewSwiper.slideTo(previewSwiper.clickedIndex)
+                                }
+                            })
+
+                            function updateNavPosition() {
+                                    $('.preview .active-nav').removeClass('active-nav')
+                                    var activeNav = $('.preview .swiper-slide').eq(viewSwiper.activeIndex).addClass('active-nav')
+                                    if (!activeNav.hasClass('swiper-slide-visible')) {
+                                        if (activeNav.index() > previewSwiper.activeIndex) {
+                                            var thumbsPerNav = Math.floor(previewSwiper.width / activeNav.width()) - 1
+                                            previewSwiper.slideTo(activeNav.index() - thumbsPerNav)
+                                        } else {
+                                            previewSwiper.slideTo(activeNav.index())
+                                        }
+                                    }
+                                }
+                        </script>
                     </div>
-                    <div class="content_content">
-                        {$content.content}
+                    <div class="pro_text">
+                        <h3 class="tit protit">{$content.title}</h3>
+                        <div class="text clearfix">
+                            {$content.desc}
+                            <a href="javascript:;" class="btn">在线订购</a>
+                        </div>
                     </div>
                 </div>
-                <div class="tag mt15">
-                    相关标签：
+                <div class="page_content  clearfix">
+                    <div class="page_title clearfix">
+                        <h3>产品详情</h3>
+                    </div>
+                    <div class="content clearfix">
+                        {$content.content|sitelink}
+                    </div>
+                </div>
+                <div class="pro_tag clearfix">
+                    <span>相关标签：</span>
                     <yunu:tag title="$content['tag']">
-                         <a href="{$tag.url}"><span>{$tag.title}</span></a>
-                    </yunu:tag>
+                         <a href="{$tag.url}">{$tag.title}</a>
+                    </yunu:tag>                
                 </div>
-
-                <div class="prve">
-                    <p>上一篇： {$content.prev}</p>
-                    <p>下一篇： {$content.next}</p>
+                <div class="show_pages clearfix">
+                    <p>上一篇：{$content.next}</p>
+                    <p>下一篇：{$content.prev}</p>
                 </div>
-
-                <div class="flink mt20">
-                    <div class="flink_tit">
-                        <p></p>
-                        <span>相关新闻</span>
-                    </div>
-                    <div class="news_list">
+                <div class="page_title clearfix">
+                    <h3>相关产品</h3>
+                </div>
+                <div class="hot_pro clearfix">
+                    <div class="pro_list clearfix">
                         <ul>
-                            <yunu:list cid="28" limit="5" orderby="sort desc">
-                            <li>
-                                <a href="{$list.url}"><span>{$list.title}</span></a>
-                                <p>{$list.create_time|date='Y-m-d',###}</p>
-                            </li>
+                            <yunu:list cid="$cid" limit="4">
+                                <li>
+                                    <a href="{$list.url}">
+                                        <div class="imgauto">
+                                            <img src="{$list.pic}" alt="{$list.title}">
+                                        </div>
+                                        <span>{$list.title}</span>
+                                    </a>
+                                </li>
                             </yunu:list>
                         </ul>
                     </div>
                 </div>
-
-                <div class="flink mt10">
-                    <div class="flink_tit">
-                        <p></p>
-                        <span>相关产品</span>
-                    </div>
-                    <div class="pro_list">
-                        <ul>
-                            <yunu:list cid="21" limit="4" orderby="sort asc" tag="1">
-                            <li>
-                                <a href="{$list.url}">
-                                    <img src="{$list.pic}" alt="{$list.title}">
-                                    <span>{$list.title}</span>
-                                </a>
-                            </li>
-                            </yunu:list>
-                        </ul>
+                <div class="showarea clearfix">
+                    <h3>相关服务 <span>/service</span></h3>
+                    <div class="list clearfix">
+                        <yunu:cwkeywords>
+                            <a href="{$cwkeywords.url}">{$cwkeywords.name}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </yunu:cwkeywords>
                     </div>
                 </div>
-
-                <div class="f14 mt20">
-                    相关服务：
-                    <yunu:cwkeywords>
-                        <a href="{$cwkeywords.url}">{$cwkeywords.name}</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                    </yunu:cwkeywords>
-                </div>
-
-                <div class="f14 mt20">
-                    地区产品：
-                    <yunu:area type='1'>
-                        <a href="{$area.url}">{$area.title}</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                    </yunu:area>
+                <div class="showarea clearfix">
+                    <h3>地区产品<span>/CITY</span></h3>
+                    <div class="list clearfix">
+                        <yunu:area type='1'>
+                            <a href="{$area.url}">{$area.title}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </yunu:area>
+                    </div>
                 </div>
             </div>
     	</div>
     </div>
-<include file="public:footer" />
-</div>
+
+    <include file="public:footer" />
+
+
+    <script src="__PUBLIC__/js/jquery.imagezoom.min.js"></script>
+
+    <script type="text/javascript">
+        $(".jqzoom").imagezoom();
+        var $zoom = $('.jqzoom');
+        $('.yunu-showcase-pic').slide({
+            titCell: '.hd ul',
+            mainCell: '.bd ul',
+            autoPage: true,
+            effect: 'left',
+            vis: 3
+        }).on('mouseenter', '.bd li', function () {
+            var src = $(this).find('img').attr('src');
+            $zoom.attr('src', src);
+            $zoom.attr('rel', src);
+            $(this).addClass('active').siblings().removeClass('active');
+        }).find('li').eq(0).addClass('active');
+    </script>
+
+    <div id="message">
+        <div class="messagebg"></div>
+        <div class="m-content">
+            <div class="m-message">
+                <form id="myform1" method="post" action="<yunu:url name='form'>">
+                    <input type="hidden" name="__token__" value="{$Request.token}" >
+                    <input type="hidden" name="__formid__" value="1" >
+                    <input type="hidden" name="__returntype__" value="default" >
+                    <label> 
+                        <span>留言标题：</span>
+                        <input class="inp protitle" type="text" name="biaoti" value="">
+                        <em>*</em>
+                    </label>
+                    <label> 
+                        <span>你的姓名：</span>
+                        <input class="inp" type="text" name="name" value="">
+                    </label>
+                    <label> 
+                        <span>联系电话：</span>
+                        <input class="inp" type="tel" name="phone" value="">
+                    </label>
+                    <label> 
+                        <span>电子邮箱：</span>
+                        <input class="inp" type="email" name="email" value="">
+                    </label>
+                    <label> 
+                        <span>联系地址：</span>
+                        <input class="inp" type="text" name="address" value="">
+                    </label>
+                    <label class="mes"> 
+                        <span>留言内容：</span>
+                        <textarea name="yuanwang"></textarea>
+                    </label>
+                    <label class="code clearfix"> 
+                        <span>验证码：</span>
+                        <input type="text" name="__captcha1__" value="" >
+                        <img src="<yunu:url name='captcha' id='1'>" onclick="this.src='<yunu:url name='captcha' id='1'>'" />
+                    </label>
+                    <div class="btn-1">
+                        <input class="focus" type="button" onclick="login()" value="提交">
+                        <input type="reset" value="重置">
+                    </div>
+                </form>
+                <script type="text/javascript">
+                    function GetRequestParameters() {
+                        var url = location.search; //获取url中"?"符后的字串
+                        var theRequest = new Object();
+                        if (url.indexOf("?") != -1) {
+                            var str = url.substr(1);
+                            var strs = str.split("&"); //将所有参数拆分放入数组
+                            for (var i = 0; i < strs.length; i++) {  //遍历参数数组
+                                theRequest[strs[i].split("=")[0]] = decodeURIComponent(strs[i].split("=")[1]);
+                            }
+                        }
+                        return Parameters;
+                    }
+                </script> 
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        var inptext = $('.protit').html();
+        $('.btn').click(function(){
+            $('#message').css({
+                "transform":"scale(1)",
+                "transition":".5s"
+            });
+            $('.protitle').val(inptext);
+        })
+        $('.messagebg').click(function(){
+            $('#message').css({
+                "transform":"scale(0)",
+                "transition":".5s"
+            });
+        })
+
+        function login() {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: $('#myform1').attr('action'),
+                data: $('#myform1').serialize(),
+                success: function (result) {
+                    console.log(result);
+                    if (result.status == "success") {
+                        $('#myform1')[0].reset();
+                        $('#message').css({
+                            "transform":"scale(0)",
+                            "transition":".5s"
+                        });
+                        alert("提交成功");
+                    }else {
+                        alert(result.msg);
+                    }
+                },
+            });
+        }
+    </script>
 </body>
 </html>

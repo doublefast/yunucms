@@ -15,7 +15,7 @@ define('WEBSITE_HOST', $http_type . $_SERVER['HTTP_HOST']);
 
 class V1 extends Controller {
     public function _initialize() {
-        config('sys.sys_area', session('sys_area'));
+        config('sys.sys_area', session('sys_areainfo') ? session('sys_areainfo')['etitle'] : "");
         config('sys.sys_levelurl', session('sys_levelurl'));
     }
     public function _empty($name) {
@@ -84,15 +84,10 @@ class V1 extends Controller {
 
         $cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : $attr['cid'];
         $titlelen = empty($attr['titlelen']) ? 0 : intval($attr['titlelen']);
-
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-            	$orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         $keyword = empty($attr['keyword']) ? '' : trim($attr['keyword']);
         $limit = empty($attr['limit']) ? null : $attr['limit'];
@@ -127,7 +122,7 @@ class V1 extends Controller {
 
         $_where['create_time'] = ['LT', time()];
 
-        $_infolist = db('content')->where($_where)->order("$orderby")->limit(($pages-1)*$limit,$limit)->select();
+        $_infolist = db('content')->where($_where)->orderRaw("$orderby")->limit(($pages-1)*$limit,$limit)->select();
 
         $_content = new \app\index\model\ContentModel();
 
@@ -147,17 +142,14 @@ class V1 extends Controller {
 
     public function api_listmip() {
         $attr = input();
-
+        sleep(1);
+        
         $cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : $attr['cid'];
         $titlelen = empty($attr['titlelen']) ? 0 : intval($attr['titlelen']);
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-                $orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         $keyword = empty($attr['keyword']) ? '' : trim($attr['keyword']);
         $limit = empty($attr['limit']) ? null : $attr['limit'];
@@ -193,18 +185,20 @@ class V1 extends Controller {
 
         $_where['create_time'] = ['LT', time()];
 
-        $_infolist = db('content')->where($_where)->order("$orderby")->limit(($pages-1)*$limit,$limit)->select();
+        $_infolist = db('content')->where($_where)->orderRaw("$orderby")->limit(($pages-1)*$limit,$limit)->select();
 
         $_content = new \app\index\model\ContentModel();
 
         foreach ($_infolist as $k => $list) {
             $_infolist[$k] = $_content->getContentByCon($list);
             $_infolist[$k]['alltitle'] = $list['title'];
-            $_infolist[$k]['url'] = $_content->getContentArea($list)['url'];
+            $infodata = $_content->getContentArea($list);
+            $_infolist[$k]['url'] = $infodata['url'];
+            $_infolist[$k]['title'] = $infodata['title'];
             if($titlelen) $_infolist[$k]['title'] = str2sub($list['title'], $titlelen, 0);
             $_infolist[$k]['create_time'] = date('Y-m-d H:i:s', $list['create_time']);
             $_infolist[$k]['update_time'] = date('Y-m-d H:i:s', $list['update_time']);
-            $desc = isset($list['desc']) ? $list['desc'] : '';
+            $desc = isset($_infolist[$k]['desc']) ? $_infolist[$k]['desc'] : '';
             $desc = str_replace("&nbsp;", '', $desc);
             $desc = strip_tags($desc);
             $_infolist[$k]['desc'] = $desc;
@@ -229,16 +223,11 @@ class V1 extends Controller {
      */
     public function api_link() {
         $attr = input();
-
         $type = empty($attr['type']) ? '' : $attr['type'];
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-                $orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         $limit = empty($attr['limit']) ? null : $attr['limit'];
         $flag = empty($attr['flag']) ? '' : intval($attr['flag']);
@@ -258,11 +247,11 @@ class V1 extends Controller {
         //地区独立内容
         $_area = config('sys.sys_area') ? db('area')->where(['etitle' => config('sys.sys_area')])->find() : [];
         if ($_area) {
-            $_where['area'] = [['exp',' is NULL'],['eq',''], ['LIKE','%,'.$_area['id'].',%'], 'or'];
+            $_where['area'] = [['=', 'null'],['eq',''], ['LIKE','%,'.$_area['id'].',%'], 'or'];
         }
 
         $_limit = "$limit";
-        $_infolist = db('link')->where($_where)->order("$orderby")->limit($_limit)->select();
+        $_infolist = db('link')->where($_where)->orderRaw("$orderby")->limit($_limit)->select();
 
         $json = $this->info($_infolist !== null);
         $json['data'] = $_infolist;
@@ -282,11 +271,7 @@ class V1 extends Controller {
         if (empty($attr['orderby'])) {
             $orderby = "id DESC";
         }else{
-            if (strpos($attr['orderby'], 'desc') === true || strpos($attr['orderby'], 'asc') === true) {
-                $orderby = $attr['orderby'];
-            }else{
-                $orderby = "id DESC";
-            }
+            $orderby = $this->checkorderstr($attr['orderby']) ? $attr['orderby'] : "id DESC";
         }
         $limit = empty($attr['limit']) ? null : $attr['limit'];
 
@@ -298,7 +283,7 @@ class V1 extends Controller {
         }
 
         $_limit = "$limit";
-        $_infolist = db('banner')->where($_where)->order("$orderby")->limit($_limit)->select();
+        $_infolist = db('banner')->where($_where)->orderRaw("$orderby")->limit($_limit)->select();
 
         $json = $this->info($_infolist !== null);
         $json['data'] = $_infolist;
@@ -491,11 +476,11 @@ class V1 extends Controller {
         }
 
         $_limit = "$limit";
-        $_infolist = db('area')->where($_where)->order("sort asc")->limit($_limit)->select();
+        $_infolist = db('area')->where($_where)->orderRaw("sort asc")->limit($_limit)->select();
         if (empty($_infolist)) {
             if ($_area) {
                 $_where['pid'] = $_area['pid'];
-                $_infolist = db('area')->where($_where)->order("sort asc")->limit($_limit)->select();
+                $_infolist = db('area')->where($_where)->orderRaw("sort asc")->limit($_limit)->select();
             }
         }
 
@@ -698,5 +683,13 @@ class V1 extends Controller {
         $json['state'] = $info['status'] === 'success'?200:400;
         $json['info'] = $info['msg']?$info['msg']:'请求失败，请参见API文档';
         return $attr['callback'] === null?$json:jsonp($json);
+    }
+    public function checkorderstr($orderstr){
+        $orderstr = strtolower(str_replace(" ","",$orderstr));
+        if (preg_match("/^[a-z]*$/", $orderstr)) {
+            return true;
+        }else{
+            return false;
+        }
     }
 }

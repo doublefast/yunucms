@@ -126,7 +126,7 @@ class Diyform extends Common
     public function formcon()
     {
         $id = input('param.fid');
-        $map = ['fid'=>$id];
+        $map = ['fid'=>$id, 'vid'=>['neq',0]];
         $formcon = new formconModel();
         //是否导出
         if (input('param.type') == 'daochu') {
@@ -163,7 +163,12 @@ class Diyform extends Common
                     }
 
                     foreach ($fieldlist as $k1 => $v1) {
-                        echo $v[$v1['field']]."\t";
+                    	if (strlen($v[$v1['field']]) == 18) {
+                    		echo " ".$v[$v1['field']]." \t";
+                    	}else{
+                    		echo $v[$v1['field']]."\t";
+                    	}
+                        
                     }
                     echo "\n";
                 }
@@ -171,10 +176,10 @@ class Diyform extends Common
             exit();
         }else{
             $Nowpage = input('get.page') ? input('get.page'):1;
-            $limits = config("paginate.list_rows");
+            $limits = config("sys.admin_list_rows") ? config("sys.admin_list_rows") : 10;
             $count = Db::name('formcon')->where($map)->count();// 获取总条数
             $allpage = intval(ceil($count / $limits));//计算总页面
-            $lists = Db::name('formcon')->where($map)->page($Nowpage, $limits)->order('create_time desc')->select();       
+            $lists = Db::name('formcon')->where($map)->page($Nowpage, $limits)->orderRaw('create_time desc')->select();       
             foreach($lists as $k=>$v){
                 $lists[$k] = $formcon->getOneFormcon($v['id']);
                 $lists[$k]['create_time']=date('Y-m-d H:i:s',$v['create_time']);
@@ -188,7 +193,7 @@ class Diyform extends Common
             }
 
             //显示抬头
-            $fieldlist = Db::name('diyfield')->where(['mid'=>$id,'remark'=>1,'type'=>3])->order('sort asc')->select();
+            $fieldlist = Db::name('diyfield')->where(['mid'=>$id,'remark'=>1,'type'=>3])->orderRaw('sort asc')->select();
             $this->assign([
                 'fieldlist' => $fieldlist,
             ]);
@@ -343,7 +348,7 @@ class Diyform extends Common
         $db = Db::name('diyfield');
 
         $flag = $db->where(['id'=>$id])->setField(['sort'=>$sort]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
     public function showcode(){
         $id = input('param.id');
@@ -596,10 +601,8 @@ class Diyform extends Common
             $param = add_slashes_recursive($param);
 
             setConfigfile($coffile, add_slashes_recursive(array_merge($conflist, $param)));
-            return json(['code' => 1, 'data' => '', 'msg' => '更新设置成功']);
-            exit();
+            return json(['code' => 1, 'data' => '', 'msg' => '更新设置成功']); exit();
         }
-
         return $this->fetch();
     }
     public function demomail(){
@@ -618,7 +621,7 @@ class Diyform extends Common
             $mail->Password = $param['mail_password'];     // SMTP服务器密码
             $mail->SetFrom($param['mail_username'], $param['mail_setname']);
 
-            $mail->Subject = "云优CMS_测试邮件";
+            $mail->Subject = "测试邮件";
             $mail->MsgHTML("当您看到此封邮件时，说明邮件提醒配置参数已经配置成功，感谢您的使用！");
             $mail->AddAddress($param['mail_demo'], '');
             $jg =  $mail->Send() ? true : $mail->ErrorInfo;

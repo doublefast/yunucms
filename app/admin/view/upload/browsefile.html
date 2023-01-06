@@ -13,12 +13,19 @@
 <title></title>
 <script language="JavaScript">
 var index = parent.layer.getFrameIndex(window.name); 
-function returnValue(sfile, stype){  
+function returnValue(sfile, stype,imgtype){  
     if (stype == 'picture') {
-        $("#img_{$docname}", window.parent.document).attr('src',sfile);
-        $("#img_{$docname}", window.parent.document).show();
-        $("#{$docname}", window.parent.document).val(sfile);
-        parent.layer.close(index);
+        if (imgtype == "duoimg") {
+            picture_html= '<div class="picture_item"><img src="'+ sfile +'" width="114" height="114"><div class="picture_del">删除</div><div class="picture_go_up">前移</div><input type="hidden" class="imgval{$docname}" value="'+ sfile +'" /></div>';
+            $("#picture_show{$docname}", window.parent.document).append(picture_html);
+            window.parent.updateimg("imgval{$docname}", "imglist{$docname}");
+            //parent.layer.close(index);
+        }else{
+            $("#img_{$docname}", window.parent.document).attr('src',sfile);
+            $("#img_{$docname}", window.parent.document).show();
+            $("#{$docname}", window.parent.document).val(sfile);
+            parent.layer.close(index);
+        }
     } else {
         window.parent.selectFile(sfile);
     }
@@ -43,7 +50,7 @@ function returnValue(sfile, stype){
             {if condition="$v.isDir eq 1"}
                 <a href="{$v.url}" title="{$v.filename}"><img src="__ADM_PUBLIC__/img/folder.jpg"><br>{$v.filename}</a>
             {else/}
-                <a href="#" onclick="returnValue('{$v.url}', '{$stype}');" title="{$v.filename}"><img src="{$v.url}"><br>{$v.filename}</a> 
+                <a href="#" onclick="returnValue('{$v.url}', '{$stype}', '{$imgtype}');" title="{$v.filename}"><img src="{$v.url}"><br>{$v.filename}</a> 
             {/if}
             </div>
         {/volist}

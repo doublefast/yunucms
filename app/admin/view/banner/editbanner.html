@@ -1,4 +1,6 @@
 {include file="public/header" /}
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
+<script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
 </head>
 <body>
     <div id="main-container">
@@ -10,6 +12,38 @@
                     <span>{$position.name}</span>
                 </div>
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+
+                    <!--area_start-->
+                    <div class="layui-form check_diqu" id="diqu">
+                        <ul>
+                            {notempty name="arealist"}
+                            <li>&nbsp;&nbsp;<button type="button" class="btn diqu_select">全选</button></li>
+                            {volist name="arealist" id="v"}
+                            <li>
+                                <label class="diqu_checkbox"><input {if $v['ischk'] }checked{/if} type="checkbox" value="{$v['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v['title']}</span></label>
+                                {notempty name="v.node"}
+                                <ul>
+                                {volist name="v.node" id="v1"}
+                                <li>
+                                    <label class="diqu_checkbox"><input {if $v1['ischk'] }checked{/if} type="checkbox" value="{$v1['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v1['title']}</span></label>
+                                    {notempty name="v1.node"}
+                                    <ul>
+                                    {volist name="v1.node" id="v2"}
+                                    <label class="diqu_checkbox"><input {if $v2['ischk'] }checked{/if} type="checkbox" value="{$v2['id']}" name="diqu[]" lay-ignore><i class="layui-icon">&#xe605;</i><span>{$v2['title']}</span></label>
+                                    {/volist}
+                                    </ul>
+                                    {/notempty}
+                                </li>
+                                {/volist}
+                                </ul>
+                                {/notempty}
+                            </li>
+                            {/volist}
+                            {/notempty}
+                        </ul>
+                    </div>
+                    <!--area_end-->
+
                     <input name="id" type="hidden" value="{$info.id}">
 					<div class="layui-form-item">
 			            <label class="layui-form-label">幻灯片名称</label>
@@ -24,7 +58,7 @@
                             <input id="path1" class="layui-input" type="text" name="pic" value="{$info.pic}"><br>
                             <img id="img_path1" class="defimg" src="{$info.pic}" onerror="javascript:this.style.display='none';">
                         </div>
-                        <div class="layui-input-inline w450">
+                        <div class="layui-input-inline w150">
                             <input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
                             <div class="site-demo-upload upload-img fl ml5">
                                 <div class="site-demo-upbar">
@@ -70,6 +104,24 @@
                             <input type="radio" name="type" value="2" title="手机" {if $info.type eq 2}checked{/if}>
 			            </div>
 			        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">描述</label>
+                        <div class="layui-input-inline">
+                            <textarea name="desc" placeholder="描述" class="layui-textarea w700">{$info.desc}</textarea>
+                        </div>
+                    </div>
+
+                    {notempty name="arealist"}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">所属地区</label>
+                        <div class="layui-input-inline">
+                            <input id="area" type="hidden" name="area" value="{$info.area}">
+                            <a class="btn" id="open_diqu">点击选择</a>&nbsp;&nbsp;&nbsp;<font class="font_tip">不选择，默认为所有地区</font>
+                        </div>
+                    </div>
+                    {/notempty}
+
 					<div class="layui-form-item">
 	                    <label class="layui-form-label"></label>
 	                    <div class="layui-input-inline">
@@ -86,7 +138,7 @@
 layui.use(['form','common','upload'], function(){
         var $ = layui.jquery;
         $form = $('form');
-        var form = layui.form(),layer = layui.layer, common=layui.common;
+        var form = layui.form(),layer = layui.layer, common=layui.common,box = '#diqu';
 
         //上传图片
         layui.upload({
@@ -139,7 +191,7 @@ layui.use(['form','common','upload'], function(){
                 shade: false,
                 anim: 2,
                 area: ['750px', '350px'],
-                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
             });
         });
 
@@ -176,6 +228,27 @@ layui.use(['form','common','upload'], function(){
             }
             return false;
         });
+
+        $('#open_diqu').on('click', function(){
+            area_select($("#diqu input:checkbox"));
+            layer.open({
+                title: '选择地区',
+                type: 1,
+                content: $(box),
+                skin: 'layer_diqu',
+                area: ['60%','50%'],
+                btn: '确定',
+                yes: function(index, layero){
+                    var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
+                        return $(el).val();
+                    }).get().join(',');
+                    $('#area').val(value);
+                    layer.close(index);
+                }
+            });
+        });
+        
+        diqu(layer, form, box);
     });
 </script>
 </body>

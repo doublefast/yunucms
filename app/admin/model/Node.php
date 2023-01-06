@@ -39,7 +39,7 @@ class Node extends Model
     {
         //超级管理员没有节点数组
         $where = empty($nodeStr) ? 'status = 1' : 'status = 1 AND id IN('.$nodeStr.')';
-        $result = Db::name('auth_rule')->where($where)->order('sort')->select();
+        $result = Db::name('auth_rule')->where($where)->orderRaw('sort')->select();
         //if(config('template')['theme_name'] == "default"){
 
             $new_result=array();
@@ -69,8 +69,8 @@ class Node extends Model
         $where = ["name"=>$url];
         $db = Db::name('auth_rule');
         $result1 = $db->where($where)->find();
-        $ztopid = $result1['id'];
-        if($result1['pid'] != 0){
+        $ztopid = isset($result1) ? $result1['id'] : "";
+        if(isset($result1) && $result1['pid'] != 0){
             $result = $db->where(["id"=>$result1['pid']])->find();
             if ($result['pid'] != 0) {
                 $result = $db->where(["id"=>$result['pid']])->find();
@@ -81,18 +81,19 @@ class Node extends Model
         }
 
         if (empty($ztopid)) {
-            $chkid = $db->where("status='1' AND pid='0' ")->value('id');
+            $chkid = $db->where(" pid='0' ")->value('id');
         }else{
             $chkid = $ztopid;
         }
 
         $menu =  $db->where(["id"=>$chkid])->find();
-        $where = "pid='".$chkid."' AND status = 1 ";
+        $where = "pid='".$chkid."'";
         $where = $nodeStr ?  $where." AND id IN(".$nodeStr.")" : $where;
-        $menu['child'] =  $db->where($where)->order('sort asc')->select();
+        $menu['child'] =  $db->where($where)->orderRaw('sort asc')->select();
         $ischk = 0;
+        $result1pid = isset($result1) ? $result1['pid'] : "";
         foreach ($menu['child'] as $k => $v) {
-            if ($v['name'] == $url || $v['id'] == $result1['pid']) {
+            if ($v['name'] == $url || $v['id'] == $result1pid) {
                 $menu['child'][$k]['ischk'] = 1;
                 $ischk = 1;
             }else{
@@ -111,19 +112,24 @@ class Node extends Model
     {
         $where = ["name"=>$url];
         $result1 = Db::name('auth_rule')->where($where)->find();
-
-        $url = ' &gt; <a href="'.url($result1['name']).'" >'.$result1['title'].'</a>';
-        $name = $result1['title'];
-        if($result1['pid'] != 0){
-            $result2 = Db::name('auth_rule')->where(["id"=>$result1['pid']])->find();
-            $url = ' &gt; <a href="'.url($result2['name']).'" >'.$result2['title'].'</a>'.$url;
-            if($result2['pid'] != 0){
-                $result3 = Db::name('auth_rule')->where(["id"=>$result2['pid']])->find();
-                $url = ' &gt; <a href="'.url($result3['name']).'" >'.$result3['title'].'</a>'.$url;
+        if($result1){
+            $url = ' &gt; <a href="'.url($result1['name']).'" >'.$result1['title'].'</a>';
+            $name = $result1['title'];
+            if($result1['pid'] != 0){
+                $result2 = Db::name('auth_rule')->where(["id"=>$result1['pid']])->find();
+                $url = ' &gt; <a href="'.url($result2['name']).'" >'.$result2['title'].'</a>'.$url;
+                if($result2['pid'] != 0){
+                    $result3 = Db::name('auth_rule')->where(["id"=>$result2['pid']])->find();
+                    $url = ' &gt; <a href="'.url($result3['name']).'" >'.$result3['title'].'</a>'.$url;
+                }
             }
+        }else{
+            $name = "";
+            $url = "";
         }
         
+        
         $url = '您当前的位置：<a href="'.url('index/index').'">首页</a>' .$url;
-        return ['url'=>$url, 'name'=>$name];
+        return ['url'=>$url, 'name'=>$name, 'jumpurl'=> $result1 ? $result1['jumpurl'] :""];
     }
 }

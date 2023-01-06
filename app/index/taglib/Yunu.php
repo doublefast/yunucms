@@ -10,7 +10,7 @@ class Yunu extends TagLib {
 			'close' => 0
 		), 
 		'list'	=> array(//内容列表
-			'attr'	=> 'cid,titlelen,orderby,keyword,limit,pagesize,flag,top,tag,sql,area,image',
+			'attr'	=> 'cid,titlelen,orderby,keyword,limit,pagesize,flag,top,tag,sql,area,image,pagecss,time',
 			'close'	=> 1,
 		),
 		'form'	=> array(//表单列表
@@ -46,7 +46,7 @@ class Yunu extends TagLib {
 			'close'	=> 1,
 		),
 		'area'	=> array(//地区导航
-			'attr'	=> 'top,con,url,limit,conurl',
+			'attr'	=> 'top,con,url,limit,conurl,topzm',
 			'close'	=> 1,
 		),
 		'position'  => array(//当前位置
@@ -62,7 +62,7 @@ class Yunu extends TagLib {
 			'close' => 1,
 		),
 		'tag'  => array(//获取url
-			'attr'  => 'title,limit',
+			'attr'  => 'title,limit,type,orderby',
 			'close' => 1,
 		),
 		'field'  => array(//自定义字段
@@ -70,6 +70,7 @@ class Yunu extends TagLib {
 			'close' => 1,
 		),
 	);
+	
 	public function tagConfig($attr) {
 		$confstr = config('sys.'.$attr['name']);
 		//$confstr = htmlspecialchars_decode($confstr);
@@ -85,7 +86,13 @@ class Yunu extends TagLib {
 				}
 			}
 		}
-		$confstr = update_str_dq($confstr, config('sys.sys_area'));
+		if ($attr['name'] == 'wapurl') {
+			$confstr = get_wapurl(securityStr($_SERVER['REQUEST_URI'])); //获取WAP版当前页面URL
+		}
+		if ($attr['name'] == 'pcurl') {
+			$confstr = get_pcurl(securityStr($_SERVER['REQUEST_URI'])); //获取PC版当前页面URL
+		}
+		$confstr = update_str_dq($confstr, session('sys_areainfo'));
 
         $str  = '<?php ';
         $str .= 'echo "'.$confstr.'";';
@@ -95,13 +102,14 @@ class Yunu extends TagLib {
 
 	public function tagList($attr, $content) {
 		$cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : $attr['cid'];
-
 		$titlelen = empty($attr['titlelen']) ? 0 : intval($attr['titlelen']);
 		$orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
 		$keyword = empty($attr['keyword']) ? '' : trim($attr['keyword']);
 		$limit = empty($attr['limit']) ? 10 : $attr['limit'];
 		$pagesize = empty($attr['pagesize']) ? 0 : intval($attr['pagesize']);
+		$pagecss = isset($attr['pagecss']) ? intval($attr['pagecss']) : 1;
 		$flag = empty($attr['flag']) ? '' : intval($attr['flag']);
+		$time = empty($attr['time']) ? '' : intval($attr['time']);
 		$area = empty($attr['area']) ? '' : intval($attr['area']);
 		$top = empty($attr['top']) ? '' : intval($attr['top']);
 		$image = !isset($attr['image']) ? '-1' : trim($attr['image']);
@@ -127,218 +135,35 @@ str;
 		}
  		$str = <<<str
 <?php
-		\$_limit = "$limit";
-		\$_keyword = $keyword;
-		\$_flag = '$flag';
-		\$_areaid = '$area';//指定地区ID
-		\$_top = '$top';
-		\$_image = '$image';
-		\$_pagesize = $pagesize;
-		\$_tag = $tag;
-		\$_sql = "$sql";
+		\$_param = [
+			"cid" => \$_cid,
+			"limit" => "$limit",
+			"keyword" => $keyword,
+			"flag" => '$flag',
+			"time" => '$time',
+			"areaid" => '$area',//指定地区ID
+			"top" => '$top',
+			"image" => '$image',
+			"pagesize" => $pagesize,
+			"pagecss" => $pagecss,
+			"tag" => $tag,
+			"sql" => "$sql",
+			"orderby" => "$orderby",
+			"titlelen" => $titlelen,
+		];
 
+		\$contentmodel = new \app\index\model\ContentModel();
+		\$_infodata = \$contentmodel->getContentlist(\$_param);
 
-		if(\$_cid == -1) \$_cid = input('cid');
-		if (\$_cid > 0 || substr(\$_cid, 0, 1) == '$') {
-			
-			\$_category = new app\index\model\CategoryModel();
-			if (strpos(\$_cid, ',')) {
-				\$_cidarr = explode(',', \$_cid); 
-				\$_ids = [];
-				foreach (\$_cidarr as \$_k => \$_v) {
-					\$_ids = array_merge(\$_ids, \$_category->getChildsId(\$_category->getCategory(), \$_v, true));
-				}
-			}else{
-				\$_ids = \$_category->getChildsId(\$_category->getCategory(), \$_cid, true);
-			}
-			
-			\$_where = array('create_time' => array('LT', time()), 'cid'=> array('IN', \$_ids));
-		}else {
-			\$_where = array('create_time' => array('LT', time()));
-		}
-		if (\$_keyword != -1) {
-			\$_where['title'] = array('LIKE','%'.\$_keyword.'%');
-		}
+		\$_infolist = json_decode(\$_infodata['infolist'], true);
+		\$page = json_decode(\$_infodata['page'], true);
 
-		if (\$_flag) {	
-			\$_where['istop'] = \$_flag;
-		}
-		if (\$_top) {	
-			\$_where['top'] = \$_top;
-		}
-		
-		if (\$_image != -1) {
-			\$_where['pic'] = \$_image ? ['NEQ', ''] : ['EQ', ''];
-		}
-		
-		
-		if (\$_tag != -1) {
-			\$_jgf = ',';
-			\$_jgf = strpos(\$_tag, '，') ? '，' : \$_jgf;
-			\$_taglist = explode(\$_jgf,\$_tag);
-			if (count(\$_taglist) > 1) {
-				\$_tagarr = array();
-				foreach (\$_taglist as \$_k => \$_v) {
-					\$_tagarr[] = ['LIKE','%'.\$_v.'%'];
-				}
-				\$_tagarr[] = 'or';
-				\$_where['tag'] = \$_tagarr;
-			}else{
-				\$_where['tag'] = ['LIKE','%'.\$_tag.'%'];
-			}
-		}
-
-		\$_where['create_time'] = ['LT', time()];
-		//地区独立内容
-		if (\$_areaid) {
-			\$_arealist = explode(',', \$_areaid);
-			\$_areawhere = [];
-			foreach (\$_arealist as \$key => \$value) {
-				if (\$value) {
-					\$_areawhere[] = ['LIKE','%,'.\$value.',%'];
-				}
-			}
-			if (count(\$_areawhere) > 1) {
-				\$_areawhere[] = 'or';
-				\$_where['area'] = \$_areawhere;
-			}else{
-				\$_where['area'] = \$_areawhere[0];
-			}
-
-			
-		}else{
-			\$_area = session('sys_areainfo');
-		    if (\$_area) {
-		    	\$_where['area'] = [['exp',' is NULL'],['eq',''],['eq',',,'],['LIKE','%,'.\$_area['id'].',%'], 'or'];
-		    }else{
-		    	\$_where['area'] = [['exp',' is NULL'],['eq',''],['eq',',,'],['LIKE','%,88888888,%'], 'or'];
-		    }
-		}
-	    
-		\$_wheresql = '';
-		\$_pageurlarr = [];
-		if (\$_sql != -1) {
-			//拼接SQL语句
-			\$_db = db('diyfield');
-			\$_sqlstrlist = explode(" ", \$_sql);
-		
-			\$_sqlstr = ' ';
-			if (\$_sqlstrlist) {
-				foreach (\$_sqlstrlist as \$key1 => \$value1) {
-					if (is_numeric(\$value1)) {
-						\$_fieldname = \$_db->where(['id'=>\$value1])->value('field');
-
-						if (\$_GET[\$_fieldname] != '不限' && \$_GET[\$_fieldname] != '') {
-							\$_filelist = explode(',', \$_GET[\$_fieldname]);
-							\$_instr = "";
-							foreach (\$_filelist as \$key2 => \$value2) {
-								if (\$value2) {
-									\$_instr = \$_instr ? \$_instr." OR (\$_fieldname LIKE '%".\$value2."%')" : "(\$_fieldname LIKE '%".\$value2."%')";
-								}
-							}
-							\$_sqlstr = \$_sqlstr."(\$_instr) ";
-						}else{
-							\$_sqlstr = \$_sqlstr."( 1 = 1 ) ";
-						}
-
-						\$_pageurlarr[\$_fieldname] = \$_GET[\$_fieldname];
-						
-					}else{
-						if (\$value1 == 'or') {
-							\$_sqlstr = \$_sqlstr."or ";
-						}
-						if (\$value1 == 'and' ) {
-							\$_sqlstr = \$_sqlstr."and ";
-						}
-					}
-				}
-			}
-			\$_wheresql = \$_sqlstr;
-		}
-
-		//获取模型别名
-		\$_tabname = "";
-		if (\$_cid != -1 && !empty(\$_cid)) {
-			\$_mid = db('category')->where(['id'=>\$_cid])->value('mid');
-			\$_tabname = db('diymodel')->where(['id'=>\$_mid])->value('tabname');
-		}
-
-		\$page = "";//分页
-		if (\$_pagesize > 0) {
-			\$_pagearr = [];
-			switch (config('sys.url_model')) {
-		    	case '1'://动态
-		    		\$_pagearr = ['query' => request()->param()];
-		    		break;
-		    	case '3'://伪静态
-		    		\$_pagearr = ['path' => ''];
-		    		break;
-		    }
-		    \$_pagearr['var_link_rows'] = 7;
-		    //存在cid情况
-			if (\$_tabname) {
-				\$_infolist = db('content')
-				->alias('con')
-				->join(config('database.prefix').'diy_'.\$_tabname.' diy','con.vid = diy.conid')
-				->where(\$_where)
-				->where(\$_wheresql)
-				->order("$orderby")
-				->paginate(\$_pagesize, false, \$_pagearr);
-
-			}else{
-				\$_infolist = db('content')
-				->where(\$_where)
-				->order("$orderby")
-				->paginate(\$_pagesize, false, \$_pagearr);
-			}
-			
-        	\$page = \$_infolist->render();
-        	if (config('sys.url_model') == 3 && \$_area) {
-        		if (\$_area['isurl'] == 0) {
-        			\$_ctitle = input('ctitle', '', 'trim');
-        			\$page = str_replace(\$_ctitle."/", \$_area['etitle'].'_'.\$_ctitle."/", \$page);
-        		}
-        	}
-
-		}else {
-			//存在cid情况
-			if (\$_tabname) {
-				\$_infolist = db('content')
-				->alias('con')
-				->join(config('database.prefix').'diy_'.\$_tabname.' diy','con.vid = diy.conid')
-				->where(\$_where)
-				->where(\$_wheresql)
-				->order("$orderby")
-				->limit(\$_limit)
-				->select();
-			}else{
-				\$_infolist = db('content')
-				->where(\$_where)
-				->order("$orderby")
-				->limit(\$_limit)
-				->select();
-			}
-		}
-
-		//组合筛选修改分页URL
-        if (\$_pageurlarr) {
-        	\$_ljstr = config('sys.url_model') == '1' ? "&" : "?";
-        	\$page = preg_replace('/href=[\'|\"](\S+)[\'|\"]/i', 'href=$1'.\$_ljstr.build_query(\$_pageurlarr), \$page);
-        }
-		\$_content = new app\index\model\ContentModel();
 		foreach (\$_infolist as \$k => \$list):
-			\$list = \$_content->getContentByCon(\$list);
-
-			\$list['alltitle'] = \$list['title'];
-			if($titlelen) \$list['title'] = str2sub(\$list['title'], $titlelen, 0);
-			\$list = \$_content->getContentArea(\$list);
-			\$list = update_str_dq(\$list, config('sys.sys_area'));
 ?>		
 str;
 		$str .= $content;
 		$str .='<?php endforeach;?>';
 		return $str1.$str;
-
 	}
 
 	public function tagForm($attr, $content) {
@@ -374,10 +199,10 @@ str;
 		    		break;
 		    }
 
-			\$_infolist = db('formcon')->where(\$_where)->order("$orderby")->paginate(\$_pagesize, false , \$_pagearr);//, false, ['query' => ['catid' => 1]]
+			\$_infolist = db('formcon')->where(\$_where)->orderRaw("$orderby")->paginate(\$_pagesize, false , \$_pagearr);//, false, ['query' => ['catid' => 1]]
         	\$page = \$_infolist->render();
 		}else {
-			\$_infolist = db('formcon')->where(\$_where)->order("$orderby")->limit(\$_limit)->select();
+			\$_infolist = db('formcon')->where(\$_where)->orderRaw("$orderby")->limit(\$_limit)->select();
 		}
 		\$_formcon = new app\index\model\DiyformModel();
 
@@ -417,7 +242,7 @@ str;
 			}
 		}
 		\$info = \$_condata;
-		\$info = update_str_dq(\$info, config('sys.sys_area'));
+		\$info = update_str_dq(\$info, session('sys_areainfo'));
 ?>		
 str;
 		$str .= $content;
@@ -428,36 +253,34 @@ str;
 		$type = empty($attr['type']) ? '' : $attr['type'];
 		$orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
 		$limit = empty($attr['limit']) ? 10 : $attr['limit'];
-		$flag = empty($attr['flag']) ? '' : intval($attr['flag']);
+		$flag = empty($attr['flag']) ? "" : $attr['flag'];
  		$str = <<<str
 <?php
 		\$_type = '$type';
 		\$_flag = '$flag';
-		
 		\$_where = [];
 		if (\$_type) {
 			\$_where['type'] = \$_type;
 		}
 
-		if (\$_flag) {	
-			\$_where['pic'] = \$_flag ? array('NEQ', '') : array('EQ', '');
+		if (\$_flag) {
+			\$_where['pic'] = \$_flag == 'true' ? ['NEQ', ''] : ['EQ', ''];
 		}
 
 		//地区独立内容
 	    \$_area = session('sys_areainfo');
 
 	    if (\$_area) {
-	    	\$_where['area'] = [['exp',' is NULL'],['eq',''],['eq',',,'],['LIKE','%,'.\$_area['id'].',%'], 'or'];
+	    	\$_where['area'] = [['eq',''],['eq',',,'],['LIKE','%,'.\$_area['id'].',%'],null, 'or'];
 	    }else{
-	    	\$_where['area'] = [['exp',' is NULL'],['eq',''],['eq',',,'],['LIKE','%,88888888,%'], 'or'];
+	    	\$_where['area'] = [['eq',''],['eq',',,'],['LIKE','%,88888888,%'],null, 'or'];
 	    }
 
-
 		\$_limit = "$limit";
-		\$_infolist = db('link')->where(\$_where)->order("$orderby")->limit(\$_limit)->select();
+		\$_infolist = db('link')->where(\$_where)->orderRaw("$orderby")->limit(\$_limit)->select();
 
 		foreach (\$_infolist as \$k => \$link):
-			\$link = update_str_dq(\$link, config('sys.sys_area'));
+			\$link = update_str_dq(\$link, session('sys_areainfo'));
 ?>		
 str;
 		$str .= $content;
@@ -479,10 +302,19 @@ str;
 		}
 
 		\$_limit = "$limit";
-		\$_infolist = db('banner')->where(\$_where)->order("$orderby")->limit(\$_limit)->select();
+
+		//地区独立内容
+	    \$_area = session('sys_areainfo');
+	    if (\$_area) {
+	    	\$_where['area'] = [['eq',''],['eq',',,'],['LIKE','%,'.\$_area['id'].',%'],null, 'or'];
+	    }else{
+	    	\$_where['area'] = [['eq',''],['eq',',,'],['LIKE','%,88888888,%'],null, 'or'];
+	    }
+
+		\$_infolist = db('banner')->where(\$_where)->orderRaw("$orderby")->limit(\$_limit)->select();
 
 		foreach (\$_infolist as \$k => \$banner):
-			\$banner = update_str_dq(\$banner, config('sys.sys_area'));
+			\$banner = update_str_dq(\$banner, session('sys_areainfo'));
 ?>		
 str;
 		$str .= $content;
@@ -490,103 +322,48 @@ str;
 		return $str;
 	}
 	public function tagBlock($attr) {
-		$name = isset($attr['name']) ? $attr['name'] : '';
+		$name = isset($attr['name']) ? trim($attr['name']) : '';
 		$infolen = empty($attr['infolen']) ? 0 : intval($attr['infolen']);
 		$textflag = empty($attr['textflag']) ? 0 : 1;
-		$name = trim($name);
+		$blockmodel = new \app\index\model\BlockModel();
+		$infodata = $blockmodel->getBlock($name, $infolen, $textflag);
 		$str =<<<str
-<?php
-		\$_block = db('block')->where("title='".'$name'."'")->find();
-		\$_block = update_str_dq(\$_block, config('sys.sys_area'));
-		\$_block_content = '';
-		if (\$_block) {
-			if (\$_block['type'] == 2) {
-				if (!$textflag) {
-					\$_block_content = '<img src="'. \$_block['content'] .'" />';
-				}else {
-					\$_block_content = \$_block['content'];
-				}
-			}else {
-				if($infolen) {
-					\$_block_content = str2sub(strip_tags(\$_block['content']), $infolen, 0);//清除html再截取
-				}else {
-					\$_block_content = \$_block['content'];
-				}
-			}
-
-			\$_blockurl = '';
-			if (\$_block['url']) {
-				\$_blockurl = \$_block['url'];
-				if (substr(\$_blockurl, 0,1) == '@') {
-		            \$_catemodel = new app\index\model\CategoryModel();
-		            \$_category = \$_catemodel->getOneCategory(substr(\$_blockurl, 1));
-		            if (\$_category) {
-		                \$_blockurl = \$_catemodel->getCategoryUrl(\$_category);
-		            }
-		        }
-				\$_block_content= "<a href='".\$_blockurl."' target='_blank'>".\$_block_content."</a>";
-			}
-		}
-		echo \$_block_content;
-?>
+<?php echo stripslashes('$infodata');?>
 str;
 		return $str;
 	}
 
 	public function tagCatlist($attr, $content) {
-		$cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : trim($attr['cid']);//只接收一个栏目ID
+		$cid = !isset($attr['cid']) || $attr['cid'] == '' ? -1 : trim($attr['cid']);
 		$type = empty($attr['type'])? 'son' : $attr['type'];//son表示下级栏目,self表示同级栏目,top顶级栏目(top忽略typeid),parent父级
 		$flag = empty($attr['flag']) ? 1: intval($attr['flag']);//0(不显示链接和单页),1(全部显示)
-		$limit = empty($attr['limit'])? '10' : $attr['limit'];
-		
+		$limit = empty($attr['limit']) ? '10' : $attr['limit'];
+		if (strpos($cid, ',')) {
+			$str1 = <<<str
+<?php
+\$_cid = '$cid';
+?>	
+str;
+		}else{
+			$str1 = <<<str
+<?php
+\$_cid = $cid;
+?>	
+str;
+		}
+
 		$str = <<<str
 <?php
-		\$_limit = "$limit";
-		\$_cid = intval($cid);
-		\$_type = "$type";
-		
-		\$_category = new app\index\model\CategoryModel();
-		if(\$_cid == -1) \$_cid = input('cid');
-		\$_catlist = \$_category->getCategory(1);
+		\$_categorymodel = new \app\index\model\CategoryModel();
+		\$_infodata = \$_categorymodel->getCatlist(\$_cid, "$type", $flag, "$limit");
 
-		if ($flag == 0) {
-			\$_catlist = \$_category->clearLink(\$_catlist);//去除外部链接的栏目
-		}
-		//type为parent
-		if (\$_type == 'parent') {
-			\$_parent  = \$_category->getParents(\$_catlist, \$_cid);
-			\$_catlist  = \$_category->unlimitedForLayer(\$_catlist, 'child', \$_parent[0]['id']);
-
-		}else{
-			//type为top,忽略cid
-			if(\$_cid == 0 || \$_type == 'top') {
-				\$_catlist  = \$_category->unlimitedForLayer(\$_catlist);
-			}else {
-				
-				if (\$_type == 'self') {
-					//同级分类
-					\$_typeinfo  = \$_category->getSelf(\$_catlist, \$_cid );
-					\$_catlist  = \$_category->unlimitedForLayer(\$_catlist, 'child', \$_typeinfo['pid']);
-				}else {
-					//son，子类列表
-					\$_catlist  = \$_category->unlimitedForLayer(\$_catlist, 'child', \$_cid);
-				}
-			}
-		}
-		
-		\$_limit_list = explode(',', \$_limit);
+		\$_catlist = json_decode(\$_infodata, true);
 		foreach(\$_catlist as \$autoindex => \$catlist):
-			if(count(\$_limit_list) > 1){
-				if((\$autoindex < \$_limit_list[0]) || (\$autoindex > \$_limit_list[1])) continue;
-			} else{
-				if(\$autoindex >= \$_limit_list[0]) break;
-			}
-			\$catlist = update_str_dq(\$catlist, config('sys.sys_area'));
 ?>
 str;
 		$str .= $content;
 		$str .='<?php endforeach;?>';
-		return $str;
+		return $str1.$str;
 	}
 
 	public function tagNav($attr, $content) {
@@ -599,9 +376,7 @@ str;
 		\$_typeid = intval('$typeid');
 		
 		\$_category = new app\index\model\CategoryModel();
-		\$_navlist = \$_category->getCategory('', \$_typeid, false);
-		
-
+		\$_navlist = \$_category->getCategory('', \$_typeid, true);
 		\$_navlist  = \$_category->unlimitedForLayer(\$_navlist);
 
 		foreach(\$_navlist as \$autoindex => \$nav):
@@ -611,11 +386,10 @@ str;
 			} else{
 				if(\$autoindex >= \$_limit) break;
 			}
-			\$nav['target'] = \$nav['target'] == 1 ? '_blank' : '_self';
 			\$navmainurl = \$nav['catmainurl'] ? false : true;
 			\$nav['url'] = \$_category->getCategoryUrl(\$nav, [] , \$navmainurl);
 
-			\$nav = update_str_dq(\$nav, config('sys.sys_area'));
+			\$nav = update_str_dq(\$nav, session('sys_areainfo'));
 
 ?>
 str;
@@ -640,8 +414,8 @@ str;
 		}
 
 		\$type = \$_category->getOneCategory(\$_typeid);
-		\$type['url'] = \$_category->getCategoryUrl(\$type);
-		\$type = update_str_dq(\$type, config('sys.sys_area'));
+		\$type = \$_category->getCategoryArea(\$type);
+		\$type = update_str_dq(\$type, session('sys_areainfo'));
 ?>
 str;
 		$str .= $content;
@@ -653,6 +427,7 @@ str;
 		$top = empty($attr['top']) ? 0 : intval($attr['top']);
 		$con = empty($attr['con']) ? 0 : intval($attr['con']);
 		$url = empty($attr['url']) ? 0 : intval($attr['url']);
+		$topzm = !isset($attr['topzm']) || $attr['topzm'] == '' ? -1 : $attr['topzm'];
 		$conurl = empty($attr['conurl']) ? '' : trim($attr['conurl']);
 		$type = empty($attr['type']) ? '' : trim($attr['type']);
 		$pid = empty($attr['pid']) ? 0 : $attr['pid'];
@@ -665,6 +440,7 @@ str;
 		\$_top = intval('$top');
 		\$_con = intval('$con');
 		\$_url = intval('$url');
+		\$_topzm = $topzm;
 		\$_pid = $pid;
 		\$_conurl = intval('$conurl');
 		\$_type = '$type';
@@ -679,43 +455,51 @@ str;
 		if (\$_url) {
 			\$_where['isurl'] = \$_url;
 		}
-		
+		if (\$_topzm != -1) {
+			\$_where['etitle'] = ['LIKE', \$_topzm.'%'];
+		}
+		\$_area = session('sys_areainfo');
 		if (\$_type == "current") {
-			\$_area = session('sys_areainfo');
 			\$_where['id']= \$_area ? \$_area['id'] : '';
+		}
+		if (\$_type == "province") {
+			\$_where['id']= \$_area ? getprovince(\$_area['id']) : '';
 		}
 
 		if (\$_type == -1 || \$_type == "group" || \$_type == "1" ) {
-		    \$_area = session('sys_areainfo');
-		    if (\$_area && !\$_conurl) {
-		    	\$_where['pid'] = \$_area['id'];
-		    }else{
-		    	\$_where['pid'] = \$_pid ? \$_pid : 0;
-		    }
+			if (\$_pid) {
+				\$_where['pid'] = \$_pid;
+			}else{
+				if (\$_area && !\$_conurl) {
+			    	\$_where['pid'] = \$_area['id'];
+			    }else{
+			    	\$_where['pid'] = 0;
+			    }
+			}
 		}
 	    \$_where['isopen'] = 1;
 		\$_limit = "$limit";
 		
-		\$_infolist = db('area')->where(\$_where)->order("sort asc")->limit(\$_limit)->select();
+		\$_infolist = db('area')->where(\$_where)->orderRaw("sort asc")->limit(\$_limit)->select();
 
 		if (empty(\$_infolist)) {
 			if (\$_area && !\$_conurl) {
 				\$_where['pid'] = \$_area['pid'];
-				\$_infolist = db('area')->where(\$_where)->order("sort asc")->limit(\$_limit)->select();
+				\$_infolist = db('area')->where(\$_where)->orderRaw("sort asc")->limit(\$_limit)->select();
 			}
 		}
 		
 		
 
-		\$_area = new app\index\model\AreaModel();
+		\$_areamodel = new app\index\model\AreaModel();
 		\$_category = new app\index\model\CategoryModel();
 		\$_content = new app\index\model\ContentModel();
 		foreach(\$_infolist as \$autoindex => \$area):
-			\$area['ys_url'] = \$_area->getAreaUrl(\$area);
+			\$area['ys_url'] = \$_areamodel->getAreaUrl(\$area);
 			\$area['ys_title'] = \$area['title'];
 			\$area['ys_stitle'] = \$area['stitle'];
 			if (\$_conurl) {
-				\$area['url'] = \$_area->getAreaUrl(\$area);
+				\$area['url'] = \$_areamodel->getAreaUrl(\$area);
 			}else{
 				if (isset(\$content)) {
 					\$_data = \$_content->getContentArea(\$content, \$area);
@@ -727,7 +511,7 @@ str;
 						\$area['url'] = \$_data['url'];
 						\$area['title'] = \$area['stitle'].\$category['ys_title'];
 					}else{
-						\$area['url'] = \$_area->getAreaUrl(\$area);
+						\$area['url'] = \$_areamodel->getAreaUrl(\$area);
 					}
 				}
 			}
@@ -790,16 +574,22 @@ str;
 		\$_limit = "$limit";
 		\$_content = new app\index\model\ContentModel();
 		if (isset(\$content)) {
-		    \$_area = session('sys_areainfo');
-		    \$_areaname = \$_area ? \$_area['stitle'] : "";
-			
 			\$_infolist = [];
+			\$_area = session('sys_areainfo');
+		    \$_areaname = \$_area ? \$_area['stitle'] : "";
+			\$_contitle = \$content['title'];
+			\$titlestr = str_replace(\$content['ys_title'], "**", \$_contitle);
+			\$titlestrarr = explode("**", \$titlestr);
+			if (isset(\$titlestrarr[1]) && \$titlestrarr[1] != '') {
+				\$_contitle = str_replace(\$titlestrarr[1], "", \$_contitle);
+			}
+
 			//cd模式 标题+长尾
 			if (\$_type == 'cd') {
 				\$_keywordlist = explode(',', config('sys.seo_cwkeyword'));
 				foreach(\$_keywordlist as \$autoindex => \$keyword):
-					\$info['name'] = array_key_exists("ys_title", \$content) ? \$content['ys_title'].\$keyword : \$content['title'].\$keyword;
-					\$info['name'] = \$_areaname . \$info['name'];
+
+					\$info['name'] = \$_contitle.\$keyword;
 					\$info['url'] = \$_content->getContentUrl(\$content, \$info['name']);
 					\$_infolist[] = \$info;
 				endforeach;
@@ -808,9 +598,12 @@ str;
 			if (\$_type == 'bc') {
 				\$_keywordlist = explode(',', config('sys.seo_ctkeyword'));
 				foreach(\$_keywordlist as \$autoindex => \$keyword):
-
-					\$info['name'] = array_key_exists("ys_title", \$content) ? \$keyword.\$content['ys_title'] : \$keyword.\$content['title'];
-					\$info['name'] = \$_areaname . \$info['name'];
+					if (strstr(\$_contitle, \$_area['title'])) {
+						\$info['name'] = \$_area['title'].\$keyword.\$content['ys_title'];
+					}else{
+						\$info['name'] = \$keyword.\$_contitle;
+					}
+					
 					\$info['url'] = \$_content->getContentUrl(\$content, \$info['name']);
 					\$_infolist[] = \$info;
 				endforeach;
@@ -821,9 +614,11 @@ str;
 				\$_keywordlist_b = explode(',', config('sys.seo_ctkeyword'));
 				foreach(\$_keywordlist_b as \$autoindex_b => \$keyword_b):
 					foreach(\$_keywordlist_d as \$autoindex_d => \$keyword_d):
-						\$info['name'] = array_key_exists("ys_title", \$content) ? \$keyword_b.\$content['ys_title'].\$keyword_d : \$keyword_b.\$content['title'].\$keyword_d;
-					
-						\$info['name'] = \$_areaname .\$info['name'];
+						if (strstr(\$_contitle, \$_area['title'])) {
+							\$info['name'] = \$_area['title'].\$keyword_b.\$content['ys_title'].\$keyword_d;
+						}else{
+							\$info['name'] = \$keyword_b.\$_contitle.\$keyword_d;
+						}
 						\$info['url'] = \$_content->getContentUrl(\$content, \$info['name']);
 						\$_infolist[] = \$info;
 					endforeach;
@@ -851,23 +646,50 @@ str;
 	public function tagTag($attr, $content){
 		$title = isset($attr['title']) ? trim($attr['title']) : '';	
 		$title = $title ? "$title" : -1;
+		$type = empty($attr['type']) ? 1 : $attr['type'];
+		$orderby = empty($attr['orderby']) ? "id DESC" : $attr['orderby'];
 		$limit = empty($attr['limit']) ? 10 : $attr['limit'];
+		if (strpos($title, '$')=== false) {
+			$str1 = <<<str
+<?php
+\$_title = "$title";
+?>	
+str;
+		}else{
+			$str1 = <<<str
+<?php
+\$_title = $title;
+?>	
+str;
+		}
 		$str =<<<str
 <?php
-		\$_title = $title;
+		\$_type = $type;
 		\$_limit = "$limit";
+		\$_infolist = [];
 		if (\$_title != -1) {
 			\$_jgf = ',';
 			\$_jgf = strpos(\$_title, '，') ? '，' : \$_jgf;
 			\$_strlist = explode(\$_jgf, \$_title);
-			\$_infolist = [];
 			foreach (\$_strlist as \$k => \$v) {
-				\$_infolist[] = ['title'=>\$v, 'num'=>1];
+				if (\$v != "") {
+					\$_infolist[] = ['title'=>\$v, 'num'=>1];
+				}
 			}
 		}else{
-			//获取全站tag	
-			\$_content = new app\index\model\ContentModel();
-			\$_infolist = \$_content->getTaglist();
+
+			if (\$_type == 1) {
+				//获取全站tag	
+				\$_content = new app\index\model\ContentModel();
+				\$_infolist = \$_content->getTaglist();
+			}else{
+				//获取后台tag	
+				\$_datalist = db('tagurl')->orderRaw("$orderby")->select();
+				foreach (\$_datalist as \$k => \$v) {
+					\$_infolist[] = ['title'=>\$v['tagname'], 'num'=>1];
+				}
+			}
+			
 		}
 		if (\$_limit) {
 			\$_infolist = array_slice(\$_infolist, 0, \$_limit);
@@ -880,7 +702,7 @@ str;
 str;
 		$str .= $content;
 		$str .='<?php endforeach;?>';
-		return $str;
+		return $str1.$str;
 	}
 
 	public function tagField($attr, $content){
@@ -893,7 +715,7 @@ str;
 		\$_id = $id;
 		\$_group = "$group";
 		\$_noset = $noset;
-		\$_active = $active;
+		\$_active = "$active";
 		\$_db = db('diyfield');
 		\$_fielddata = \$_db->where(['id'=>\$_id])->find();
 		if (\$_fielddata) {
@@ -906,7 +728,7 @@ str;
 			\$_garrdata = explode(',',\$_group);
 			foreach (\$_garrdata as \$key1 => \$value1) {
 				\$_gname = \$_db->where(['id'=>\$value1])->value('field');
-				\$_garr[\$_gname] = \$_GET[\$_gname];
+				\$_garr[\$_gname] = isset(\$_GET[\$_gname]) ? \$_GET[\$_gname] : '';
 			}
 		}
 
@@ -917,7 +739,7 @@ str;
 			array_unshift(\$_infolist, '不限');
 		}
 		\$_ljstr = config('sys.url_model') == '1' ? "&" : "?";
-
+		\$_dqfield = \$_garr[\$ff];
 		foreach (\$_infolist as \$autoindex => \$val): 
 			if (\$_fielddata['ftype'] == 'select') {
 				\$_garr[\$ff] = \$val;

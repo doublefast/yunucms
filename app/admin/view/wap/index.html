@@ -11,26 +11,51 @@
                 </div>
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
 					<div class="layui-form-item">
-			            <label class="layui-form-label">自动跳转</label>
-			            <div class="layui-input-inline">
+			            <label class="layui-form-label">PC跳WAP</label>
+			            <div class="layui-input-inline w60">
 			               	<input type="checkbox" name="wap_auto" {if config('sys.wap_auto')}checked{/if} lay-skin="switch" lay-filter="switchTest">
 			            </div>
+                        <div class="layui-input-inline w450"><font class="font_tip">开启则电脑访问手机页面会自动跳转，响应式网站无需开启，否则会报错</font></div>
 			        </div>
 
                     <div class="layui-form-item">
-                        <label class="layui-form-label">二级域名</label>
-                        <div class="layui-input-inline" style="width:100px;">
-                            <input type="checkbox" name="wap_levelurl" {if config('sys.wap_levelurl')}checked{/if} lay-skin="switch" lay-filter="switchTest">
+                        <label class="layui-form-label">WAP跳PC</label>
+                        <div class="layui-input-inline w60">
+                            <input type="checkbox" name="pc_auto" {if config('sys.pc_auto')}checked{/if} lay-skin="switch" lay-filter="switchTest">
                         </div>
-                        <div class="layui-input-inline"><font class="font_tip">默认为"m.二级域名后缀"</font></div>
+                        <div class="layui-input-inline w450"><font class="font_tip">开启则手机访问电脑页面会自动跳转，响应式网站无需开启，否则会报错</font></div>
                     </div>
 
                     <div class="layui-form-item">
-                        <label class="layui-form-label">MIP设置</label>
-                        <div class="layui-input-inline" style="width:100px;">
+                        <label class="layui-form-label">WAP独立域名</label>
+                        <div class="layui-input-inline w60">
+                            <input type="checkbox" name="wap_levelurl" {if config('sys.wap_levelurl')}checked{/if} lay-skin="switch" lay-filter="switchPro">
+                        </div>
+                         <div class="layui-input-inline w450"><font class="font_tip">响应式无需开启</font></div>
+                    </div>
+
+                    <div class="layui-form-item switchPro {if config('sys.wap_levelurl') neq 1}none{/if}">
+                        <label class="layui-form-label">WAP域名前缀</label>
+                        <div class="layui-input-inline w100">
+                            <input class="layui-input" type="text" name="wap_pre" value="{:config('sys.wap_pre')}" placeholder="m" >
+                        </div>
+                        <font class="font_tip">默认为"m".二级域名后缀</font>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">PC-MIP设置</label>
+                        <div class="layui-input-inline w60">
+                            <input type="checkbox" name="pc_mip" {if config('sys.pc_mip')}checked{/if} lay-skin="switch" lay-filter="switchTest">
+                        </div>
+                        <div class="layui-input-inline w600"><font class="font_tip">开启则详情页"img"标签转换为"mip-img"，非MIP网站无需开启，否则图片无法显示</font></div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">WAP-MIP设置</label>
+                        <div class="layui-input-inline w60">
                             <input type="checkbox" name="wap_mip" {if config('sys.wap_mip')}checked{/if} lay-skin="switch" lay-filter="switchTest">
                         </div>
-                        <div class="layui-input-inline"><font class="font_tip">启用后编辑器内"img"标签自动转换为"mip-img"</font></div>
+                        <div class="layui-input-inline w600"><font class="font_tip">开启则详情页"img"标签转换为"mip-img"，非MIP网站无需开启，否则图片无法显示</font></div>
                     </div>
                     
                     <div class="layui-form-item">
@@ -39,7 +64,7 @@
                             <input id="path1" class="layui-input" type="text" name="wap_logo" value="{:config('sys.wap_logo')}"><br>
                             <img id="img_path1" class="defimg" src="{:config('sys.wap_logo')}" onerror="javascript:this.style.display='none';">
                         </div>
-                        <div class="layui-input-inline w450">
+                        <div class="layui-input-inline w150">
                             <input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
                             <div class="site-demo-upload upload-img fl ml5">
                                 <div class="site-demo-upbar">
@@ -103,7 +128,7 @@ layui.use(['form','common','upload'], function(){
                 shade: false,
                 anim: 2,
                 area: ['750px', '350px'],
-                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
             });
         });
 
@@ -121,8 +146,7 @@ layui.use(['form','common','upload'], function(){
                         success: function (info) {
                             if (info.code == 1) {
                                 common.layerAlertSHref(info.msg, '提示', "{:url('wap/index')}");
-                            }
-                            else {
+                            }else {
                                 common.layerAlertE(info.msg, '提示');
                                 $(data.elem).removeAttr("disabled").text("提交");
                             }
@@ -139,6 +163,13 @@ layui.use(['form','common','upload'], function(){
                 common.layerAlertE('链接错误！', '提示');
             }
             return false;
+        });
+        form.on('switch(switchPro)', function(data) {
+            if (this.checked) {
+                $(".switchPro").show();
+            }else{
+                $(".switchPro").hide();
+            }
         });
     });
 </script>

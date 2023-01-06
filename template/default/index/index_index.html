@@ -4,121 +4,220 @@
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta name="keywords" content="<yunu:config name='seo_keywords'/>">
-    <meta name="description" content="<yunu:config name='seo_description'/>">
-    <title><yunu:config name="seo_title"/>-<yunu:config name="site_title"/></title>
-    <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta name="applicable-device" content="pc,wap">
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="keywords" content="<yunu:config name='seo_keywords'>">
+    <meta name="description" content="<yunu:config name='seo_description'>">
+    <title><yunu:config name="seo_title"></title>
     <script type="text/javascript" src="__PUBLIC__/js/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/js/mk.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/js/jquery.lazyload.min.js"></script>
-    <!-- <link rel="stylesheet" href="__PUBLIC__/css/wowslider1.css">
-    <link rel="stylesheet" href="__PUBLIC__/css/wowslider2.css"> -->
-    <link rel="stylesheet" href="__PUBLIC__/css/idangerous.swiper.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/swiper.min.css">
+    <script type="text/javascript" src="__PUBLIC__/js/yunu.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/Superslide.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/swiper.min.js"></script>
 </head>
 <body>
-<include file="public:header" index="1" />
+    <include file="public:header"/>
+    <script type="text/javascript">
+        $('.head_nav li').eq(0).addClass('on');
+    </script>
+    <div class="pc_banner">
+        <div class="pcbanner">
+            <div class="swiper-wrapper">
+                <yunu:banner type="1" limit="5">
+                    <div class="swiper-slide"><img src="{$banner.pic}"></div>
+                </yunu:banner>
+            </div>
+            <div class="pagination"></div>
+            <div class="next"></div>
+            <div class="prev"></div>
+        </div>
+        <script type="text/javascript">
+            var mySwiper = new Swiper('.pcbanner', {
+                preventIntercationOnTransition : true,
+                speed: 600,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.pcbanner .pagination',
+                    type: 'bullets',
+                    clickable :true,
+                },
+                navigation: {
+                    nextEl: '.pcbanner .next',
+                    prevEl: '.pcbanner .prev',
+                    disabledClass: 'my-button-disabled',
+                },
+            })
+            mySwiper.el.onmouseover = function(){
+                mySwiper.autoplay.stop();
+            }
+        </script>
+        
+        <div class="banner_text clearfix">
+            <div class="center clearfix">
+                <div class="banner_text_content clearfix">
+                    <img class="imgleft" id="imgleft" src="__PUBLIC__/img/jb.png" alt="图片名">
+                    <div class="banner_text_bg">
+                        <yunu:block name='head_text4' />
+                    </div>
+                    <script type="text/javascript">
+                        $(document).ready(function(){
+                            $('#imgleft').animate({left: "0"},1000);
+                            $('#pbottom').animate({top: "0"},1000);
+                            $('#fonts').animate({fontSize: "43px"},1000);
+                            $('#fonts').animate({opacity: "1"},2000);
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="m_banner mtop">
+        <div class="mbanner">
+            <div class="swiper-wrapper">
+                <yunu:banner type="2" limit="5">
+                    <div class="swiper-slide"><img src="{$banner.pic}"></div>
+                </yunu:banner>
+            </div>
+            <div class="pagination"></div>
+        </div>
+        <script type="text/javascript">
+            var mySwiper = new Swiper('.mbanner', {
+                speed: 500,
+                autoplay: {
+                    delay:5000
+                },
+                loop : true,
+                pagination: {
+                    el: '.mbanner .pagination',
+                    type: 'bullets',
+                },
+            })
+        </script>
+    </div>
+
     <div class="main">
         <div class="i_box1 clearfix">
             <div class="center">
-                <div class="i_box1_content">
+                <div class="i_box1_content clearfix">
                     <div class="main_l fl">
                         <p>
-                            <span>产品分类</span>
-                            <i>PRODUCT DISPLAY</i>
+                            <yunu:type typeid='21'>
+                                <span>{$type.title}</span>
+                                <i>{$type.subtitle}</i> 
+                            </yunu:type>              
                         </p>
                         <ul>
-                            <yunu:catlist cid='21'>
-                            <li><a href="{$catlist.url}"><span>{$catlist.title}</span></a></li>
+                            <yunu:catlist cid="21">
+                                <li><a href="{$catlist.url}"><span>{$catlist.title}</span></a></li>
                             </yunu:catlist>
                         </ul>
                         <div class="contact">
-                            <a href="javascript:;">
-                                <img data-original="__PUBLIC__/img/88.png" alt="">
-                                <h3>在线留言</h3>
-                                <span>留下您的宝贵意见</span>
-                            </a>
+                            <yunu:type typeid='73'>
+                                <a href="{$type.url}">
+                                    <img src="__PUBLIC__/img/88.png">
+                                    <h3>在线留言</h3>
+                                    <span>留下您的宝贵意见</span>
+                                </a>
+                            </yunu:type>
                         </div>
                     </div>
-                    <div class="main_r fr pro_list">
-                        <ul>
-                            <yunu:list cid="21" limit="8" orderby="sort desc" flag="1">
-                            <li>
-                                <a href="{$list.url}">
-                                    <img data-original="{$list.pic}" alt="{$list.title}" width="180" height="190" img-Auto="true">
-                                    <span>{$list.title}</span>
-                                </a>
-                            </li>
-                            </yunu:list> 
-                        </ul>
+                    <div class="main_r fr">
+                        <div class="pro_list clearfix">
+                            <ul>
+                                <yunu:list cid="21" limit="8" flag="1" orderby="sort asc">
+                                    <li>
+                                        <a href="{$list.url}">
+                                            <div class="imgauto"><img src="{$list.pic}" alt="{$list.title}"></div>
+                                            <span>{$list.title}</span>
+                                        </a>
+                                    </li>
+                                </yunu:list>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="i_box2">
+        <div class="i_box2 clearfix">
             <div class="center">
                 <yunu:type typeid='20'>
-                <div class="i_box2_tit">
-                    <p><i>{$type.title} / {$type.subtitle}</i></p>
-                    <span></span>
-                </div>
+                    <div class="i_box2_tit clearfix">
+                        <p><i>{$type.title} / {$type.subtitle}</i></p>
+                        <span></span>
+                    </div>
+                </yunu:type>
                 <div class="i_box2_content clearfix">
                     <div class="i_box2_content1 fl">
-                        <div class="flimg">
-                            <img data-original="__PUBLIC__/img/img1.png" alt="">
-                        </div>
-                        <div class="i_box2_img fl">
-                            <img data-original="{$type.pic}" alt="">
-                        </div>
-                        <div class="i_box2_text fl">
-                            <p>{$type.desc}<a href="{$type.url}">【详细介绍】</a></p>
-                        </div>
+                        <yunu:type typeid='85'>
+                            <div class="flimg">
+                                <img src="__PUBLIC__/img/img1.png">
+                            </div>
+                            <div class="i_box2_text fr">
+                                <p>{$type.desc}</p>
+                            </div>
+                            <div class="i_box2_img fl">
+                                <img src="{$type.pic}">
+                            </div>
+                        </yunu:type>
                         <div class="i_box2_menu fl">
-                            <yunu:type typeid='20'><a href="{$type.url}">公司简介</a></yunu:type>
-                            <yunu:type typeid='30'><a href="{$type.url}">联系方式</a></yunu:type>
-                            <a href="javascript:;">在线留言</a>
+                            <yunu:type typeid='20'>
+                                <a href="{$type.url}">公司简介</a>
+                            </yunu:type>
+                            <yunu:type typeid='30'>
+                                <a href="{$type.url}">联系方式</a>
+                            </yunu:type>
+                            <yunu:type typeid='73'>
+                                <a href="{$type.url}">在线留言</a>
+                            </yunu:type>
                         </div>
                     </div>
                     <div class="fr">
                         <div class="i_box2_fr_img">
                             <div class="swiper-container">
                                 <div class="swiper-wrapper">
-                                    <yunu:list cid="34" limit="10" orderby="sort desc" flag="1">
-                                    <div class="swiper-slide">
-                                        <div class="title"><img data-original="{$list.pic}" alt="{$list.title}"></div>
-                                    </div>
+                                    <yunu:list cid="34" limit="4" flag="1">
+                                        <div class="swiper-slide">
+                                            <div class="imgauto"><img src="{$list.pic}" alt="{$list.title}"></div>
+                                        </div>
                                     </yunu:list>
                                 </div>
                                 <div class="pagination"></div>
                             </div>
-                            <script src="__PUBLIC__/js/idangerous.swiper.min.js"></script>
                             <script type="text/javascript">
-                                var mySwiper = new Swiper('.swiper-container',{
-                                    height: 350,
-                                    pagination: '.pagination',
-                                    paginationClickable: true
+                                var mySwiper = new Swiper('.i_box2_fr_img .swiper-container', {
+                                    speed: 400,
+                                    loop : true,
+                                    pagination: {
+                                        el: '.i_box2_fr_img .pagination',
+                                        type: 'bullets',
+                                        clickable :true,
+                                    },
                                 })
-                                function randomColor () {
-                                    var colors = ('blue red green orange pink').split(' ');
-                                    return colors[ Math.floor( Math.random()*colors.length ) ]
-                                }
                             </script>
                         </div>
                     </div>
                 </div>
-                </yunu:type>
             </div>
         </div>
-        <div class="i_box3">
+
+        <div class="i_box3 clearfix">
             <div class="center">
-                <yunu:type typeid='29'>
-                <div class="i_box3_tit">
-                    <p>{$type.title} / {$type.subtitle}</p>
+                <div class="i_box3_tit clearfix">
+                    <p>客户案例 / CASES</p>
                 </div>
-                <div class="i_box3_content" id="marquee1">
+                <div class="i_box3_content clearfix" id="marquee1">
                     <ul>
-                        <yunu:list cid="$type['id']" limit="10" orderby="sort desc" flag="1">
-                        <li><a href="{$list.url}"><img data-original="{$list.pic}" alt="{$list.title}"></a></li>
+                        <yunu:list cid="29" limit="8" flag="1">
+                            <li><a href="{$list.url}"><div class="imgauto"><img src="{$list.pic}" onerror="this.src='__PUBLIC__/img/nopic.png'"></div></a></li>
                         </yunu:list>
                     </ul>
                 </div>
@@ -129,84 +228,62 @@
                     })();
                 </script>
                 <div class="i_box3_a">
-                    <a href="{$type.url}">MORE+</a>
+                    <yunu:type typeid='29'>
+                        <a href="{$type.url}">MORE+</a>
+                    </yunu:type>
                 </div>
-                </yunu:type>
             </div>
         </div>
+
         <div class="i_box4 clearfix">
             <div class="center">
-                <div class="i_box4_content">
-                    <div class="new_list fl">
-                        <ul>
-                            <yunu:list cid="28" limit="5" orderby="sort desc" flag="1">
-                            <li>
-                                <div class="i_box4_time fl">
-                                    <p>
-                                        <span>{$list.update_time|date='d',###}</span>
-                                        <i>{$list.update_time|date='Y-m',###}</i>
-                                    </p>
-                                </div>
-                                <div class="i_box4_text fl">
-                                    <a href="{$list.url}"><span>{$list.title}</span></a>
-                                    <p>{$list.desc|str2sub=30, true}</p>
-                                </div>
-                            </li>
-                            </yunu:list>
-                        </ul>
+                <div class="i_box4_content clearfix">
+                    <div class="fl">
+                        <div class="new_list clearfix">
+                            <ul>
+                                <yunu:list cid="28" limit="5" flag="1">
+                                    <li>
+                                        <div class="i_box4_time">
+                                            <p>
+                                                <span>{$list.create_time|date='d',###}</span>
+                                                <i>{$list.create_time|date='Y-m',###}</i>
+                                            </p>
+                                        </div>
+                                        <div class="i_box4_text">
+                                            <a href="{$list.url}"><span>{$list.title}</span></a>
+                                            <p>{$list.content|str2sub=100, true}</p>
+                                        </div>
+                                    </li>
+                                </yunu:list>
+                            </ul>
+                        </div>
                     </div>
                     <div class="fr">
                         <h3>联系方式 / CONTACT</h3>
-                        <p><img src="/template/default/index/img/dz.png" alt=""><span>地址：香港XXXXXX街XXX号XXX大厦XXXXX室</span></p>
-                        <p><img src="/template/default/index/img/dh.png" alt=""><span>电话：010-12345678</span></p>
-                        <p><img src="/template/default/index/img/sj.png" alt=""><span>手机：13888888888</span></p>
-                        <p><img src="/template/default/index/img/yx.png" alt=""><span>邮箱：88888888@qq.com</span></p>
+                        <p>
+                            <b><img src="__PUBLIC__/img/dz.png" alt="图片名"></b>
+                            <span>地址：<yunu:block name='dizhi' /></span>
+                        </p>
+                        <p>
+                            <b><img src="__PUBLIC__/img/dh.png" alt="图片名"></b>
+                            <span>电话：<yunu:block name='dianhua' /></span>
+                        </p>
+                        <p>
+                            <b><img src="__PUBLIC__/img/sj.png" alt="图片名"></b>
+                            <span>手机：<yunu:block name='shouji' /></span>
+                        </p>
+                        <p>
+                            <b><img src="__PUBLIC__/img/yx.png" alt="图片名"></b>                          
+                            <span>邮箱：<yunu:block name='email' /></span>
+                        </p>
                         <div class="map">
-                            <script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
-                            <div style="width:240px;height:240px;border:#ccc solid 1px;" id="dituContent"></div>
-                            <script type="text/javascript">
-                                //创建和初始化地图函数：
-                                function initMap(){
-                                    createMap();//创建地图
-                                    setMapEvent();//设置地图事件
-                                    //向地图添加控件
-                                }
-                                function createMap(){
-                                    var map = new BMap.Map("dituContent");//在百度地图容器中创建一个地图
-                                    var point = new BMap.Point(<yunu:block name='map' />);//定义一个中心点坐标
-                                    map.centerAndZoom(point,17);//设定地图的中心点和坐标并将地图显示在地图容器中
-                                    window.map = map;//将map变量存储在全局
-                                }
-
-                                //地图事件设置函数：
-                                function setMapEvent(){
-                                    map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
-                                    map.enableScrollWheelZoom();//启用地图滚轮放大缩小
-                                    map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
-                                    map.enableKeyboard();//启用键盘上下左右键移动地图
-                                }
-
-                                //地图控件添加函数：
-                                function addMapControl(){
-                                    //向地图中添加缩放控件
-                                var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
-                                map.addControl(ctrl_nav);
-                                    //向地图中添加缩略图控件
-                                var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
-                                map.addControl(ctrl_ove);
-                                    //向地图中添加比例尺控件
-                                var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
-                                map.addControl(ctrl_sca);
-                                }
-
-
-                                initMap();//创建和初始化地图
-                            </script>
+                            <yunu:block name='map' />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="flink">
             <div class="center">
                 <div class="flink_tit">
@@ -215,37 +292,30 @@
                 </div>
                 <div class="flink_list">
                     <ul>
-                        <yunu:link type="1">
-                        <li><a href="{$link.url}">{$link.title}</a></li>
+                        <yunu:link type="1" limit="35">
+                            <li><a href="{$link.url}">{$link.title}</a></li>
                         </yunu:link>
                     </ul>
                 </div>
-                <div class="flink_tit mt30">
+            </div>
+        </div>
+        <div class="flink">
+            <div class="center">
+                <div class="flink_tit">
                     <p></p>
                     <span>城市分站 CITYS</span>
                 </div>
                 <div class="flink_list">
                     <ul>
-                        <yunu:area type="level" top="1">
-                        <li><a href="{$area.url}">{$area.title}</a></li>
+                        <yunu:area type="1" limit="35">
+                            <li><a href="{$area.url}">{$area.title}</a></li>
                         </yunu:area>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-<include file="public:footer" />
-<script type="text/javascript">
-    $("img[data-original]").lazyload({
-        effect : "fadeIn",
-        threshold : 300,
-        load: function(){
-            var t = $(this);
-            if (t.attr('img-Auto')) {
-                t.imgAuto();
-            }
-        }
-    });
-</script>
+
+    <include file="public:footer" />
 </body>
 </html>

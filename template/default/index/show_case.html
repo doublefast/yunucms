@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta name="applicable-device" content="pc,wap">
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <title><if condition="strlen($content['seo_title']) neq 0">{$content.seo_title}<else/>{$content.title}-<yunu:config name="site_title"></if></title>
+    <meta name="keywords" content="<if condition="strlen($content['seo_keywords']) neq 0">{$content.seo_keywords}<else/>{$content.title}</if>">
+    <meta name="description" content="<if condition="strlen($content['seo_desc']) neq 0">{$content.seo_desc|str2sub=160, true}<else/>{$content.content|str2sub=160, true} </if>">
+    <script type="text/javascript" src="__PUBLIC__/js/jquery-1.12.4.min.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/css/yunu.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/swiper.min.css">
+    <script type="text/javascript" src="__PUBLIC__/js/yunu.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/Superslide.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/swiper.min.js"></script>
+</head>
+<body>
+    <include file="public:header" />
+
+    <div class="page_banner">
+        <img src="__PUBLIC__/img/pagebanner.jpg">
+    </div>
+
+    <div class="main container">
+    	<div class="center">
+    		<div class="main_l fl" id="mhide">
+                <p>
+                    <yunu:type typeid='$cid' type="parent">
+                        <span>{$type.title}</span>
+                        <i>{$type.subtitle}</i>   
+                    </yunu:type>            
+                </p>
+                <ul>
+                    <yunu:catlist cid="$category['id']" type="parent">
+                        <li <if condition="$catlist['id'] eq $cid || $catlist['id'] eq $category['pid']">class="on"</if>><a href="{$catlist.url}"><span>{$catlist.title}</span></a></li>
+                    </yunu:catlist>
+                </ul>
+                <div class="liuyan">
+                    <b>
+                        <yunu:type typeid='30'>
+                            <a href="{$type.url}">
+                                <img src="__PUBLIC__/img/lxa1.jpg" alt="图片名">
+                                <img src="__PUBLIC__/img/lxa2.jpg" alt="图片名">
+                            </a>
+                        </yunu:type>
+                    </b>
+                    <b>
+                        <yunu:type typeid='73'>
+                            <a href="{$type.url}">
+                                <img src="__PUBLIC__/img/lya1.jpg" alt="图片名">
+                                <img src="__PUBLIC__/img/lya2.jpg" alt="图片名">
+                            </a>
+                        </yunu:type>
+                    </b>
+                </div>
+            </div>
+            <div class="main_r fr">
+                <div class="crumbs">
+                    <p>
+                        <yunu:position cid="$cid" delimiter="&gt;&gt;" />
+                    </p>
+                </div>
+                <div class="content_tit">
+                    <h3>{$content.title}</h3>
+                    <p>
+                        <span>分类：{$category.title}</span>
+                        <span>发布时间：{$content.create_time|date='Y-m-d',###}</span>
+                        <span>{$content.click}次浏览</span>
+                    </p>
+                </div>
+                <div class="content_des">
+                    <p>{$content.content|str2sub=40, true}</p>
+                </div>
+                <div class="content">
+                    {$content.content|sitelink}
+                </div>
+                <div class="show_pages">
+                    <p>上一篇：{$content.next}</p>
+                    <p>下一篇：{$content.prev}</p>
+                </div>
+                <div class="hot_new">
+                    <div class="page_title clearfix">
+                        <h3>相关案例</h3>
+                    </div>
+                    <div class="news_list clearfix">
+                        <ul>
+                            <yunu:list cid="$cid" limit="10" flag="1">
+                                <li>
+                                    <a href="{$list.url}"><span>{$list.title}</span></a>
+                                    <p>{$list.update_time|date='Y-m-d',###}</p>
+                                </li>
+                            </yunu:list>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+    <include file="public:footer" />
+</body>
+</html>

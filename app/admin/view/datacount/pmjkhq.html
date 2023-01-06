@@ -6,8 +6,44 @@
 		<div class="main">
 			<div class="notice">{$position.url}</div>
 			<div class="main_content">
-				{if $mainkeywords }
-					<iframe id="myiframe" scrolling="yes" frameborder="0" width="100%" height="100%" src="http://ranking.yunucms.com/index.php/keyword/id/{$mainkeywords.id}/type/0/year/{:date('Y')}/month/{:date('n')}"></iframe>
+				{if $keydata}
+					<div class="title">
+						<span>{$position.name}</span>
+					</div>
+					<div class="table" v-el:table>
+					<table>
+						<thead>
+							<tr>
+								<th width="80"><span>序号</span></th>
+								<th><span>关键词</span></th>
+								<th class="sort" width="100"><span>百度指数</span></th>
+								<th width="100"><span>搜索引擎</span></th>
+								<th class="sort" width="100"><span>初排</span></th>
+								<th class="sort" width="100"><span>新排</span></th>
+								<th width="100"><span>变化</span></th>
+								<th width="150"><span>监控时间</span></th>
+								<th width="80"><span>趋势</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{foreach name="keydata" item="v" key="k"}
+			                <tr>
+			                    <td>{$k+1}</td>
+			                    <td>{$v.keyword}</td>
+			                    <td>{$v.baidu_index}</td>
+			                    <td align="center">{$v.search_engines_value}</td>
+			                    <td align="center">{$v.initial_rank}</td>
+			                    <td align="center">{$v.current_rank}</td>
+			                    <td align="center">{$v.bhstr}</td>
+			                    <td align="center">{$v.monitortime}</td>
+			                    <td align="center">
+			                        <a class="btn btn2" href="{$v.trend_url}" target="_blank">查看</a>
+			                    </td>
+			                </tr>
+			                {/foreach}
+						</tbody>
+					</table>
+				</div>
 				{else/}
 					<style type="text/css">
 					.main404{ width: 80%; margin: 150px auto; height: 400px;  }
@@ -29,11 +65,4 @@
 		</div>
 	</div>
 </body>
-<script type="text/javascript">
-$(window.parent.document).find("#myiframe").load(function(){
-	var main = $(window.parent.document).find("#myiframe");
-	var thisheight = $(document).height();
-	main.height(thisheight);
-});
-</script>
 </html>

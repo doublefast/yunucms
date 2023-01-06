@@ -34,8 +34,8 @@
 
         //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的重新定义
         , toolbars: [[
-            'fullscreen', 'source', '|',
-            'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'autotypeset', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
+            'fullscreen', 'source', '|', 'undo', 'redo','|',
+            'bold', 'italic', 'underline', 'fontborder', 'strikethrough','removeformat','formatmatch', 'autotypeset', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
             'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
             'paragraph', 'fontfamily', 'fontsize', '|',
             'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
@@ -249,7 +249,7 @@
 
         //wordCount
         //,wordCount:true          //是否开启字数统计
-        //,maximumWords:10000       //允许的最大字符数
+        ,maximumWords:100000       //允许的最大字符数
         //字数统计提示，{#count}代表当前字数，{#leave}代表还可以输入多少字符数,留空支持多语言自动切换，否则按此配置显示
         //,wordCountMsg:''   //当前已输入 {#count} 个字符，您还可以输入{#leave} 个字符
         //超出字数限制提示  留空支持多语言自动切换，否则按此配置显示
@@ -275,7 +275,7 @@
 
         //autoHeightEnabled
         // 是否自动长高,默认true
-        //,autoHeightEnabled:true
+        ,autoHeightEnabled:false
 
         //scaleEnabled
         //是否可以拉伸长高,默认true(当开启时，自动长高失效)
@@ -407,7 +407,7 @@
 			p:      ['class', 'style'],
 			pre:    ['class', 'style'],
 			s:      [],
-			section:[],
+			section:['class', 'style'],
 			small:  [],
 			span:   ['class', 'style'],
 			sub:    ['class', 'style'],
@@ -424,7 +424,7 @@
 			u:      [],
 			ul:     ['class', 'style'],
 			video:  ['autoplay', 'controls', 'loop', 'preload', 'src', 'height', 'width', 'class', 'style'],
-            source: ['src', 'type'],  
+            source: ['autoplay', 'src', 'type'],  
             embed:  ['type', 'class', 'pluginspage', 'src', 'width', 'height', 'align', 'style', 'wmode', 'play',  'autoplay','loop', 'menu', 'allowscriptaccess', 'allowfullscreen', 'controls', 'preload'],  
             iframe: ['src', 'class', 'height', 'width', 'max-width', 'max-height', 'align', 'frameborder', 'allowfullscreen'] 
 		}

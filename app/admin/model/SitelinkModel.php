@@ -12,6 +12,16 @@ class SitelinkModel extends Model
         return $this->select();
     }
 
+    public function getSitelinkByWhere($where, $Nowpage, $limits)
+    {
+        return $this->where($where)->page($Nowpage, $limits)->orderRaw('id desc')->select();
+    }
+
+    public function getSitelinkCount($where)
+    {
+        return $this->where($where)->count();
+    }
+    
     public function insertSitelink($param)
     {
         $param['status'] = array_key_exists("status", $param) ? 1 : 0;

@@ -1,73 +1,164 @@
 {include file="public/header" /}
+<style type="text/css">
+.layui-input-inline .icheckbox_square-green{display: none;}
+</style>
 <link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/diqu.css">
 <script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
 </head>
 <body>
-	<div id="main-container">
-		{include file="public/menu" /}
-		<div class="main">
-			<div class="notice">{$position.url}</div>
-			<div class="main_content">
-				<div class="layui-form check_diqu" id="diqu"></div>
-				<div class="title">
-					<span>{$position.name}</span>
-				</div>
-				<a class="btn mr10" href="{:url('addlink')}">添加</a><a class="btn do-action" data-type="doDelete" data-href="{:url('dellink')}">删除</a>
-				<div class="table" v-el:table>
-					<form id="export-form" method="post" action="{:url('index')}">
-					<table class="layuitable">
-						<thead>
-							<tr>
-								<th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
-								<th class="sort" width="80"><span>ID</span></th>
-								<th class="sort" width="200"><span>标题</span></th>
-								<th><span>链接地址</span></th>
-								<th class="sort" width="100"><span>图片</span></th>
-								<th class="sort" width="100"><span>位置</span></th>
-								<th class="sort" width="100"><span>排序</span></th>
-								<th width="150"><span>操作</span></th>
-							</tr>
-						</thead>
-						<tbody id="article_list">
-							{notempty name="infolist"}
-		                    	{volist name="infolist" id="v"}
-								<tr>
-									<td><input class="ids i-checks" type="checkbox" name="ck" ids="{$v.id}"></td>
-									<td>{$v.id}</td>
-									<td>{$v.title}</td>
-									<td>{$v.url}</td>
-									<td>{notempty name="v['pic']"}<a class="blue" href="{$v.pic}" target="_blank">【预览】</a>{/notempty}</td>
-									<td>{$v.wz}</td>
-									<td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td>
-									<td>
-										<a class="btn do-action" data-type="doEdit" data-href="{:url('editlink')}" data-id="{$v.id}">编辑</a>
-		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('dellink',['ids'=>$v['id']])}">删除</a>
-									</td>
-								</tr>
-								{/volist}
-		                    {else /}
-		                        <td colspan="8" class="text-center"> 暂未发现数据! </td>
-		                    {/notempty}
-						</tbody>
-						<tbody>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="layui-form check_diqu" id="diqu"></div>
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+                <a class="btn mr10" href="{:url('addlink')}">添加</a><a class="btn do-action mr10" data-type="doDelete" data-href="{:url('dellink')}">删除</a><a class="btn doautolink" href="javascript:void()">自动换链设置</a>
 
-							<tr class="last_tr">
-								<td><input class="i-checks checkbox check-all" type="checkbox"></td>
-								<td colspan="7" class="tal">
+                <div class="none" id="autolink" style="padding-top:20px;">
+                    <div class="ui_prompt" style="width:90%; margin-left:5%;margin-bottom:10px;">
+                        <p>温馨提示：正规行业，提交至系统才会审核通过，交换范围默认为全局交换，如果开启本账号交换则仅根据自己授权域名下的站点内部交换，请谨慎开启！</p>
+                    </div>
+                    <form  class="layui-form layui-form-pane" method="post">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-inline w450">
+                                {if !isset($flinkdata.state)}
+                                    <a class="btn">待提交</a>
+                                {else/}
+                                    {if $flinkdata.state eq 0}<a class="btn">待审核</a>{/if}
+                                    {if $flinkdata.state eq 1}<a class="btn">审核通过</a>{/if}
+                                    {if $flinkdata.state eq 2}<a class="btn mr10" style="background:red;">退回</a><font color="red">{$flinkdata.note}</font>{/if}
+                                    {if $flinkdata.state eq 3}<a class="btn" style="background:red;">异常</a>{/if}
+                                    {if $flinkdata.state eq 4}<a class="btn" style="background:red;">锁定</a>{/if}
+                                {/if}
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">关键词</label>
+                            <div class="layui-input-inline w450">
+                                <input class="layui-input w100 fl mr10" type="text" name="keyword1" id="keyword1" value="{$flinkdata ? $flinkdata.keyword1 : ""}">
+                                <input class="layui-input w100 fl mr10" type="text" name="keyword2" id="keyword2" value="{$flinkdata ? $flinkdata.keyword2 : ""}">
+                                <input class="layui-input w100 fl" type="text" name="keyword3" id="keyword3" value="{$flinkdata ? $flinkdata.keyword3 : ""}">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">您的链接</label>
+                            <div class="layui-input-inline">
+                                <input class="layui-input" type="text" value="{$siteurl}" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">是否允许同IP</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="same_ip" value="1" title="是" {if $flinkdata && $flinkdata.same_ip eq 1}checked{/if}>
+                                <input type="radio" name="same_ip" value="0" title="否" {if $flinkdata && $flinkdata.same_ip eq 0}checked{/if}>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">交换范围</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="exchange_type" value="0" title="全局交换" lay-filter="exchange_type" id="exchange_type" {if $flinkdata && $flinkdata.exchange_type eq 0}checked{/if}>
+                                <input type="radio" name="exchange_type" value="1" title="本帐号内交换" lay-filter="exchange_type" {if $flinkdata && $flinkdata.exchange_type eq 1}checked{/if}>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择所属行业</label>
+                            <div class="layui-input-inline w350">
+                                <select data-val="true" lay-filter="tpl_list" name="type" id="type" >
+                                    <option value="旅游/酒店/机构" {if $flinkdata && $flinkdata.type eq "旅游/酒店/机构"}selected{/if}>旅游/酒店/机构</option>
+                                    <option value="服装/鞋包/纺织" {if $flinkdata && $flinkdata.type eq "服装/鞋包/纺织"}selected{/if}>服装/鞋包/纺织</option>
+                                    <option value="农业/水产/养殖" {if $flinkdata && $flinkdata.type eq "农业/水产/养殖"}selected{/if}>农业/水产/养殖</option>
+                                    <option value="珠宝/饰品" {if $flinkdata && $flinkdata.type eq "珠宝/饰品"}selected{/if}>珠宝/饰品</option>
+                                    <option value="房产/建材/装饰" {if $flinkdata && $flinkdata.type eq "房产/建材/装饰"}selected{/if}>房产/建材/装饰</option>
+                                    <option value="IT/数码/电子" {if $flinkdata && $flinkdata.type eq "IT/数码/电子"}selected{/if}>IT/数码/电子</option>
+                                    <option value="机械/五金/化工" {if$flinkdata && $flinkdata.type eq "机械/五金/化工"}selected{/if}>机械/五金/化工</option>
+                                    <option value="食品/饮料/酒类" {if $flinkdata && $flinkdata.type eq "食品/饮料/酒类"}selected{/if}>食品/饮料/酒类</option>
+                                    <option value="娱乐/文艺/体育" {if $flinkdata && $flinkdata.type eq "娱乐/文艺/体育"}selected{/if}>娱乐/文艺/体育</option>
+                                    <option value="家电/家具/用品" {if $flinkdata && $flinkdata.type eq "家电/家具/用品"}selected{/if}>家电/家具/用品</option>
+                                    <option value="汽车/配件/运输" {if $flinkdata && $flinkdata.type eq "汽车/配件/运输"}selected{/if}>汽车/配件/运输</option>
+                                    <option value="能源/环保/新材料" {if $flinkdata && $flinkdata.type eq "能源/环保/新材料"}selected{/if}>能源/环保/新材料</option>
+                                    <option value="玩具/礼品/包装" {if $flinkdata && $flinkdata.type eq "玩具/礼品/包装"}selected{/if}>玩具/礼品/包装</option>
+                                    <option value="家居/照明/办公" {if $flinkdata && $flinkdata.type eq "家居/照明/办公"}selected{/if}>家居/照明/办公</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">联系QQ</label>
+                            <div class="layui-input-inline">
+                                <input class="layui-input" type="text" name="qq" id="qq" value="{$flinkdata ? $flinkdata.qq : ""}">
+                            </div>
+                        </div>
+                        {if isset($flinkdata.state)}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-inline">
+                                <a class="btn delautolink" href="javascript:void()">取消换链</a>
+                            </div>
+                        </div>
+                        {/if}
+                    </form>
+                </div>
+
+                <div class="table" v-el:table>
+                    <table class="layuitable">
+                        <thead>
+                            <tr>
+                                <th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
+                                <th class="sort" width="50"><span>ID</span></th>
+                                <th width="200"><span>标题</span></th>
+                                <th><span>链接地址</span></th>
+                                <th width="100"><span>图片</span></th>
+                                <th class="sort" width="100"><span>时间</span></th>
+                                <th class="sort" width="100"><span>类型</span></th>
+                                <th class="sort" width="100"><span>位置</span></th>
+                                <th class="sort" width="100"><span>排序</span></th>
+                                <th width="150"><span>操作</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="article_list">
+                            {notempty name="infolist"}
+                                {volist name="infolist" id="v"}
+                                <tr>
+                                    <td><input class="ids i-checks" type="checkbox" name="ck" ids="{$v.id}"></td>
+                                    <td>{$v.id}</td>
+                                    <td>{$v.title}</td>
+                                    <td>{$v.url}</td>
+                                    <td>{notempty name="v['pic']"}<a class="blue" href="{$v.pic}" target="_blank">【预览】</a>{/notempty}</td>
+                                    <td>{$v.add_time}</td>
+                                    <td>{$v.add_type}</td>
+                                    <td>{$v.wz}</td>
+                                    <td><input class="sort" type="number" maxlength="4" data-id="{$v.id}" value="{$v.sort}"/></td>
+                                    <td>
+                                        <a class="btn do-action" data-type="doEdit" data-href="{:url('editlink')}" data-id="{$v.id}">编辑</a>
+                                        <a class="btn do-action" data-type="doDelOne" data-href="{:url('dellink',['ids'=>$v['id']])}">删除</a>
+                                    </td>
+                                </tr>
+                                {/volist}
+                            {else /}
+                                <td colspan="10" class="text-center"> 暂未发现数据! </td>
+                            {/notempty}
+                            <tr class="last_tr">
+                                <td><input class="i-checks checkbox check-all" type="checkbox"></td>
+                                <td colspan="9" class="tal">
                                     <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
                                     <div style="float:left;" class="mr10">
                                         <input id="area" type="hidden" name="area">
                                         <a class="btn" id="open_diqu" style="height:37px;line-height:37px;">批量设置地区</a>          
                                     </div>
                                     </form>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 <script>
     var laytpl,laypage;
     layui.use(['layer', 'form', 'common', 'icheck'], function () {
@@ -86,15 +177,15 @@
         });
 
         $('#open_diqu').on('click', function(){
-            if (1 > $(".layuitable #article_list input:checked").size()){
+            if (1 > $(".layuitable input:checked").size()){
                 layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
             }else{
-            	$.ajax({
+                $.ajax({
                     url: '{:url("content/getarea")}',
                     dataType: "html",
                     type: "POST",
                     success: function(data){
-                		$(box).html(data);
+                        $(box).html(data);
                         area_select($("#diqu input:checkbox"));
                     }
                 }); 
@@ -110,7 +201,7 @@
                         var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
                             return $(el).val();
                         }).get().join(',');
-                        for (var c = "", d = $(".layuitable #article_list input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                        for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
                         $('#area').val(value);
                         $.ajax({
                             url: '{:url("movearea")}',
@@ -131,26 +222,118 @@
             }
         });
         diqu(layer, form, box);
+        form.on('radio(exchange_type)', function(data){
+            if (data.value > 0) {
+                $.ajax({
+                    url: '{:url('security/checkIndexHtml')}',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {},
+                    success: function (info) {
+                        info = JSON.parse(info);
+                        if (info.state == 1) {
+                            common.layerAlertE(info.msg, '提示');
+                            $("#exchange_type").prop("checked",true);
+                            form.render();
+                        }
+                    }
+                });             
+            }
+        });  
     });
 
     $(document).on('blur','.sort', function () {
         var id = $(this).attr('data-id');
         var obs = $(this);
         $.ajax({
-               	url: '{:url("sortlink")}',
-                dataType: "json",
-                data:{'id':id,'sort':obs.val()},
-                type: "POST",
-                success: function(data){
-                    //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
-                },
-                error:function(ajaxobj)
-                {
-                    if(ajaxobj.responseText!='')
-                        alert(ajaxobj.responseText);
+            url: '{:url("sortlink")}',
+            dataType: "json",
+            data:{'id':id,'sort':obs.val()},
+            type: "POST",
+            success: function(data){
+                //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
+            },
+            error:function(ajaxobj){
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
                 }
             });
-      });
+    });
+
+    //开启自动友情链接
+    $(document).on('click','.doautolink', function () {
+        var diqulay = layer.open({
+            title: '自动换链设置',
+            type: 1,
+            content: $("#autolink"),
+            area: ['600px','530px'],
+            {if !isset($flinkdata.state)}
+                btn: '提交',
+            {else/}
+                {if $flinkdata.state eq 2}
+                btn: '重新提交',
+                {/if} 
+            {/if}
+            
+            
+            yes: function(index, layero){
+                    var same_ip = $('#autolink input[name="same_ip"]:checked ').val();
+                    var exchange_type = $('#autolink input[name="exchange_type"]:checked ').val();
+                    var type = $('#type').val();
+                    var qq = $('#qq').val();
+                    var keyword1 = $('#keyword1').val();
+                    var keyword2 = $('#keyword2').val();
+                    var keyword3 = $('#keyword3').val();
+                    if (keyword1 == "" || qq == "") {
+                        layer.alert("对不起，请输入完整信息！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+                        return false;
+                    };
+                    var keyword = keyword1;
+                    keyword = keyword2 ? keyword+"\r\n"+keyword2 : keyword;
+                    keyword = keyword3 ? keyword+"\r\n"+keyword3 : keyword;
+
+                    $.ajax({
+                        url: '{:url("autolink")}',
+                        dataType: "json",
+                        data:{'same_ip':same_ip, 'type':type, 'qq':qq, 'keyword':keyword, 'exchange_type':exchange_type},
+                        type: "POST",
+                        success: function(data){
+                            if(data.code == 1){
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                });
+                                layer.close(diqulay);
+                            }else{
+                                parent.layer.alert(data.msg, {
+                                    title: "提示", icon: 0, resize: false, zIndex: layer.zIndex
+                                });
+                            }
+                        }
+                    }); 
+            }
+        });
+    });
+    //取消自动友链
+    $(document).on('click','.delautolink', function () {
+        $.ajax({
+            url: '{:url("delautolink")}',
+            dataType: "json",
+            type: "POST",
+            success: function(data){
+                if(data.code == 1){
+                    parent.layer.alert(data.msg, {
+                        title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                    },function(){
+                        location.href = location.href;
+                    });
+                }else{
+                    parent.layer.alert(data.msg, {
+                        title: "提示", icon: 0, resize: false, zIndex: layer.zIndex
+                    });
+                }
+            }
+        }); 
+    });
 </script>
 </body>
 </html>

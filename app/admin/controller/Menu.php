@@ -67,11 +67,11 @@ class Menu extends Common
         if($status == 1)
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>0]);
-            return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已禁止']);
+            return json(['code' => 1, 'data' => '', 'msg' => '已禁止']);
         }else
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>1]);
-            return json(['code' => 0, 'data' => $flag['data'], 'msg' => '已开启']);
+            return json(['code' => 0, 'data' => '', 'msg' => '已开启']);
         }
     }
 
@@ -82,6 +82,6 @@ class Menu extends Common
         $db = Db::name('auth_rule');
 
         $flag = $db->where(['id'=>$id])->setField(['sort'=>$sort]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 }

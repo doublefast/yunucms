@@ -9,11 +9,12 @@ class DiyformModel extends Model
 
     public function getAlldiyform()
     {
-        return $this->order('id desc')->select();
+        return $this->orderRaw('id desc')->select();
     }
     public function insertDiyform($param)
     {
         try{
+        	$param['tabname'] = strtolower($param['tabname']);
             $param['mailwarn'] = array_key_exists("mailwarn", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $result = $this->validate('DiyformValidate')->save($param);
@@ -32,6 +33,7 @@ class DiyformModel extends Model
     public function editDiyform($param)
     {
         try{
+        	$param['tabname'] = strtolower($param['tabname']);
             $param['mailwarn'] = array_key_exists("mailwarn", $param) ? 1 : 0;
             $param['status'] = array_key_exists("status", $param) ? 1 : 0;
             $result =  $this->validate('DiyformValidate')->save($param, ['id' => $param['id']]);

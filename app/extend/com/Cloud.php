@@ -3,26 +3,16 @@ namespace com;
 use \com\Http;
 
 class Cloud {
-    //错误信息
     private $error = '出现未知错误 Cloud ！';
-    //需要发送的数据
     private $data = array();
-    //接口
     private $api = NULL;
-    // 站点标识
     private $identifier = '';
-    // 升级锁
     public $lock = '';
-    // 升级目录路径
     public $path = './';
-    // 请求类型
     public $type = 'post';
-
-    //服务器地址
-    const api_url = 'http://www.yunucms.com/Api';
-
-    //平台校验API地址
-    const yunapi_url = 'http://www.yunucms.com/yunuapi';
+    const main_url = 'http://www.yunucms.com';
+    const api_url = 'http://cms.api.yunucms.com';
+    const yunapi_url = 'http://api.yunucms.com';
     
     public function __construct($identifier = '', $path = './') {
         $this->identifier = $identifier;
@@ -30,6 +20,10 @@ class Cloud {
         $this->lock = ROOT_PATH.'data/cloud.lock';
     }
 
+    public function mainUrl() {
+        return self::main_url;
+    }
+    
     public function apiUrl() {
         return self::api_url;
     }
@@ -58,7 +52,7 @@ class Cloud {
     }
 
     public function api($api) {
-        $this->api = self::api_url.'/index/name/'.$api;
+        $this->api = self::api_url.'/'.$api;
         return $this->run($this->data);
     }
 
@@ -68,7 +62,7 @@ class Cloud {
     }
 
     public function down($api) {
-        $this->api = self::api_url.'/index/name/'.$api;
+        $this->api = self::api_url.'/'.$api;
         $file = time().rand(10,99).'.zip';
         $request = $this->run(false);
         if (!is_dir($this->path)) {
@@ -76,7 +70,7 @@ class Cloud {
         }
         $ch = curl_init();
         $fp = fopen($this->path.$file, 'wb');
-        curl_setopt($ch, CURLOPT_URL, $request['url']);//$request['url']
+        curl_setopt($ch, CURLOPT_URL, $request['url']);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_TIMEOUT, 3600);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -112,6 +106,7 @@ class Cloud {
         $params['identifier'] = $this->identifier;
         $params = array_merge($params,$this->data);
         $params = array_filter($params);
+
         if (is_file($this->lock)) {
             @unlink($this->lock);
         }

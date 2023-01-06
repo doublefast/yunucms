@@ -1,0 +1,84 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="layui-form check_diqu" id="diqu"></div>
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				 <div class="ui_prompt">
+                    <p class="ui_prompt_tit">温馨提示</p>
+                    <p>删除资源需谨慎，请提前做好网站资源备份，路径为根目录下的uploads文件夹！！</p>
+                </div> 
+                <br>
+				<a class="btn do-action mr10" data-type="doDelete" data-href="{:url('delfile')}">删除</a>
+				<a class="btn mr10" href="{:url('filemanage',['is_use'=>1])}">已使用</a>
+				<a class="btn mr10" href="{:url('filemanage',['is_use'=>2])}">未使用</a>
+				<div class="table" v-el:table>
+					<form id="export-form" method="post" action="{:url('index')}">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
+								<th><span>路径</span></th>
+								<th class="sort" width="100"><span>大小</span></th>
+								<th class="sort" width="150"><span>创建时间</span></th>
+                                <th class="sort" width="100"><span>类型</span></th>
+                                <th class="sort" width="100"><span>状态</span></th>
+								<th width="150"><span>操作</span></th>
+							</tr>
+						</thead>
+						<tbody id="article_list">
+							{notempty name="filelistarr"}
+		                    	{volist name="filelistarr" id="v"}
+								<tr>
+									<td>{if condition="!$v.is_use"}<input class="ids i-checks" type="checkbox" name="ck" ids="{$v.filenameall}">{/if}</td>
+									<td align="left">
+										{if condition="$v.is_img"}
+											<a href="{$v.filenameall}" target="_blank">{$v.filenameall}</a>
+										{else/}
+											{$v.filenameall}
+										{/if}
+									</td>
+									<td>{$v.filesize}</td>
+									<td>{$v.filectime}</td>
+									<td>{if condition="$v.is_img"}<font color="#0199cc">图片</font>{else/}<font color="#666">文件</font>{/if}</td>
+                                    <td>{if condition="$v.is_use"}<font color="#0199cc">使用中</font>{else/}<font color="#666">未使用</font>{/if}</td>
+									<td>
+		                            	{if condition="!$v.is_use"}<a class="btn do-action" data-type="doDelOne" data-href="{:url('delfile',['filename'=>urlencode($v['filenameall'])])}">删除</a>{/if}
+									</td>
+								</tr>
+								{/volist}
+		                    {else /}
+		                        <td colspan="6" class="text-center"> 暂未发现数据! </td>
+		                    {/notempty}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    layui.use(['layer', 'form', 'common', 'icheck'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common, form = layui.form(),box = '#diqu';
+        laypage = layui.laypage;
+        //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+        //全选的实现
+        $('.check-all').on('ifChecked', function (event) {
+            $('input[name="ck"]').iCheck('check');
+        });
+        $('.check-all').on('ifUnchecked', function (event) {
+            $('input[name="ck"]').iCheck('uncheck');
+        });
+    });
+</script>
+</body>
+</html>

@@ -10,7 +10,7 @@ class UserType extends Model
 
     public function getRoleByWhere($map, $Nowpage, $limits)
     {
-        return $this->where($map)->page($Nowpage, $limits)->order('id desc')->select();
+        return $this->where($map)->page($Nowpage, $limits)->orderRaw('id desc')->select();
     }
 
     public function getAllRole($where)
@@ -21,6 +21,7 @@ class UserType extends Model
     public function insertRole($param)
     {
         $param['status'] = array_key_exists("status", $param) ? 1 : 0;
+        $param['catstatus'] = array_key_exists("catstatus", $param) ? 1 : 0;
         try{
             $result =  $this->validate('RoleValidate')->save($param);
             if(false === $result){               
@@ -36,6 +37,7 @@ class UserType extends Model
     public function editRole($param)
     {
         $param['status'] = array_key_exists("status", $param) ? 1 : 0;
+        $param['catstatus'] = array_key_exists("catstatus", $param) ? 1 : 0;
         try{
             $result =  $this->validate('RoleValidate')->save($param, ['id' => $param['id']]);
             if(false === $result){
@@ -90,7 +92,16 @@ class UserType extends Model
             return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
         }
     }
-
+    public function editCatlist($catid)
+    {
+        $infolist = $this->where(['catstatus'=>1])->select();
+        foreach ($infolist as $k => $v) {
+            if ($v['catlist']) {
+                $catlist = $v['catlist'].",".$catid;
+                $this->where(['id'=>$v['id']])->update(['catlist'=>$catlist]);
+            }
+        }
+    }
     public function getRoleInfo($id){
 
         $result = Db::name('auth_group')->where(['id'=>$id])->find();

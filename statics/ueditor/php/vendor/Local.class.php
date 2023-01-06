@@ -34,11 +34,12 @@ class Local extends Base{
 	public function remove(){
 		$file = trim($_POST['key']);
 		$config    = $this->config;
-
 		$root_path = $config['root_path'];
-
 		//安全验证
+		$file = str_replace("\\", "/", $file); 
+		$file_path = $root_path.$file;
 		$pathlist = explode("/", $file); 
+
 		if ($pathlist[0] != 'uploads' && $pathlist[1] != 'uploads') {
 			return array(
 				'state' => 'ERROR',
@@ -53,7 +54,6 @@ class Local extends Base{
 			);
 			exit();
 		}
-		
 		$file_path = $root_path.$file;
 		if( file_exists($file_path) ){
 			$result = @unlink($file_path);

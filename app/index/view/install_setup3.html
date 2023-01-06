@@ -5,23 +5,67 @@
 <title>YUNUCMS安装向导</title>
 <link href="__INSTALL__/css/base.css" rel="stylesheet" type="text/css" />
 <link href="__INSTALL__/css/style.css" rel="stylesheet" type="text/css" />
-<script src="__INSTALL__/js/jquery-1.4.2.min.js"></script>
 <script src="__INSTALL__/js/install.js"></script>
 </head>
 <body>
 <div class="g-install">
   <div class="m-head">
-    <h1>YUNUCMS安装进行中</h1>
+    <h1>YUNUCMS安装配置</h1>
   </div>
+  <form action="/index.php?s=index/install/setup4" method="post">
   <div class="m-body">
-  	<div class="m-log">
-    	
+    <div class="tt"></div>
+    <div class="m-form">
+      
+        <div class="formitm">
+          <label class="lab">数据库地址：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="DB_HOST" id="DB_HOST" value="127.0.0.1" />
+          </div>
+        </div>
+        <div class="formitm">
+          <label class="lab">数据库端口：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="DB_PORT" id="DB_PORT" value="3306" />
+          </div>
+        </div>
+        <div class="formitm">
+          <label class="lab">数据库名称：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="DB_NAME" id="DB_NAME" value="yunucms"  />
+          </div>
+        </div>
+        <div class="formitm">
+          <label class="lab">数据库用户名：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="DB_USER" id="DB_USER" value="root"  />
+          </div>
+        </div>
+        <div class="formitm">
+          <label class="lab">数据库密码：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="DB_PWD" id="DB_PWD" value="" />
+          </div>
+        </div>
+        <div class="formitm">
+          <label class="lab">数据表前缀：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="DB_PREFIX"  value="yunu_" id="DB_PREFIX" />
+          </div>
+        </div>
+        <div class="formitm">
+          <label class="lab">后台管理员密码：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="ADM_PASS"  value="{$admpass}" id="ADM_PASS" />
+          </div>
+        </div>
     </div>
   </div>
   <div class="m-foot"> 
-  	<a href="javascript:;">安装中...</a>
+  	<a href="/index.php?s=index/install/setup2">上一步</a>
+    <button type="submit" class="submit">安装</button>
   </div>
+  </form>
 </div>
-{$showstr}
 </body>
 </html>

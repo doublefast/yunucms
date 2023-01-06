@@ -1,4 +1,5 @@
 {include file="public/header" /}
+<link rel="stylesheet" href="__ADM_PUBLIC__/css/formSelects-v4.css">
 </head>
 <body>
     <div id="main-container">
@@ -9,21 +10,216 @@
                 <div class="title">
                     <span>{$position.name}</span>
                 </div>
-				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
-				<div class="ui_prompt">
-					<p class="ui_prompt_tit">温馨提示</p>
-					<p>· 信息源已生成：<a href="/rss.xml" target="_blank">/rss.xml</a> </p>
-					<p>· XML站点地图已生成：<a href="/sitemap.xml" target="_blank">/sitemap.xml</a> </p>
-					<p>· HTM站点地图已生成：<a href="/sitemap.htm" target="_blank">/sitemap.htm</a> </p>
-					<p>· TXT站点地图已生成：<a href="/sitemap.txt" target="_blank">/sitemap.txt</a> </p>
-					<p>· 手动触发URL：{:config('sys.site_protocol')}://{:config('sys.site_url')}/index.php?s=admin/api/upsitemap</a> </p>
-				</div>
+                <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <div class="ui_prompt">
+                        <p class="ui_prompt_tit">温馨提示</p>
+                        <p>· 手动触发URL：{:config('sys.site_protocol')}://{:config('sys.site_url')}/index.php?s=admin/api/upsitemap<a href="{:config('sys.site_protocol')}://{:config('sys.site_url')}/index.php?s=admin/api/upsitemap" target="_blank"> [ 手动更新 ]</a> </p>
+                        <p>· 如果url超过5万个或开启泛域名请前往城市分站管理列表生成对应站点地图</p>
+                    </div>
+                    <div class="layui-form-item mt20">
+                        <label class="layui-form-label">自动生成</label>
+                        <div class="layui-input-inline w80">
+                            <input type="checkbox" {if config('sys.sitemap_auto') eq 1}checked{/if} name="sitemap_auto" lay-skin="switch" lay-filter="switchTest">
+                        </div>
+                        <font class="font_tip">内容更新时自动更新地图文件</font>
+                    </div>
+                    <div class="none pt10 tishi" id="tishi">
+                        <div class="ui_prompt">
+                            <p>· 信息源已生成：<a href="/rss.xml" target="_blank">/rss.xml</a> </p>
+                            <p>· XML站点地图已生成：<a href="/sitemap.xml" target="_blank">/sitemap.xml</a> </p>
+                            <p>· HTM站点地图已生成：<a href="/sitemap.htm" target="_blank">/sitemap.htm</a> </p>
+                            <p>· TXT站点地图已生成：<a href="/sitemap.txt" target="_blank">/sitemap.txt</a> </p>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">生成类型</label>
+                        <div class="layui-input-inline w700">
+                            <input type="checkbox" lay-skin="primary" name="selsitemap_type" {if strstr(config('sys.sitemap_type'), 'rss.xml')}checked{/if} value="rss.xml" title="rss.xml">
+                            <input type="checkbox" lay-skin="primary" name="selsitemap_type" {if strstr(config('sys.sitemap_type'), 'sitemap.xml')}checked{/if} {if config('sys.sitemap_type') eq ''}checked{/if} value="sitemap.xml"  title="sitemap.xml">
+                            <input type="checkbox" lay-skin="primary" name="selsitemap_type" {if strstr(config('sys.sitemap_type'), 'sitemap.htm')}checked{/if} value="sitemap.htm" title="sitemap.htm">
+                            <input type="checkbox" lay-skin="primary" name="selsitemap_type" {if strstr(config('sys.sitemap_type'), 'sitemap.txt')}checked{/if} value="sitemap.txt" title="sitemap.txt">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">更新频率</label>
+                        <font class="font_title fl">首页&nbsp;&nbsp;</font>
+                        <div class="layui-input-inline w100">
+                            <select name="sitemap_up_index" id="sitemap_up_index" class="list_rows">
+                                <?php 
+                                $plstr = ['always'=>'经常', 'hourly'=>'每小时', 'daily'=>'每天', 'weekly'=>'每周', 'monthly'=>'每月', 'yearly'=>'每年', 'never'=>'从不'];
+                                foreach ($plstr as $k => $v) {
+                                    $selstr = $k == config('sys.sitemap_up_index') ? "selected" : "";
+                                    echo "<option $selstr value='$k'>$v</option>";
+                                }
+                                ?>
+                            </select>    
+                        </div>
+                        <font class="font_title fl">列表页&nbsp;&nbsp;</font>
+                        <div class="layui-input-inline w100">
+                            <select name="sitemap_up_list" id="sitemap_up_list" class="list_rows">
+                                <?php 
+                                foreach ($plstr as $k => $v) {
+                                    $selstr = $k == config('sys.sitemap_up_list') ? "selected" : "";
+                                    echo "<option $selstr value='$k'>$v</option>";
+                                }
+                                ?>
+                            </select>    
+                        </div>
+                        <font class="font_title fl">内容页&nbsp;&nbsp;</font>
+                        <div class="layui-input-inline w100">
+                            <select name="sitemap_up_content" id="sitemap_up_content" class="list_rows">
+                                <?php 
+                                foreach ($plstr as $k => $v) {
+                                    $selstr = $k == config('sys.sitemap_up_content') ? "selected" : "";
+                                    echo "<option $selstr value='$k'>$v</option>";
+                                }
+                                ?>
+                            </select>    
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">生成排序</label>
+                        <div class="layui-input-inline w450">
+                            <select name="sitemap_type_site" xm-select="select1" xm-select-search="" xm-select-height="38px">
+                                {notempty name="sitemap_type_list"}
+                                {volist name="sitemap_type_list" id="v"}
+                                <option value="{$v.id}" {if strstr($sitemap_type_site, $v['id'])}selected{/if}>{$v.title}</option>
+                                {/volist}
+                                {/notempty}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">优先级别</label>
+                        <font class="font_title fl">首页&nbsp;&nbsp;</font>
+                        <div class="layui-input-inline w80">
+                            <select name="sitemap_lev_index" id="sitemap_lev_index" class="list_rows">
+                                <?php 
+                                for ($x=1; $x<=10; $x++) {
+                                    $num = number_format($x/10, 1);
+                                    $selstr = $num == config('sys.sitemap_lev_index') ? "selected" : "";
+                                    $selstr = config('sys.sitemap_lev_index') == false && $num == 1 ? "selected" : $selstr;
+                                    echo "<option $selstr value='".$num."'>".$num."</option>";
+                                }
+                                ?>
+                            </select>    
+                        </div>
+                        <font class="font_title fl">列表页&nbsp;&nbsp;</font>
+                        <div class="layui-input-inline w80">
+                            <select name="sitemap_lev_list" id="sitemap_lev_list" class="list_rows">
+                                <?php 
+                                for ($x=1; $x<=10; $x++) {
+                                    $num = number_format($x/10, 1);
+                                    $selstr = $num == config('sys.sitemap_lev_list') ? "selected" : "";
+                                    $selstr = config('sys.sitemap_lev_list') == false && $num == 0.8 ? "selected" : $selstr;
+                                    echo "<option $selstr value='".$num."'>".$num."</option>";
+                                }
+                                ?>
+                            </select>    
+                        </div>
+                        <font class="font_title fl">内容页&nbsp;&nbsp;</font>
+                        <div class="layui-input-inline w80">
+                            <select name="sitemap_lev_content" id="sitemap_lev_content" class="list_rows">
+                                <?php 
+                                for ($x=1; $x<=10; $x++) {
+                                    $num = number_format($x/10, 1);
+                                    $selstr = $num == config('sys.sitemap_lev_content') ? "selected" : "";
+                                    $selstr = config('sys.sitemap_lev_content') == false && $num == 0.6 ? "selected" : $selstr;
+                                    echo "<option $selstr value='".$num."'>".$num."</option>";
+                                }
+                                ?>
+                            </select>    
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">生成文档范围</label>
+                        <div class="layui-input-inline w80">
+                            <input class="layui-input " type="text" name="sitemap_num_start" id="sitemap_num_start" lay-verify="number" value="{if config('sys.sitemap_num_start') eq false }0{else/}{:config('sys.sitemap_num_start')}{/if}">
+                        </div>
+                        <div class="layui-input-inline" style="width:20px;line-height:38px;">&nbsp;~&nbsp;</div>
+                        <div class="layui-input-inline w80">
+                            <input class="layui-input w80" type="text" name="sitemap_num" id="sitemap_num" lay-verify="number" value="{if config('sys.sitemap_num') eq false }1000{else/}{:config('sys.sitemap_num')}{/if}">
+                        </div>
+                        <font class="font_tip">如果数据较多建议分批生成，每次生成后修改文件名称再修改文档范围重新生成即可</font>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-inline">
+                            <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('sitemap')}'>提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/formSelects-v4.js"></script>
+<script>
+layui.use(['form','common'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    var arr = new Array();
+                    $("input:checkbox[name='selsitemap_type']:checked").each(function(i){
+                        arr[i] = $(this).val();
+                    });
+                    var selsitemap_type = arr.join(",");
+                    $ajaxdata = data.field;
+                    $ajaxdata['sitemap_type'] = selsitemap_type;
 
 
-				</form>
-			</div>
-			
-		</div>
-	</div>
+                    if (($("#sitemap_num_start").val() - $("#sitemap_num").val()) > 50000) {
+                        common.layerAlertE("上限最多为5万，请修改设置", '提示');
+                        return false;
+                    };
+                    if ($("#sitemap_num").val() < $("#sitemap_num_start").val()) {
+                        common.layerAlertE("请确认生成文档范围填写正确", '提示');
+                        return false;
+                    };
+
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: $ajaxdata,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                var diqulay = layer.open({
+                                    title: '提示',
+                                    type: 1,
+                                    content: $("#tishi"),
+                                    skin: 'layer_diqu',
+                                    area: ['400px','170px'],
+                                });
+                            }else {
+                                common.layerAlertE(info.msg, '提示');
+                            }
+                            $(data.elem).removeAttr("disabled").text("提交");
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+    });
+</script>
 </body>
 </html>

@@ -42,13 +42,13 @@ class Category extends Common
         $this->assign('listfile', getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'list_*'));
         $this->assign('showfile', getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'show_*'));
         $this->assign('coverfile', getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'cover_*'));
-        
         $this->assign('infolist', $arr);
+        
+        runhook('sys_admin_category');
         return $this->fetch();
     }
 
-    public function addcategory()
-    {
+    public function addcategory(){
         $diymodel = new DiymodelModel();
         $category = new CategoryModel();
         $nav = new \org\Leftnav;
@@ -73,8 +73,7 @@ class Category extends Common
         return $this->fetch();
     }
 
-    public function batchaddcategory()
-    {
+    public function batchaddcategory(){
     	$diymodel = new DiymodelModel();
         $category = new CategoryModel();
         $nav = new \org\Leftnav;
@@ -112,8 +111,7 @@ class Category extends Common
         $this->assign('modellist', $diymodel->getAllDiymodel());
     	return $this->fetch();
     }
-    public function editcategory()
-    {
+    public function editcategory(){
         $category = new CategoryModel();
         $diymodel = new DiymodelModel();
         $content = new ContentModel();
@@ -145,9 +143,16 @@ class Category extends Common
         $this->assign('modellist', $diymodel->getAllDiymodel());
         return $this->fetch();
     }
+    public function editcategorycon(){
+        $category = new CategoryModel();
+        if(request()->isAjax()){
+            $param = input('post.');
+            Db::name('category')->where(['id'=>$param['id']])->setField(['desc'=>$param['desc'],'content'=>$param['content']]);
+            return json(['code' => 1, 'data' => "", 'msg' => "编辑栏目成功"]);
+        }
+    }
 
-    public function delcategory()
-    {
+    public function delcategory(){
         $id = input('param.ids');
         $category = new CategoryModel();
         $content = new ContentModel();
@@ -176,57 +181,34 @@ class Category extends Common
         return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
     }
 
-    public function sortcategory()
-    {
+    public function sortcategory(){
         $id = input('param.id');
         $sort = input('param.sort');
         $db = Db::name('category');
 
         $flag = $db->where(['id'=>$id])->setField(['sort'=>$sort]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
         
     }
 
-    public function etitlecategory()
-    {
+    public function etitlecategory(){
         $id = input('param.id');
         $etitle = input('param.etitle');
-        $db = Db::name('category');
-        $flag = $db->where(['id'=>$id])->setField(['etitle'=>$etitle]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        $category = new CategoryModel();
+        return json($category->editCategorytitle($id, $etitle));
     }
 
-    public function doisarea()
-    {
-        $ids = input('param.ids');
-        $isarea = input('param.isarea');
-        $db = Db::name('category');
-        $flag = $db->where(['id'=>['IN', $ids]])->setField(['isarea'=>$isarea]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
-    }
-
-    public function doisnav()
-    {
-        $ids = input('param.ids');
-        $isnav = input('param.isnav');
-        $db = Db::name('category');
-        $flag = $db->where(['id'=>['IN', $ids]])->setField(['nav'=>$isnav]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
-    }
-
-    public function dotemplate()
-    {
+    public function dotemplate(){
         $ids = input('param.ids');
         $tpl_cover = input('param.tpl_cover') == '选择模板' ? '' : input('param.tpl_cover');
         $tpl_list = input('param.tpl_list') == '选择模板' ? '' : input('param.tpl_list');
         $tpl_show = input('param.tpl_show') == '选择模板' ? '' : input('param.tpl_show');
         $db = Db::name('category');
         $flag = $db->where(['id'=>['IN', $ids]])->setField(['tpl_cover'=>$tpl_cover,'tpl_list'=>$tpl_list,'tpl_show'=>$tpl_show]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 
-    public function dotdk()
-    {
+    public function doseo(){
         $ids = input('param.ids');
         $seo_title = input('param.seo_title');
         $seo_keywords = input('param.seo_keywords');
@@ -241,20 +223,53 @@ class Category extends Common
         }
         return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
+    public function doqita(){
+        $ids = input('param.ids');
+        $cover = input('param.cover');
+        $status = input('param.status');
+        $target = input('param.target');
+        $nav = input('param.nav');
 
-    public function statecategory()
-    {
+        $db = Db::name('category');
+        $flag = $db->where(['id'=>['IN', $ids]])->setField(['cover'=>$cover,'status'=>$status,'target'=>$target,'nav'=>$nav]);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
+    }
+
+    public function doarea(){
+        $ids = input('param.ids');
+        
+        $isarea = input('param.isarea');
+        $areatitle = input('param.areatitle');
+        $areacontitle = input('param.areacontitle');
+        $catmainurl = input('param.catmainurl');
+        $conmainurl = input('param.conmainurl');
+        
+        $db = Db::name('category');
+        $flag = $db->where(['id'=>['IN', $ids]])->setField(['isarea'=>$isarea,'areatitle'=>$areatitle,'areacontitle'=>$areacontitle,'catmainurl'=>$catmainurl,'conmainurl'=>$conmainurl]);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
+    }
+
+    public function statecategory(){
         $id = input('param.id');
         $db = Db::name('category');
         $status =  $db->where(['id'=>$id])->value('status');//判断当前状态
         if($status == 1)
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>0]);
-            return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已关闭']);
+            return json(['code' => 1, 'data' => '', 'msg' => '已关闭']);
         }else
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>1]);
-            return json(['code' => 0, 'data' => $flag['data'], 'msg' => '已开启']);
+            return json(['code' => 0, 'data' => '', 'msg' => '已开启']);
         }
+    }
+
+    public function edittitle()
+    {
+        $id = input('param.id');
+        $title = input('param.title');
+        $db = Db::name('category');
+        $flag = $db->where(['id'=>$id])->setField(['title'=>$title]);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 }

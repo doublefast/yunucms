@@ -9,12 +9,13 @@ class BannerModel extends Model
 
     public function getAllBanner()
     {
-        return $this->order('sort asc')->select();
+        return $this->orderRaw('sort asc')->select();
     }
 
     public function insertBanner($param)
     {
         try{
+            $param['area'] = $param['area'] ? ','.$param['area'].',' : '';
             $result = $this->allowField(true)->save($param);
             if(false === $result){            
                 return ['code' => -1, 'data' => '', 'msg' => $this->getError()];
@@ -29,6 +30,7 @@ class BannerModel extends Model
     public function editBanner($param)
     {
         try{
+            $param['area'] = $param['area'] ? ','.$param['area'].',' : '';
             $result =  $this->allowField(true)->save($param, ['id' => $param['id']]);
             if(false === $result){            
                 return ['code' => 0, 'data' => '', 'msg' => $this->getError()];

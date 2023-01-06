@@ -24,6 +24,15 @@
 		                <div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
 		            </div>
 		        </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">权限赋予</label>
+                    <div class="layui-input-inline w60">
+                        <input type="checkbox" name="catstatus" {if $info.catstatus eq 1}checked{/if} lay-skin="switch" lay-filter="switchTest" title="开关">
+                        <div class="layui-unselect layui-form-switch layui-form-onswitch"><i></i></div>
+                    </div>
+                    <font class="font_tip">开启后，用户新增栏目则直接拥有权限</font>
+                </div>
+                
 		        <div class="layui-form-item">
                     <label class="layui-form-label"></label>
                     <div class="layui-input-block">
