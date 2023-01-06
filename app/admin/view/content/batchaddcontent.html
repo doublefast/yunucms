@@ -20,7 +20,7 @@
 					{notempty name="catlist"}
 		            {volist name="catlist" id="v"}
 		            <li data-pid="{$v['pid']}">
-                        <a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
+                        <a href="{:url('content/index',['cid'=>$v['id']])}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
                             {if $v.pid eq 0}
                                 <i data-id="{$v['id']}" ></i>
                             {else}
@@ -126,7 +126,7 @@
 					<div class="layui-form-item">
 			            <label class="layui-form-label">当前分类</label>
 			            <div class="layui-input-inline">
-			                <input class="layui-input" type="text" value="{$cate.title}" readonly="readonly">
+			                <input class="layui-input catename" type="text" value="{$cate.title}" readonly="readonly">
 			            </div>
 			        </div>
 
@@ -145,7 +145,7 @@
 			        <div class="layui-form-item">
 			            <label class="layui-form-label">是否推荐</label>
 			           	<div class="layui-input-inline">
-			                <input type="checkbox" checked="" name="istop" lay-skin="switch" lay-filter="switchTest">
+			                <input type="checkbox" name="istop" lay-skin="switch" lay-filter="switchTest">
 			            </div>
 			        </div>
 
@@ -186,6 +186,26 @@
 			            </div>
 			        </div>
 
+			        <div class="layui-form-item">
+			        	<label class="layui-form-label">标题设置</label>
+			        	<div class="layui-input-inline w450">
+			        		<input type="radio" name="titletype" value="1" title="图片名称" checked>
+			        		<input type="radio" name="titletype" value="2" title="栏目名称">
+			        	</div>
+			        </div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">简介</label>
+						<div class="layui-input-inline">
+						   	<textarea name="desc" placeholder="简介" class="layui-textarea w700"></textarea>
+						</div>
+					</div>
+			        <div class="layui-form-item layui-form-item-flex">
+			        	<label class="layui-form-label">内容</label>
+			        	<div class="layui-input-inline">
+			        		<textarea name="content" id="content"></textarea>
+			        	</div>
+			        </div>
+
 			        <div class="title_bar mb20">
 						批量添加
 					</div>
@@ -213,7 +233,16 @@
 			</div>
 		</div>
 	</div>
-
+<script type="text/javascript">
+    window.UEDITOR_HOME_URL = '__UEDITOR__/';
+    window.onload = function() {
+        window.UEDITOR_CONFIG.initialFrameWidth=700;
+        window.UEDITOR_CONFIG.initialFrameHeight=450;
+        UE.getEditor('content',{initialFrameWidth:'100%'});
+    }
+</script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js?time=20211202"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>
 <script>
 function updateimg(node,name){
 	var num = $('.'+node);
@@ -253,6 +282,9 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
 		uploader.on( 'uploadSuccess', function(file,data){
 			if(data.status == 1){
 
+				titletype = $('input[name="titletype"]:checked ').val();
+				picname = titletype == 1 ? data.name : $(".catename").val();
+
 				picture_tip.html("上传成功");				
 				var img = data.image_name;
 				var picture_html="";
@@ -264,7 +296,7 @@ layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
 		        picture_html += '<input type="hidden" class="imgval" value="'+img+'" />';
 		        picture_html += '</div>';
 		        picture_html += '<div class="input_batch">';
-		        picture_html += '<div class="item"><label class="layui-form-label">标题：</label><input class="layui-input w450 titleval" onchange="inputchange()" type="text" value="'+data.name+'"></div>';
+		        picture_html += '<div class="item"><label class="layui-form-label">标题：</label><input class="layui-input w450 titleval" onchange="inputchange()" type="text" value="'+picname+'"></div>';
 				picture_html += '<div class="item"><label class="layui-form-label">排序：</label><input class="layui-input w450 sortval" onchange="inputchange()" type="text" value="1"></div>';
 		        picture_html += '</div>';
 				picture_html += '<div class="clear"></div>';

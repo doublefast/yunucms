@@ -1,0 +1,128 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+                <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                    <input type="hidden" class="field-id" name="id" value="{$data_info['id']}">
+                    {$fieldhtml['html']}
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-inline">
+                          <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('setting')}'>提交</button>
+                        </div>
+                    </div>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript">
+    var option= {toolbars: [[
+        'fullscreen', 'source', '|',
+        'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor',
+        'paragraph', 'fontfamily', 'fontsize', '|',
+        'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+        'link', 'unlink',
+    ]],initialFrameWidth:'100%',initialFrameHeight:100};
+    window.UEDITOR_HOME_URL = '__UEDITOR__/';
+    window.onload = function() {
+        window.UEDITOR_CONFIG.initialFrameWidth=700;
+        window.UEDITOR_CONFIG.initialFrameHeight=450;
+        {$fieldhtml['ueditor']}
+    }
+</script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js?time=20211202"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script> 
+<script type="text/javascript" src="__ADM_PUBLIC__/js/formSelects-v4.js"></script>
+<script>
+function updateimg(node,name){
+    var num = $('.'+node);
+    var valstr = "";
+    for(i=0;i<num.length;i++)
+    {
+        valstr = valstr+num.eq(i).val()+"***";
+    }
+    $("#"+name).val(valstr);
+}
+layui.use(['form','common','upload','icheck','laydate','laytpl'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common, laydate = layui.laydate, laytpl =layui.laytpl,box = '#diqu';
+
+        //上传图片
+        layui.upload({
+            url: "{:url('Upload/upload',['file'=>'file'])}" //上传接口
+            ,before: function(input){
+                //console.log('图片上传中');
+            }
+            ,title:'上传图片'
+            ,elem: '#upload-image' //指定原始元素，默认直接查找class="layui-upload-file"
+            ,method: 'post' //上传接口的http类型
+            ,ext: '{:str_replace(',','|',config('sys.upload_image_ext'))}'
+            ,type:'images'
+            ,success: function(data){ //上传成功后的回调
+                if(data.status == 1){
+                    $("#path1").val(data.image_name);
+                    $("#img_path1").attr('src', data.image_name).show();
+                }else{
+                    alert(data.error_info);
+                }
+            }
+        });
+
+        $('.BrowerPicture').click(function(){
+            var path = $(this).attr('rel');
+            layer.open({
+                type: 2,
+                title: '选择站内图片',
+                shadeClose: true,
+                shade: false,
+                anim: 2,
+                area: ['750px', '350px'],
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
+            });
+        });
+      
+        {$fieldhtml['script']}
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('plugins/index')}");
+                            }else {
+                                common.layerAlertE(info.msg, '提示');
+                            }
+                        },
+                        beforeSend: function () {
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+});
+</script>
+</body>
+</html>

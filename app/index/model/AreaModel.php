@@ -27,4 +27,18 @@ class AreaModel extends Model
 	    }
 	    return $url;
 	}
+
+	public function getDefArea(){
+		if (!cache('defareaetitle')) {
+			$etitle = $this->where(['id'=>config('sys.seo_default_area')])->value('etitle');
+			cache('defareaetitle', $etitle, 7200);
+		}else{
+			$etitle = cache('defareaetitle');
+		}
+		return $etitle;
+	}
+
+	public function getInfo($where=[], $field='*'){
+        return $this->where($where)->field($field)->find();
+    }
 }

@@ -35,13 +35,18 @@ body .w700 {width: 700px;}
 body .w450 {width: 450px;}
 body .w300 {width: 300px;}
 body .w100 {width: 100px;}
+body .w80 {width: 80px;}
+body .w60 {width: 60px;}
 body .defimg{max-height:50px; float:left; margin-right:20px;}
 body .img_item{height:60px; border: 1px solid #ccc; margin:3px 5px 0px 0px;}
 body .font_tip{font-size: 12px; color: #999; height: 38px; line-height: 38px;}
+body .font_title{font-size: 12px; color: #000; height: 38px; line-height: 38px;}
 .layui-form-item .w700{width: 700px;}
+.layui-form-item .w600{width: 600px;}
 .layui-form-item .w450{width: 450px;}
 .layui-form-item .w100{width: 100px;}
-
+.layui-form-item .w80{width: 80px;}
+.layui-form-item .w60{width: 60px;}
 
 ::-webkit-input-placeholder {color: #ccc;}
 :-moz-placeholder {color: #ccc;}
@@ -208,6 +213,7 @@ input[type="radio"] {vertical-align:middle; margin-top:-2px; margin-bottom:1px;}
 .textarea.error {border: 1px solid #f00!important;}
 /****************************** btn ******************************/
 a.btn,a.btn_aux {display: inline-block;zoom: 1;*display: inline;}
+a.btn2{padding: 0 10px;}
 .btn,button,input[type="submit"],input[type="button"],input[type="reset"] {width: auto;padding: 0 17px;height: 32px;line-height: 32px;text-align: center;color: #fff;font-size: 12px;background: #28b5d6;border: 0;}
 .btn:hover,button:hover,input[type="submit"]:hover,input[type="button"]:hover,input[type="reset"]:hover,.btn.hover,button.hover,input[type="submit"].hover,input[type="button"].hover,input[type="reset"].hover {background: #0099cc;color: #fff;}
 .btn[disabled],button[disabled],input[type="submit"][disabled],input[type="button"][disabled],input[type="reset"][disabled],.btn.disabled,button.disabled,input[type="submit"].disabled,input[type="button"].disabled,input[type="reset"].disabled {background: #ccc!important;}
@@ -413,3 +419,10 @@ cursor: pointer;}
 .copy{ height: 30px; line-height: 30px; width: 100%; text-align: center; color: #999; margin-top:10px; }
 
 *html .bf_picture_preview{position:absolute;left:expression(eval(document.documentElement.scrollLeft));top:expression(eval(document.documentElement.scrollTop))}
+.submitbtn{background: #f7f7f7; width: 100%; position:fixed ; bottom:0px; z-index: 9998; }
+.submitbtn .btn{margin: 5px;}
+.layui-form-item-flex{display: flex;}
+.layui-form-item-flex .layui-form-label{flex:none;}
+.layui-form-item-flex .layui-input-inline{flex:auto; margin-right: 0px;}
+body .sidebar2{z-index: 9999;}
+body .content_box,body .main_content{min-width: 900px;}

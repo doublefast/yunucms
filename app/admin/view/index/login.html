@@ -12,7 +12,7 @@
     <script type="text/javascript" src="__ADM_PUBLIC__/layui/layui.js"></script>
     <script type="text/javascript" src="__ADM_PUBLIC__/js/jquery.slider.min.js"></script>
 </head>
-<body class="login_bg">
+<body class="login_bg" >
     <div class="login_from">
         <div class="login_title">
             <h1>欢迎登录{$copy_sysname}</h1>
@@ -37,6 +37,7 @@
 
     <script>
         layui.use('form', function(){
+            top.location.title = self.location.title;
             var form = layui.form();
             var key = {if config('sys.site_slide') eq 1}false{else/}true{/if};
             var slider = $('#slider');
@@ -66,14 +67,15 @@
                         url:'{:url('dologin')}',
                         data:$('#doLogin').serialize(),
                         dataType:"json",
+                        type:"post",
                         error:function(data){
-                            common.layerAlertE('链接错误！', '提示');
+                            layer.msg('链接错误！', {icon: 5,time:2000});
                         },
                         success:function(data){
                             if(data.code==1){
                                 layer.msg(data.msg, {icon: 6,time:1000}, function(index){
                                     layer.close(index);
-                                    window.location.href = data.data;
+                                    top.location.href = data.data;
                                 });
                             }else{
                                 layer.msg(data.msg, {icon: 5,time:2000});

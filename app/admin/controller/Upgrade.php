@@ -10,10 +10,6 @@ class Upgrade extends Common
         $version = include_once(ROOT_PATH.'version.php');
         config($version);
 
-        $root_dir = request()->baseFile();
-        $root_dir  = preg_replace(['/index.php$/'], [''], $root_dir);
-        define('ROOT_DIR', $root_dir);
-
         $this->error = "";
         $this->update_path = ROOT_PATH.'data'.DS.'uppack'.DS;
         $this->update_back_path = ROOT_PATH.'data'.DS.'upback'.DS;
@@ -36,22 +32,25 @@ class Upgrade extends Common
             $data = [];
             $data['username'] = $username;
             $data['password'] = $password;
-            //$data['vcode'] = $vcode;
+            $data['timestamp'] = time();
+            $data['format'] = 'json';
             $data['domain'] = $_SERVER["HTTP_HOST"];
             $data['site_name'] = config('sys.site_title');
             $data['version'] = config('yunucms.version');
-            $res = $this->cloud->data($data)->api('Bind');
+            $res = $this->cloud->data($data)->api('bindapi');
             if (isset($res['code']) && $res['code'] == 1) {
                 $coffile = CONF_PATH.DS.'extra'.DS.'cloud.php';
                 $condata['identifier'] = $res['data'];
                 $condata['grant'] = $res['grant'];
                 $condata['agent'] = $res['agent'];
+                $condata['pid'] = $res['pid'];
                 setConfigfile($coffile, $condata);
                 // 缓存站点标识
                 if (is_file($coffile)) {
                     Config::load($coffile, '', 'cloud');
                     $conflist = Config::get('','cloud');
                     if (isset($conflist['identifier']) && !empty($conflist['identifier'])) {
+                        dir_del(RUNTIME_PATH.'cache'.DS);
                         return json(['code' => 1, 'msg' => '<font class="mcolor">恭喜您，已成功绑定云平台账号。</font>']);
                     }
                 }
@@ -60,9 +59,10 @@ class Upgrade extends Common
             return json(['code' => 2, 'msg' => isset($res['msg']) ? $res['msg'] : '云平台绑定失败！']);
         }
 
-        $html_status = url_get_contents($this->cloud->apiUrl()."/main.html");
-        $html_status = $html_status == 'SUCCESS' ? 1 : 0;
-        $this->assign('api_url', $this->cloud->apiUrl());
+        $html_status = @curl("http://cms.api.yunucms.com/check");
+        $html_status = $html_status == "SUCCESS" ? 1 : 0;
+
+        $this->assign('openbind', input('param.openbind', 0, 'trim'));
         $this->assign('html_status', $html_status);
 
         return $this->fetch();
@@ -76,15 +76,14 @@ class Upgrade extends Common
     }
     //获取更新版本列表
     private function getVersion(){
-        /*$cache = cache($this->cache_upgrade_list);
-        if (isset($cache['data']) && !empty($cache['data'])) {
-            return $cache;
-        }*/
-        $result = $this->cloud->data(['version' => config("yunucms.version"), 'app_grant' => config('cloud.grant')])->api('Versions');
+        $result = $this->cloud->data(['version' => config("yunucms.version"), 'app_grant' => config('cloud.grant')])->api('versionsapi');
+
         if ($result) {
             if ($result['code'] == 1) {
+                $length = count($result['data']);
                 foreach ($result['data'] as $k => $v) {
                     $result['data'][$k]['content'] = htmlspecialchars_decode($v['content']);
+                    $result['data'][$k]['isupgrade'] = $k + 1 == $length ? 1 : 0 ;
                 }
                 //cache($this->cache_upgrade_list, $result, 3600);  
             }
@@ -114,7 +113,7 @@ class Upgrade extends Common
     }
     //获取模版列表
     private function getTpl(){
-        $result = $this->cloud->data(['identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->api('Tpl');
+        $result = $this->cloud->data(['identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->api('tplapi');
         if ($result) {
             return $result;
         }else{
@@ -152,7 +151,7 @@ class Upgrade extends Common
         }
         // 检查当前升级补丁前面是否还有未升级的补丁
 
-        $file = $this->cloud->data(['number' => $number, 'identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->down('Install');
+        $file = $this->cloud->data(['number' => $number, 'identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->down('installapi');
         if ($file === false || empty($file)) {
             $this->clearCache($file);
             return json(['code' => 2, 'msg' => '获取模版失败！']);
@@ -167,6 +166,10 @@ class Upgrade extends Common
 
     public function download($version = '')
     {
+        $result = $this->cloud->data(['version' => config("yunucms.version"), 'identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->api('checkupgradeapi');
+        if ($result && $result['code'] == 2) {
+           return json(['code' => 2, 'msg' => $result['msg']]);
+       	}
         if (!request()->isPost() || empty($version)) {
             return json(['code' => 2, 'msg' => '参数传递错误！']);
         }
@@ -189,11 +192,11 @@ class Upgrade extends Common
         foreach ($versions['data'] as $k => $v) {
             if (version_compare($v['version'], $version, '>=')) {
                 if (version_compare($v['version'], $version, '=')) {
-                    $file = $this->cloud->data(['version' => $v['version'], 'identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->down('Upgrade');
+                    $file = $this->cloud->data(['version' => $v['version'], 'identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->down('upgradeapi');
                     break;
                 }
             } else {
-                $file = $this->cloud->data(['version' => $v['version'], 'identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->down('Upgrade');
+                $file = $this->cloud->data(['version' => $v['version'], 'identifier' => config('cloud.identifier'), 'app_grant' => config('cloud.grant')])->down('upgradeapi');
                 if ($file === false) {
                     $this->clearCache($file);
                     return json(['code' => 2, 'msg' => '前置版本 '.$v['version'].' 升级失败！']);
@@ -269,9 +272,6 @@ class Upgrade extends Common
 
     private function _systemInstall($file, $version)
     {
-        $_version = cache($this->cache_upgrade_list);
-        $_version = $_version['data'];
-
         $dir = new \com\Dir();
         if (!is_dir($this->update_back_path)) {
             $dir->create($this->update_back_path);
@@ -345,14 +345,26 @@ class Upgrade extends Common
                 }
             }
         }
+        // 执行更新文件
+        $update_file = realpath($decom_path.DS.'updatefile.php');
+        if (is_file($update_file)) {
+            include $update_file;
+            $updatefile = new \updatefile();
+            $updatefile->index();
+        }
+
         $this->clearCache('', $version);
+
+        // 删除升级备份文件
+        if (is_dir($this->update_back_path)) {
+            $dir = new \com\Dir();
+            $dir->delDir($this->update_back_path);
+        }
+        runhook('sys_admin_update');
         return true;
     }
     private function _tplInstall($file)
     {
-        $_version = cache($this->cache_upgrade_list);
-        $_version = $_version['data'];
-
         $dir = new \com\Dir();
         if (!is_dir($this->update_back_path)) {
             $dir->create($this->update_back_path);

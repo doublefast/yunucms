@@ -130,7 +130,7 @@
 							<input id="path1" class="layui-input" type="text" name="image_watermark_pic" value="{:config('sys.image_watermark_pic')}"><br>
 							<img id="img_path1" class="defimg" src="{:config('sys.image_watermark_pic')}" onerror="javascript:this.style.display='none';">
 			            </div>
-			            <div class="layui-input-inline w450">
+			            <div class="layui-input-inline w150">
 			            	<input type="button" rel="path1" value="选择站内图片" class="fl BrowerPicture file_btn" />
 			            	<div class="site-demo-upload upload-img fl ml5">
 				                <div class="site-demo-upbar">
@@ -211,7 +211,7 @@ layui.use(['form','common','upload'], function(){
                 shade: false,
                 anim: 2,
                 area: ['750px', '350px'],
-                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}?docname='+path]
+                content: ['{:url('upload/browsefile', array('stype' => 'picture'))}&docname='+path]
             });
         });
 

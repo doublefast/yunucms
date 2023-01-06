@@ -10,12 +10,18 @@
 					<span>{$position.name}</span>
 				</div>
 				<a class="btn mr10" href="{:url('addsitelink',['type'=>''])}">单个添加</a><a class="btn mr10" href="{:url('addsitelink',['type'=>'manymanysitelink'])}">多对多添加</a><a class="btn mr10" href="{:url('addsitelink',['type'=>'manyonesitelink'])}">多对一添加</a><a class="btn do-action" data-type="doDelete" data-href="{:url('delsitelink')}">删除</a>
-				<div class="table" v-el:table>
-					<form id="export-form" method="post" action="{:url('index')}">
+				<div class="search fr">
+					<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<input type="text" id="key" value="{:input('param.key')}" placeholder="请输入关键词" >
+					<a class="icon-search" href="javascript:;"></a>
+					</form>
+				</div>
+				<div class="clear"></div>
+				<div class="table" >
 					<table class="layuitable">
 						<thead>
 							<tr>
-								<th width="50"><input class="i-checks checkbox check-all" type="checkbox"></th>
+								<th width="50"><input type="checkbox" class="selected-all" id="selected-all"></th>
 								<th class="sort" width="80"><span>ID</span></th>
 								<th class="sort" width="200"><span>关键词</span></th>
 								<th><span>链接地址</span></th>
@@ -25,55 +31,111 @@
 								<th width="150"><span>操作</span></th>
 							</tr>
 						</thead>
-						<tbody>
-							{notempty name="infolist"}
-		                    	{volist name="infolist" id="v"}
-								<tr>
-									<td><input class="ids i-checks" type="checkbox" name="ck" ids="{$v.id}"></td>
-									<td>{$v.id}</td>
-									<td>{$v.name}</td>
-									<td>{$v.url}</td>
-									<td>{$v.num}</td>
-									<td>{if $v.otype eq '_blank'}新开{else}当前{/if}</td>
-									<td><a href="javascript:;" class="change_status" data-id="{$v.id}"> <div class="layui-unselect layui-form-switch {if condition="$v.status eq 1"}layui-form-onswitch{/if}"><i></i></div> </a></td>
-									<td>
-										<a class="btn do-action" data-type="doEdit" data-href="{:url('editsitelink')}" data-id="{$v.id}">编辑</a>
-		                            	<a class="btn do-action" data-type="doDelOne" data-href="{:url('delsitelink',['ids'=>$v['id']])}">删除</a>
-									</td>
-								</tr>
-								{/volist}
-		                    {else /}
-		                        <td colspan="8" class="text-center"> 暂未发现数据! </td>
-		                    {/notempty}
-						</tbody>
+						<script id="arlist" type="text/html">
+
+                            {{# for(var i=0;i<d.length;i++){  }}
+                            <tr class="long-td">
+                                <td>
+                                    <div class="icheckbox_square-green diychk" style="position: relative;"><input type="checkbox" style="position: absolute; opacity: 0;width:0;height:0px;" name="ck" ids="{{d[i].id}}" value="true"><ins class="iCheck-helper"></ins></div>  
+                                </td>
+                                <td>{{d[i].id}}</td>
+                                <td>{{d[i].name}}</td>
+                                <td>{{d[i].url}}</td>
+                                <td>{{d[i].num}}</td>
+                                <td>{{# if(d[i].otype == "_blank"){}}新开{{#  }else{ }}当前{{#  } }}</td>
+                                <td><a href="javascript:;" class="change_status" data-id="{{d[i].id}}"> <div class="layui-unselect layui-form-switch {{# if(d[i].status == 1){}} layui-form-onswitch{{#  } }} "><i></i></div> </a></td>
+                                <td>
+                                    <a class="btn btn2 do-action" data-type="doEdit" data-href="{:url('editsitelink')}" data-id="{{d[i].id}}&gopage={{d[i].gopage}}">编辑</a>
+                                    <a class="btn btn2 do-action" data-type="doDelOne" data-href="{:url('delsitelink')}" data-id="{{d[i].id}}">删除</a>
+                                </td>
+                            </tr>
+                            {{# } }}
+                        </script>
+                        <tbody id="article_list" ></tbody>
 					</table>
 				</div>
+
+				<div id="AjaxPage" style="float: right;margin-top:-10px;margin-left:10px;"></div>
+                <div class="CountPage" style="float: right; line-height:30px;">
+                    共 {$count} 条&nbsp;&nbsp;
+                    <select name="list_rows" id="list_rows" class="list_rows">
+                        <option value="10" {if config('sys.admin_list_rows') eq 10}selected{/if}>10 条/页</option>
+                        <option value="20" {if config('sys.admin_list_rows') eq 20}selected{/if}>20 条/页</option>
+                        <option value="50" {if config('sys.admin_list_rows') eq 50}selected{/if}>50 条/页</option>
+                        <option value="100" {if config('sys.admin_list_rows') eq 100}selected{/if}>100 条/页</option>
+                    </select>            
+                </div>
+                
+                <div style="clear:both;"></div>
 			</div>
 		</div>
 	</div>
 <script>
     var laytpl,laypage;
-    layui.use(['layer', 'common', 'icheck'], function () {
+    var url='{:url("sitelink/index")}';
+    var allpages='{$allpage}';
+    layui.use(['layer','laypage', 'common', 'icheck','laytpl'], function () {
         var $ = layui.jquery, layer = layui.layer, common = layui.common;
+        laytpl =layui.laytpl;
         laypage = layui.laypage;
+        
+        common.Ajaxpage({$gopage});
+
         //加载单选框样式
         $(("[type='checkbox']")).iCheck({
             checkboxClass: 'icheckbox_square-green',
         });
-        //全选的实现
-        $('.check-all').on('ifChecked', function (event) {
-            $('input[name="ck"]').iCheck('check');
+        //全选
+        $(document).on('ifChanged','.selected-all', function (event) {
+            var $input = $('.layuitable tbody tr td').find('input');
+            if ($('.selected-all').prop("checked")) {
+                $("#article_list .diychk").addClass('checked');
+                $("#article_list .diychk").children('input:checkbox').prop("checked", true);
+            }else{
+                $("#article_list .diychk").removeClass('checked');
+                $("#article_list .diychk").children('input:checkbox').prop("checked", false);
+            }
         });
-        $('.check-all').on('ifUnchecked', function (event) {
-            $('input[name="ck"]').iCheck('uncheck');
-        });
+    });
+    $(document).on('click','.diychk', function () {
+        if ($(this).hasClass('checked')) {
+            $(this).removeClass('checked');
+            $(this).children('input:checkbox').prop("checked", false);
+        }else{
+            $(this).addClass('checked');
+            $(this).children('input:checkbox').prop("checked", true);
+        }
+    });
+    $(document).on('change','#list_rows', function () {
+        var list_rows = $(this).val();
+    	$.ajax({
+            url: '{:url("system/listrows")}',
+            dataType: "json",
+            data:{'list_rows':list_rows},
+            type: "POST",
+            success: function(data){
+                location.href = location.href;
+                
+            }
+        }); 
+    });
+
+    $(document).on('click','.icon-search', function () {
+        window.location.href = "{:url("sitelink/index")}&key="+$('#key').val();
+    });
+
+    $("#key").keydown(function (event) {
+        if (event.keyCode==13){
+            window.location.href = "{:url("sitelink/index")}&key="+$('#key').val();
+            return false;
+        };
     });
 
     $(document).on('click','.change_status', function () {
             var id=$(this).attr('data-id');
             var obs=$(this);
             $.ajax({
-                url: '{:url("statesitelink")}',
+                url: '{:url("status")}',
                 dataType: "json",
                 data:{'id':id},
                 type: "POST",

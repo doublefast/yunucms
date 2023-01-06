@@ -4,15 +4,19 @@ use app\admin\model\ContentModel;
 use app\admin\model\CategoryModel;
 use app\admin\model\DiyfieldModel;
 use app\admin\model\AreaModel;
-use app\admin\model\MediaModel;
 use think\Config;
 use think\Db;
 use Aip\AipNlp;
+
+use Qiniu\Auth as Auth;
+use Qiniu\Storage\BucketManager;
+use Qiniu\Storage\UploadManager;
 
 class Content extends Common
 {
     public function index()
     {
+        $this->checkrecordapi();
     	$category = new CategoryModel();
         $content = new ContentModel();
 
@@ -36,21 +40,13 @@ class Content extends Common
         $allpage = intval(ceil($count / $limits));//计算总页面
         $infolist = $content->getContentByWhere($where, $Nowpage, $limits);      
 
-        $homecon = new \app\index\model\ContentModel;
-
         foreach($infolist as $k=>$v){
             $infolist[$k]['isyy'] = strtotime($v['create_time']) > time() ? 1 : 0;
             $infolist[$k]['time'] = date('Y-m-d', strtotime($v['create_time']));
             $infolist[$k]['gopage'] = $Nowpage;
             $cate = $category->getOneCategory($v['cid']);
             $infolist[$k]['ctitle'] = $cate['title'];
-            //前台URL
-            $indexurl = $homecon->getContentUrl($v, '', '');
-            if (config('sys.url_model') == 3) {
-                $indexurl = $indexurl.'html';
-            }
-            $indexurl = str_replace("&", "&amp;", $indexurl);
-            $infolist[$k]['indexurl'] = $indexurl;
+            $infolist[$k]['indexurl'] = $content->getHomeContentUrl($v);
         }  
 
     	$nav = new \org\Leftnav;
@@ -70,9 +66,10 @@ class Content extends Common
             }
         } 
         $catlist = $nav::rule($allcate);
-        
+        $cate = $category->getOneCategory($cid);
         $this->assign([
-        	'cate' => $category->getOneCategory($cid),
+            'addcatelist' => $cate ? $category->getCategoryAddCon($cate['id'], $cate['mid']) : null,
+        	'cate' => $cate ? $cate : ['id'=>0],
         	'catlist' => $catlist,
             'infolist' => $infolist,
             'Nowpage' => $Nowpage,
@@ -81,11 +78,16 @@ class Content extends Common
             'gopage' => $gopage,
             'maincatlist' => $maincatlist
        	]);
+        runhook('sys_admin_content');
         if(input('get.page')){
-
             return json($infolist);
         }
-        return $this->fetch();
+        if ($cate && $cate['cover'] ) {
+            return $this->fetch("./app/admin/view/content/editcontentcate.html");
+        }else{
+            return $this->fetch();
+        }
+        
     }
 
     public function getarea()
@@ -135,38 +137,62 @@ class Content extends Common
         echo $html;
     }
     public function baiduqc(){
-
         if(request()->isAjax()){
             $title = input('title');
-            $appid = config('sys.bdqc_appid');
-            $apikey = config('sys.bdqc_apikey');
-            $arcretkey = config('sys.bdqc_arcretkey');
-            if (empty($appid) || empty($apikey) || empty($arcretkey)) {
-                return json(['code' => -1, 'data' => '', 'msg' => "请先设置：扩展管理->接口管理->百度切词接口"]);
-            }
-            $client = new AipNlp(config('sys.bdqc_appid'), config('sys.bdqc_apikey'), config('sys.bdqc_arcretkey'));
-            $lexer = $client->lexer($title);
-            $tagstr = '';
-            if (isset($lexer['error_code'])) {
-                return json(['code' => -1, 'data' => '', 'msg' => "请检查百度切词API设置：".$lexer['error_msg']]);
-            }
-            if (isset($lexer['items'])) {
-                $items = $lexer['items'];
-                $qcnum = config('sys.bdqc_qcnum') ? config('sys.bdqc_qcnum') : rand(1,count($items));
-                $itemcount = count($items) > $qcnum ? $qcnum : count($items);
-                $result = array_rand($items, $itemcount == 0 ? 1 : $itemcount);
-                $resultstr = [];
-                if (is_array($result)) {
-                    foreach ($result as $k => $v) {
-                        $resultstr[] = $items[$v]['item'];
-                    }
-                    $tagstr = implode(',', $resultstr);
-                }else{
-                    $tagstr = $items[$result]['item'];
+            $content = new ContentModel();
+            $flag = $content->baiduqc($title);
+            return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
+        }
+    }
+
+    public function wxcaiji(){
+        if(request()->isAjax()){
+            $wxurl = input('wxurl');
+            if (config('sys.qiniu')) {
+                header("Content-type:text/html;charset=utf-8");
+                set_time_limit(1800);
+                require_once  ROOT_PATH.'app/extend/Qiniu/autoload.php';
+                // 需要填写你的 Access Key 和 Secret Key
+                $accessKey = config('sys.qiniu_accesskey');
+                $secretKey = config('sys.qiniu_secretkey');
+                $auth = new Auth($accessKey, $secretKey);
+                $bucket = config('sys.qiniu_bucket');
+                $domain = config('sys.qiniu_domain');
+                $bucketManager = new BucketManager($auth);
+
+                $html = curl($wxurl);
+                preg_match('/id="js_share_source".*?href="(.*?)"/i', $html, $match);
+                if (!empty($match[1])) {
+                    $match[1] = str_replace("http://", "https://", htmlspecialchars_decode($match[1]));
+                    $html = curl($match[1]);
                 }
-                
+                preg_match('/(?<=id="activity-name">).*?(?=<\/h2>)/is', $html, $match);
+                if (empty($match[0])){
+                    return json(['code' => 0, 'msg' => "获取微信文章标题Error"]);
+                };
+                $title = $match[0];
+                preg_match('/(?<=id="js_content">).*?(?=<\/div>)/is', $html, $match);
+                if (empty($match[0])){
+                    return json(['code' => 0, 'msg' => "获取微信文章内容Error"]);
+                };
+                $content = $match[0];
+                $content = preg_replace_callback(
+                    '/(?<=data-src="|url\(&quot;).*?(?="|&quot;\))/i',
+                    function ($matches) use ($bucketManager, $bucket, $domain) {
+                        list($ret, $err) = $bucketManager->fetch($matches[0], $bucket, null);
+                        if ($err !== null) {
+                            return $matches[0];
+                        } else {
+                            return $domain.$ret['key'];
+                        }
+                    },
+                    $content
+                );
+                $content = str_replace("data-src","src",$content);
+                return json(['code' => 1, 'title' => trim($title), 'content' => $content]);
+            }else{
+                return json(['code' => 0, 'msg' => "请先开启七牛云配置"]);
             }
-            return json(['code' => 1, 'data' => '', 'msg' => $tagstr]);
         }
     }
 
@@ -183,6 +209,13 @@ class Content extends Common
             $param = input('post.');
            	$content = new ContentModel();
             $flag = $content->insertContent($param, $cate['mid']);
+            if ($flag['code'] == 1) {
+                $sitemap_auto = config('sys.sitemap_auto') ? intval(config('sys.sitemap_auto')) : 0;
+                if ($sitemap_auto) {
+                    $api = new Api();
+                    $api->createSitemap();
+                }
+            }
             return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
         }
         
@@ -205,8 +238,9 @@ class Content extends Common
         array_unshift($arealist, $zhuzhan);
 
         $arealist = $area->getAreaByCon($arealist);
-
         $this->assign([
+            'showfile' => getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'show_*'),
+            'addcatelist' => $category->getCategoryAddCon($cate['id'], $cate['mid']),
         	'cate' => $cate,
         	'catlist' => $catlist,
         	'fieldhtml' => $fieldhtml,
@@ -291,6 +325,7 @@ class Content extends Common
         $gopage = input('gopage') ? input('gopage') : 1;
         $info = $content->getOneContent($id);
 
+
         $cate = $category->getOneCategory($info['cid']);
         if(request()->isAjax()){
             $param = input('post.');
@@ -303,7 +338,6 @@ class Content extends Common
 
         $fieldlist = $diyfield->getAllDiyfield($cate['mid']);
         $fieldhtml = $this->fieldformat($fieldlist, $info);
-
         //获取开启独立内容地区列表
         $arealist = $area->getAllArea(['isopen'=>1]);
 
@@ -317,8 +351,16 @@ class Content extends Common
         array_unshift($arealist, $zhuzhan);
 
         $arealist = $area->getAreaByCon($arealist, 0, $info['area']);
-
+        $addcatelist = $category->getCategoryAddCon($cate['id'], $cate['mid']);
+        if ($info['addcid']) {
+            $addcidarr = explode(',', $info['addcid']);
+            foreach ($addcatelist as $k => $v) {
+                $addcatelist[$k]['idsel'] = in_array($v['id'], $addcidarr);
+            }
+        }
         $this->assign([
+            'showfile' => getFileFolderList('./template/'.config('sys.theme_style').'/index' , 2, 'show_*'),
+            'addcatelist' => $addcatelist,
             'info' => $info,
             'cate' => $cate,
             'catlist' => $catlist,
@@ -335,7 +377,7 @@ class Content extends Common
         $sort = input('param.sort');
 
         $flag = db('content')->where(['id'=>$id])->setField(['sort'=>$sort]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 
     public function statecontent()
@@ -346,11 +388,11 @@ class Content extends Common
         if($istop == 1)
         {
             $flag = $db->where(['id'=>$id])->setField(['istop'=>0]);
-            return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已关闭']);
+            return json(['code' => 1, 'data' => '', 'msg' => '已关闭']);
         }else
         {
             $flag = $db->where(['id'=>$id])->setField(['istop'=>1]);
-            return json(['code' => 0, 'data' => $flag['data'], 'msg' => '已开启']);
+            return json(['code' => 0, 'data' => '', 'msg' => '已开启']);
         }
     }
     public function movecategory()
@@ -359,7 +401,7 @@ class Content extends Common
         $cid = input('param.cid');
         $db = Db::name('content');
         $flag = $db->where('id', 'IN', $ids."0")->setField(['cid'=>$cid]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
     public function movearea()
     {
@@ -368,7 +410,7 @@ class Content extends Common
         $aid = $aid ? ','.$aid.',' : '';
         $db = Db::name('content');
         $flag = $db->where('id', 'IN', $ids."0")->setField(['area'=>$aid]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 
     public function stateall()
@@ -378,7 +420,7 @@ class Content extends Common
         $db = Db::name('content');
 
         $flag = $db->where('id', 'in', $ids."0")->setField(['istop'=>$istop]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 
     public function mainurl()
@@ -388,7 +430,7 @@ class Content extends Common
         $db = Db::name('content');
 
         $flag = $db->where('id', 'in', $ids."0")->setField(['mainurl'=>$mainurl]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 
     public function baidu()
@@ -470,64 +512,20 @@ class Content extends Common
 
     }
 
-    //媒体联盟推送
-    public function media()
-    {
-        $ids = input('param.ids');
-
-        $media = new MediaModel(); 
-        $domainid = $media->checkmedia(config('sys.api_mediaapikey') ? config('sys.api_mediaapikey') : '');
-        if (!$domainid || !config('sys.api_media')) {
-            return json(['code' => 0, 'msg' => '授权帐号未购买媒体联盟服务']);
-        }
-
-        $content = new ContentModel();
-        if ($domainid) {
-            $conlist = $content->getContentByWhere(['id'=>['IN', $ids."0"]], 1, 100);
-            $infolist = [];
-            foreach ($conlist as $k => $v) {
-                $con = $content->getOneContent($v['id']);
-                $data['title'] = $v['title'];
-                $data['content'] = isset($con['content']) ? $con['content'] : '';
-                //图片资源URL更新
-                if ($data['content']) {
-
-                    $editcon = $data['content'];
-                    $pattern = "/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.png]))[\'|\"].*?[\/]?>/i";
-                    preg_match_all($pattern, $editcon, $matchContent);
-
-                    if ($matchContent[1]) {
-                        foreach ($matchContent[1] as $k => $v) {
-                            //判断本地是否已存在该文件
-                            $newimgsrc = $media->editImgSrc($v);
-                            if ($newimgsrc != $v) {
-                                $editcon = str_replace($v, $newimgsrc, $editcon);
-                            }
-                        }
-                    }
-                }
-                $data['content'] = $editcon;
-                $infolist[] = $data;
-            }
-
-            $info = $media->pushContent($domainid, $infolist); 
-            if ($info['status']) {
-                return json(['code' => 1, 'msg' => "成功推送：".$info['oknum']." 条内容，失败：".$info['errnum']." 条内容，剩余：".$info['num']." 条！"]);
-            }else{
-                return json(['code' => 0, 'msg' => $info['msg']]);
-            }
-        }else{
-            return json(['code' => 0, 'msg' => '授权帐号未购买媒体联盟服务']);
-        }
-
-    }
-
     public function xzh()
     {
         $ids = input('param.ids');
+        $tstype = input('param.tstype');
         $db = Db::name('content');
 
-        if (config('sys.seo_bdxzhurl')) {
+        if ($tstype == 1) {
+            $api = trim(config('sys.seo_bdxzhurl'));
+        }
+        if ($tstype == 3) {
+            $api = trim(config('sys.seo_bdmipurl'));
+        }
+
+        if ($api) {
             $flag = $db->where('id', 'in', $ids."0")->select();
 
             $urls = array();
@@ -571,8 +569,8 @@ class Content extends Common
                     }
                 }
             }
-
-            $api = trim(config('sys.seo_bdxzhurl'));
+            
+            
             $ch = curl_init();
             $options =  array(
                 CURLOPT_URL => $api,
@@ -588,12 +586,19 @@ class Content extends Common
             if (isset($jg['error'])) {
                 return json(['code' => 0, 'data' => '', 'msg' => $jg['message']]);
             }else{
-                $numb = isset($jg['success_realtime']) ? $jg['success_realtime'] : 0;
-                $pe = isset($jg['remain_realtime']) ? $jg['remain_realtime'] : 0;
-                return json(['code' => 1, 'data' => '', 'msg' => "成功推送：".$numb." 条URL，剩余配额：".$pe." 条"]);
+                if ($tstype == 1) {
+                    $numb = isset($jg['success_daily']) ? $jg['success_daily'] : 0;
+                    $pe = isset($jg['remain_daily']) ? $jg['remain_daily'] : 0;
+                    return json(['code' => 1, 'data' => '', 'msg' => "当天已成功推送：".$numb." 条URL，当天剩余配额：".$pe." 条"]);
+                }
+                if ($tstype == 3) {
+                    $numb = isset($jg['success_mip']) ? $jg['success_mip'] : 0;
+                    $pe = isset($jg['reamin_mip']) ? $jg['reamin_mip'] : 0;
+                    return json(['code' => 1, 'data' => '', 'msg' => "成功推送：".$numb." 条URL，剩余配额：".$pe." 条"]);
+                }
             }
         }else{
-            return json(['code' => 0, 'data' => '', 'msg' => '请先设置熊掌号主动推送API']);
+            return json(['code' => 0, 'data' => '', 'msg' => '请先设置对应的推送API']);
         }
 
     }
@@ -620,7 +625,65 @@ class Content extends Common
         $title = input('param.title');
         $db = Db::name('content');
         $flag = $db->where(['id'=>$id])->setField(['title'=>$title]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
+    }
+
+    public function createtag(){
+        $id = input('param.ids');
+        $content = new ContentModel();
+        $flag = $content->createtag($id);
+        return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
+    }
+    public function doaddcid(){
+        $ids = input('param.ids');
+        $addcidval = input('param.addcidval');
+        $db = Db::name('content');
+        $flag = $db->where(['id'=>['IN', $ids]])->setField(['addcid'=>$addcidval]);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
+    }
+    public function dotdk()
+    {
+        $ids = input('param.ids');
+        $seo_title = input('param.seo_title');
+        $seo_keywords = input('param.seo_keywords');
+        $seo_desc = input('param.seo_desc');
+        $db = Db::name('content');
+        $flag = $db->where(['id'=>['IN', $ids]])->select();
+        foreach ($flag as $k => $v) {
+            $new_seo_title = str_replace("{内容名称}", $v['title'], $seo_title);
+            $new_seo_keywords = str_replace("{内容名称}", $v['title'], $seo_keywords);
+            $new_seo_desc = str_replace("{内容名称}", $v['title'], $seo_desc);
+            $db->where(['id'=>$v['id']])->setField(['seo_title'=>$new_seo_title,'seo_keywords'=>$new_seo_keywords,'seo_desc'=>$new_seo_desc]);
+        }
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
+    }
+    public function dotag(){
+        $ids = input('param.ids');
+        $tag = input('param.inptag');
+        $db = Db::name('content');
+        $flag = $db->where(['id'=>['IN', $ids]])->setField(['tag'=>$tag]);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
+    }
+    public function showtitle()
+    {   
+        $cid = input('param.cid');
+        $category = new CategoryModel();
+        $content = new ContentModel();
+        $allcate = $category->getAllcategory();
+        $cidlist = $category->getChildsId($allcate, $cid, 1);//构造包含子分类ID
+        $where['cid'] = ['IN', $cidlist];  
+        $conlist = $content->getContentByWhere($where, 1, 10000); 
+        $contxt = "";
+        foreach ($conlist as $k => $v) {
+            $contxt .= $v['title']."\r\n";
+        }
+        header("Content-type: application/octet-stream"); 
+        header("Accept-Ranges: bytes"); 
+        header("Content-Disposition: attachment; filename = keywords.txt");
+        header("Expires: 0"); 
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0"); 
+        header("Pragma: public"); 
+        echo $contxt;
     }
 
     private function fieldformat($fiellist, $vallist = []){
@@ -651,10 +714,10 @@ class Content extends Common
 			        $html .= '</div>';
     				break;
     			case 'seditor'://简约文本编辑器
-                    $html .= '<div class="layui-form-item">';
+                    $html .= '<div class="layui-form-item layui-form-item-flex">';
                     $html .= '<label class="layui-form-label">'.$v['title'].'</label>';
                     $html .= '<div class="layui-input-inline">';
-                    $html .= '<textarea name="'.$v['field'].'" id="'.$v['field'].'" '.$req.'>'.$val.'</textarea>';
+                    $html .= '<script name="'.$v['field'].'" type="text/plain" id="'.$v['field'].'" '.$req.'>'.$val.'</script>';
                     $html .= '</div>';
                     $html .= '</div>';
 
@@ -662,10 +725,10 @@ class Content extends Common
 
                     break;
                 case 'editor'://富文本编辑器
-    				$html .= '<div class="layui-form-item">';
+    				$html .= '<div class="layui-form-item layui-form-item-flex">';
                     $html .= '<label class="layui-form-label">'.$v['title'].'</label>';
                     $html .= '<div class="layui-input-inline">';
-                    $html .= '<textarea name="'.$v['field'].'" id="'.$v['field'].'" '.$req.'>'.$val.'</textarea>';
+                    $html .= '<script name="'.$v['field'].'" type="text/plain" id="'.$v['field'].'" '.$req.'>'.$val.'</script>';
 
                     if (config('sys.api_wyc') && config('sys.api_bdqc')) {
                     $html .= '<br/><a href="javascript:void(\'\');" class="wyc'.$v['field'].'"> -- 点击一键生成同义词 -- </a>';
@@ -673,17 +736,15 @@ class Content extends Common
                     $html .= '</div>';
                     $html .= '</div>';
 
-                    $ueditor .= 'UE.getEditor("'.$v['field'].'");';
+                    $ueditor .= 'UE.getEditor("'.$v['field'].'", {initialFrameWidth:"100%"});';//{autoFloatEnabled:true}
 
                     //同义词
                     if (config('sys.api_wyc') && config('sys.api_bdqc')) {
                     $script .= '$(".wyc'.$v['field'].'").click(function(){';
                     $script .= '$.ajax({';
-                    $script .= 'url: "http://wyc.yunucms.com/api",';
+                    $script .= 'url: "http://tool.yunucms.com/Index/api/tongyici",';
                     $script .= 'type: "POST",';
                     $script .= 'data: {';
-                    $script .= 'appid: "'.config('sys.wyc_appid').'",';
-                    $script .= 'appsecret: "'.create_appsecret(config('sys.wyc_appid'), config('sys.wyc_appsecret')).'",';
                     $script .= 'type: '.config('sys.wyc_type').',';
                     $script .= 'percent: '.config('sys.wyc_percent').',';
                     $script .= 'AipNlp_APP_ID: "'.config('sys.bdqc_appid').'",';
@@ -777,22 +838,28 @@ class Content extends Common
 
                 	$html .= '<div class="layui-form-item">';
 	            	$html .= '<label class="layui-form-label">'.$v['title'].'</label>';
-
-
-
-
 	              	$html .= '<div class="layui-input-inline w700">';
-	                $html .= '<input type="hidden" name="'.$v['field'].'" value="'.$val.'" id="imglist'.$v['id'].'">';
-					/*$html .= '<div class="site-demo-upload upload-img">';
-				    $html .= '<div class="site-demo-upbar">';
-				    $html .= '<input type="file" name="file" class="layui-upload-file" id="upload-imagelist'.$v['id'].'">';
-				    $html .= '</div>';
-				    $html .= '</div>';*/
-                    $html .= '<div id="upload_imagelist'.$v['id'].'">上传多图</div>';
+                    $html .= '<input type="button" rel="imglist'.$v['id'].'" value="选择站内图片" class="fl BrowerPicture'.$v['id'].' file_btn mr10" style="height:35px;line-height:35px;" />';
+                    $html .= '<input type="hidden" name="'.$v['field'].'" value="'.$val.'" id="imglist'.$v['id'].'">';
+                    $html .= '<div id="upload_imagelist'.$v['id'].'" class="fl">上传多图</div>';
+                    $html .= '<div style="clear:both;></div>';
 					$html .= '<div class="picture_tip picture_tip'.$v['id'].'"></div>';
 				    $html .= '<div id="picture_show'.$v['id'].'">'.$img_str.'</div>';
 	                $html .= '</div>';
-	                $html .= '</div>';
+                    $html .= '</div>';
+
+                    $script .= '$(".BrowerPicture'.$v['id'].'").on("click",function(){';
+                    $script .= 'var path = "'.$v['id'].'";';
+                    $script .= 'layer.open({';
+                    $script .= 'type: 2,';
+                    $script .= 'title: "选择站内图片",';
+                    $script .= 'shadeClose: true,';
+                    $script .= 'shade: false,';
+                    $script .= 'anim: 2,';
+                    $script .= 'area: ["750px", "350px"],';
+                    $script .= 'content: ["'.url('upload/browsefile', array('stype' => 'picture','imgtype' => 'duoimg')).'&docname="+path]';
+                    $script .= '});';
+                    $script .= '});';
 
 	                $script .= 'var picture_show'.$v['id'].' = $("#picture_show'.$v['id'].'");';
 					$script .= 'var picture_tip'.$v['id'].' = $(".picture_tip'.$v['id'].'");';
@@ -807,6 +874,8 @@ class Content extends Common
                     $script .= 'extensions: "'.config('sys.upload_image_ext').'",';
                     $script .= 'mimeTypes: "image/"';
                     $script .= '},';
+                    $script .= 'compress: false,';
+                    $script .= 'resize: false,';
                     $script .= 'duplicate :true';
                     $script .= '});';
                                             
@@ -922,5 +991,43 @@ class Content extends Common
     		}
     	}
     	return ['html'=>$html, 'script'=>$script, 'ueditor'=>$ueditor];
+    }
+    public function disablewordscount()
+    {
+        if (trim(config("sys.disablewords_content")) == "" || !config('sys.disablewords_status')) {
+            $data = ['code' => 0, 'msg' => "更新已有数据，请先开启并设置禁用词！"];
+        }else{
+            $htmltype = input('post.htmltype'); 
+            $filecount = db('content')->field('id')->count();
+            $time = 0.05 * $filecount;
+            $data = ['code' => 1, 'time' => s_to_hs($time), 'msg' => ""];
+        }
+        return json($data);
+        
+    }
+    public function disablewordsshow(){
+        return $this->fetch();
+    }
+    public function disablewordsupdate(){
+        if(request()->isAjax()){
+            $fid =  input("param.fid/d", 0);
+            $achievepage = input("param.achieve/d", 0);
+            function_exists('set_time_limit') && set_time_limit(0);
+            $db = db('content');
+            $concount = $db->field('id,jumpurl')->count();
+            $data['allpagetotal'] = $concount;
+            $data['achievepage'] = $achievepage;
+            $limit = 10;
+            $conlist = $db->orderRaw("id asc")->limit($fid*$limit.",".$limit)->select();
+            $content = new ContentModel();
+            foreach ($conlist as $k => $v) {
+                $coninfo = $content->getOneContent($v['id']);
+                $content->editContent($coninfo, $v['mid']);
+                $data['achievepage'] +=  1;
+            }
+            $data['fid'] = $fid + 1;
+            return ['code' => 1, 'data' => $data, 'msg' => ''];
+            return json($data);
+        }
     }
 }

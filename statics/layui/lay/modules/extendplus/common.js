@@ -10,7 +10,7 @@
                 data: data,
                 success: function (data, startic) {
                     if (data.code == 1) {
-                        parent.layer.alert(data.msg, {
+                        layer.alert(data.msg, {
                             title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
                         }, function () {
                             location.href = location.href;
@@ -60,7 +60,7 @@
             });
         },
         layerDel: function (title, text, url, type, dataType, data, callback) {
-            parent.layer.confirm(text, {
+            layer.confirm(text, {
                 title: title,
                 btnAlign: 'c',
                 resize: false,
@@ -72,7 +72,7 @@
             });
         },
         layerState: function (title, text, url, type, dataType, data, callback) {
-            parent.layer.confirm(text, {
+            layer.confirm(text, {
                 title: title,
                 btnAlign: 'c',
                 resize: false,
@@ -85,21 +85,21 @@
         },
         //成功提示
         layerAlertS: function (text, title) {
-            parent.layer.alert(text, { title: title, icon: 1, time: 5000, resize: false, zIndex: layer.zIndex });
+            layer.alert(text, { title: title, icon: 1, time: 5000, resize: false, zIndex: layer.zIndex });
         },
         //成功提示
         layerAlertSHref: function (text, title, url) {
-            parent.layer.alert(text, { title: title, icon: 1, closeBtn:0, resize: false, zIndex: layer.zIndex }, function(){
+            layer.alert(text, { title: title, icon: 1, closeBtn:0, resize: false, zIndex: layer.zIndex }, function(){
                 window.location.href = url;
             });
         },
         //错误提示
         layerAlertE: function (text, title) {
-            parent.layer.alert(text, { title: title, icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+            layer.alert(text, { title: title, icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
         },
         //信息提示
         layerAlertI: function (text) {
-            parent.layer.alert(text, { time: 5000, resize: false, zIndex: layer.zIndex });
+            layer.alert(text, { time: 5000, resize: false, zIndex: layer.zIndex });
             return;
         },
         layerPrompt: function () {
@@ -109,7 +109,7 @@
         },
         //退出系统
         signOut: function (title, text, url,rturl,type, dataType, data, callback) {
-            parent.layer.confirm(text, {
+            layer.confirm(text, {
                 title: title,
                 resize: false,
                 btn: ['确定退出', '我再想想'],
@@ -125,9 +125,7 @@
                     success: function (data, startic) {
                         if (data.code == 1) {
                             location.href = rturl;
-                            obj.layerAlertS(data.message, '提示');
-                        }
-                        else {
+                        }else {
                             obj.layerAlertE(data.message, '提示');
                         }
                     },

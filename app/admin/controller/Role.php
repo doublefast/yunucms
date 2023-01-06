@@ -55,15 +55,15 @@ class Role extends Common
         if($status==1)
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>0]);
-            return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已禁止']);
+            return json(['code' => 1, 'data' => '', 'msg' => '已禁止']);
         }else
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>1]);
-            return json(['code' => 0, 'data' => $flag['data'], 'msg' => '已开启']);
+            return json(['code' => 0, 'data' => '', 'msg' => '已开启']);
         }
     }
 
-    public function giveAccess()
+    public function giveaccess()
     {
         if(request()->isAjax()) {
             $param = input('param.');
@@ -87,7 +87,7 @@ class Role extends Common
         return $this->fetch();
     }
     //获取栏目权限管理
-    public function giveAccessCat()
+    public function giveaccesscat()
     {
         if(request()->isAjax()) {
             $param = input('param.');

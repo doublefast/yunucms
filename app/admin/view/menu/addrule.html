@@ -16,7 +16,7 @@
 		                <select data-val="true" lay-filter="pid" name="pid"  lay-verify="required" lay-search="">
 		                    <option selected="selected" value="0">默认顶级</option>
 		                    {foreach name="admin_rule" item="v"}
-		                        <option value="{$v.id}">{if $v.pid eq 0}{else}{if $v.lvl eq 2}　├ {else}　　├ {/if}{/if}{$v.title}</option>
+		                        <option value="{$v.id}">{:lvlstr($v.lvl)}{$v.title}</option>
 		                    {/foreach}
 		                </select>
 		            </div>
@@ -45,6 +45,13 @@
 		            <label class="layui-form-label">排序</label>
 		            <div class="layui-input-block">
 		                <input name="sort" lay-verify="number" autocomplete="off" value="0" placeholder="输入顺序" class="layui-input w300" type="text">
+		            </div>
+		        </div>
+
+				<div class="layui-form-item">
+		            <label class="layui-form-label">跳转链接</label>
+		            <div class="layui-input-block">
+		                <input name="jumpurl" autocomplete="off" value="" placeholder="跳转链接" class="layui-input w300" type="text">
 		            </div>
 		        </div>
 

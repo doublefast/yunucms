@@ -1,4 +1,7 @@
 {include file="public/header" /}
+<style>
+.main .main_content{height:calc(100% - 60px);}
+</style>
 </head>
 <body style="overflow: hidden;">
 	<div id="main-container">
@@ -7,7 +10,30 @@
 			<div class="notice">{$position.url}</div>
 			<div class="main_content">
 				{if config('sys.bdcx_url') neq ''}
-					<iframe id="myiframe" scrolling="yes" frameborder="0" width="100%" height="100%" src="{:config('sys.bdcx_url')}"></iframe>
+					<script>
+					var a = $("<a href='{:config('sys.bdcx_url')}' target='_blank' >test</a>").get(0);
+					var e = document.createEvent('MouseEvents');
+					e.initEvent('click', true, true);
+					a.dispatchEvent(e);
+					</script>
+					<style type="text/css">
+					.main .main_content{margin: 0px;}
+					.main404{ width: 80%; margin: 150px auto; height: 400px;  }
+					.mainfl{float: left; width: 50%; padding-top: 10%; line-height: 30px;color: #666;}
+					.mainfr{float: right; width: 50%;}
+					</style>
+					<div class="main404">
+						<div class="mainfl">
+							<h3>如果不能正常跳转，请在浏览器右上角设置允许访问</h3>
+							请前往tongji.baidu.com <br>
+							管理 - 其他设置 - 统计图片设置 - 获取数据统计链接<br><br>
+							<a class="btn" href="http://tongji.baidu.com" target="_blank">前往设置</a>
+						</div>
+						<div class="mainfr">
+							<img src="__ADM_PUBLIC__/img/404.jpg">
+						</div>
+					</div>
+					<!-- <iframe id="myiframe" scrolling="yes" frameborder="0" width="100%" height="100%" src="{:config('sys.bdcx_url')}"></iframe> -->
 				{else/}
 					<style type="text/css">
 					.main .main_content{margin: 0px;}
@@ -31,11 +57,4 @@
 		</div>
 	</div>
 </body>
-<script type="text/javascript">
-$(window.parent.document).find("#myiframe").load(function(){
-	var main = $(window.parent.document).find("#myiframe");
-	var thisheight = $(document).height();
-	main.height(thisheight);
-});
-</script>
 </html>

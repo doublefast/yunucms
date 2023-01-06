@@ -7,8 +7,33 @@ class Sitelink extends Common
 {
     public function index(){
         $Sitelink = new SitelinkModel();
-        $infolist = $Sitelink->getAllSitelink(); 
-        $this->assign('infolist', $infolist);
+
+        $key = input('key');
+        $gopage = input('gopage') ? input('gopage') : 1;
+
+        $where = [];
+        if($key && $key !== ""){
+            $where['name'] =  ['like', "%$key%"];          
+        }
+
+        $Nowpage = input('get.page') ? input('get.page') : 1;
+        $limits = config("sys.admin_list_rows") ? config("sys.admin_list_rows") : 10;
+        $count = $Sitelink->getSitelinkCount($where);
+        $allpage = intval(ceil($count / $limits));
+        $infolist = $Sitelink->getSitelinkByWhere($where, $Nowpage, $limits); 
+        foreach ($infolist as $k => $v) {
+            $infolist[$k]['gopage'] = $Nowpage;
+        }
+        $this->assign([
+            'infolist' => $infolist,
+            'Nowpage' => $Nowpage,
+            'allpage' => $allpage,
+            'count' => $count,
+            'gopage' => $gopage
+        ]);
+        if(input('get.page')){
+            return json($infolist);
+        }
         return $this->fetch();
     }
 
@@ -30,7 +55,7 @@ class Sitelink extends Common
                 	if ($v) {
                 		$param['name'] = $v;
 	                    $flag = $Sitelink->insertSitelink($param);
-	                    if ($flag) {
+	                    if ($flag['code']) {
 	                        $success ++;
 	                    }else{
 	                        $error ++;
@@ -55,7 +80,7 @@ class Sitelink extends Common
 	                    $param['url'] = $urls[$k];
 	                    $param['wapurl'] = $wapurls[$k];
 	                    $flag = $Sitelink->insertSitelink($param);
-	                    if ($flag) {
+	                    if ($flag['code']) {
 	                        $success ++;
 	                    }else{
 	                        $error ++;
@@ -65,19 +90,24 @@ class Sitelink extends Common
                 return json(['code' => 1, 'data' => '', 'msg' => "多对多添加结果：成功：$success 失败：$error"]);
             }
         }
+        $linktype = in_array($linktype, ['', 'manyonesitelink', 'manymanysitelink']) ? $linktype : '';
         return $this->fetch($linktype);
     }
 
     public function editsitelink()
     {
         $Sitelink = new SitelinkModel();
+        $gopage = input('gopage') ? input('gopage') : 1;
         if(request()->isAjax()){
             $param = input('post.');
             $flag = $Sitelink->editSitelink($param);
             return json(['code' => $flag['code'], 'data' => $flag['data'], 'msg' => $flag['msg']]);
         }
         $id = input('param.id');
-        $this->assign('info', $Sitelink->getOneSitelink($id));
+        $this->assign([
+            'info'=>$Sitelink->getOneSitelink($id),
+            'gopage' => $gopage
+        ]);
         return $this->fetch();
     }
 
@@ -97,11 +127,11 @@ class Sitelink extends Common
         if($status == 1)
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>0]);
-            return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已禁止']);
+            return json(['code' => 1, 'data' => '', 'msg' => '已禁止']);
         }else
         {
             $flag = $db->where(['id'=>$id])->setField(['status'=>1]);
-            return json(['code' => 0, 'data' => $flag['data'], 'msg' => '已开启']);
+            return json(['code' => 0, 'data' => '', 'msg' => '已开启']);
         }
     }
 }

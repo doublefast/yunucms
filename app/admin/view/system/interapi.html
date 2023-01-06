@@ -12,11 +12,11 @@
 				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
 
 					<div class="title_bar mb20">
-						百度推送API
+						百度普通收录推送API
 					</div>
 					<div class="layui-form-item">
 			            <label class="layui-form-label">是否开启</label>
-			            <div class="layui-input-inline w100">
+			            <div class="layui-input-inline w60">
 			                <input type="checkbox" {if config('sys.api_bdts') eq 1}checked{/if} name="api_bdts" lay-skin="switch" lay-filter="api_bdts">
 			            </div>
 			        </div>
@@ -25,7 +25,7 @@
 			            <div class="layui-input-inline">
 			                <input class="layui-input w300" type="text" name="seo_bdurl" value="{:config('sys.seo_bdurl')}" placeholder="">
 			            </div>
-			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip">百度主动推送API_URL <a href="http://help.yunucms.com/737468" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
+			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip">百度普通收录主动推送API_URL <a href="http://help.yunucms.com/737468" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 			        <div class="layui-form-item api_bdts {if config('sys.api_bdts') neq 1}none{/if}">
 			            <label class="layui-form-label">子域名推送</label>
@@ -35,11 +35,11 @@
 			        </div>
 
 			        <div class="title_bar mb20">
-						百度熊掌号
+						百度快速收录推送API
 					</div>
 					<div class="layui-form-item">
 			            <label class="layui-form-label">是否开启</label>
-			            <div class="layui-input-inline w100">
+			            <div class="layui-input-inline w60">
 			                <input type="checkbox" {if config('sys.api_bdxzh') eq 1}checked{/if} name="api_bdxzh" lay-skin="switch" lay-filter="api_bdxzh">
 			            </div>
 			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip"><a href="http://www.yunucms.com/article/show/id/86.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
@@ -52,11 +52,19 @@
 	                    </div>
 			        </div>
 					<div class="layui-form-item api_bdxzh {if config('sys.api_bdxzh') neq 1}none{/if}">
-			            <label class="layui-form-label">主动推送API</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w300" type="text" name="seo_bdxzhurl" value="{:config('sys.seo_bdxzhurl')}" placeholder="">
+			            <label class="layui-form-label">快速收录</label>
+			            <div class="layui-input-inline w700">
+			                <input class="layui-input w700" type="text" name="seo_bdxzhurl" value="{:config('sys.seo_bdxzhurl')}" placeholder="">
 			            </div>
-			            <div class="layui-input-inline"><font class="font_tip">熊掌号主动推送API_URL </font></div>
+			            <div class="layui-input-inline"><font class="font_tip">百度资源提交快速收录主动推送API_URL </font></div>
+			        </div>
+
+			        <div class="layui-form-item api_bdxzh {if config('sys.api_bdxzh') neq 1}none{/if}">
+			            <label class="layui-form-label">MIP收录</label>
+			            <div class="layui-input-inline w700">
+			                <input class="layui-input w700" type="text" name="seo_bdmipurl" value="{:config('sys.seo_bdmipurl')}" placeholder="">
+			            </div>
+			            <div class="layui-input-inline"><font class="font_tip">MIP收录主动推送API_URL </font></div>
 			        </div>
 
 					<div class="title_bar mb20">
@@ -76,7 +84,7 @@
 
 					<div class="layui-form-item">
 			            <label class="layui-form-label">是否开启</label>
-			            <div class="layui-input-inline w100">
+			            <div class="layui-input-inline w60">
 			                <input type="checkbox" {if config('sys.api_bdqc') eq 1}checked{/if} name="api_bdqc" id="api_bdqc" lay-skin="switch" lay-filter="api_bdqc">
 			            </div>
 			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip"><a href="http://www.yunucms.com/Article/show/id/76.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
@@ -115,7 +123,7 @@
 
 					<div class="layui-form-item">
 			            <label class="layui-form-label">是否开启</label>
-			            <div class="layui-input-inline w100">
+			            <div class="layui-input-inline w60">
 			                <input type="checkbox" id="api_wyc" {if config('sys.api_wyc') eq 1}checked{/if} name="api_wyc" lay-skin="switch" lay-filter="api_wyc">
 			            </div>
 			            <div class="layui-input-inline"><font class="font_tip">开启同义词前需先设置好百度切词接口 {if !$isagent}<a href="http://www.yunucms.com/article/show/id/85.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a>{/if}</font></div>
@@ -139,61 +147,42 @@
 	                    </div>
 			        </div>
 
-			        <div class="layui-form-item api_wyc {if config('sys.api_wyc') neq 1}none{/if}">
-			            <label class="layui-form-label">APP ID</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w450" type="text" name="wyc_appid" value="{:config('sys.wyc_appid')}">
-			            </div>
-			        </div>
-
-			        <div class="layui-form-item api_wyc {if config('sys.api_wyc') neq 1}none{/if}">
-			            <label class="layui-form-label">APP SECRET</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w450" type="text" name="wyc_appsecret" value="{:config('sys.wyc_appsecret')}">
-			            </div>
-			        </div>
-
 			        <div class="title_bar mb20">
-						信息推送API
+						多站点控制平台对接
 					</div>
+					
+					<div class="layui-form-item">
+	                    <label class="layui-form-label">一键登录</label>
+	                    <div class="layui-input-inline w60">
+	                        <input type="checkbox" {if config('sys.api_autologin') eq 1}checked{/if} name="api_autologin" lay-skin="switch" lay-filter="switchTest">
+	                    </div>
+	                    <div class="layui-input-inline">
+	                    	<font class="font_tip">允许控制平台一键登录，如不使用，建议关闭</font>
+	                    </div>
+	                </div>
 
 					<div class="layui-form-item">
-			            <label class="layui-form-label">是否开启</label>
-			            <div class="layui-input-inline w100">
+			            <label class="layui-form-label">百度自动推送</label>
+			            <div class="layui-input-inline w60">
+			                <input type="checkbox" {if config('sys.api_bdautots') eq 1}checked{/if} name="api_bdautots" lay-skin="switch" lay-filter="api_bdautots">
+			            </div>
+			            <div class="layui-input-inline"><font class="font_tip">开启百度自动推送请先设置百度推送API</font></div>
+			        </div>
+					
+					<div class="layui-form-item">
+			            <label class="layui-form-label">接受平台推送</label>
+			            <div class="layui-input-inline w60">
 			                <input type="checkbox" {if config('sys.api_xxts') eq 1}checked{/if} name="api_xxts" lay-skin="switch" lay-filter="api_xxts">
 			            </div>
 			            {if !$isagent}<div class="layui-input-inline"><font class="font_tip"><a href="http://www.yunucms.com/article/show/id/92.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
 			        </div>
 
-			        <div class="title_bar mb20">
-						平台排名监控获取
-					</div>
-
 					<div class="layui-form-item">
-			            <label class="layui-form-label">是否开启</label>
-			            <div class="layui-input-inline w100">
+			            <label class="layui-form-label">排名监控获取</label>
+			            <div class="layui-input-inline w60">
 			                <input type="checkbox" {if config('sys.api_pmjkhq') eq 1}checked{/if} id="api_pmjkhq" name="api_pmjkhq" lay-skin="switch" lay-filter="api_pmjkhq">
 			            </div>
-			            <div class="layui-input-inline w700"><font class="font_tip">开启排名监控获取前需先在平台添加排名监控查询 {if !$isagent}<a href="http://www.yunucms.com/article/show/id/91.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a>{/if}</font></div>
-			        </div>
-
-			        <div class="title_bar mb20">
-						媒体联盟API
-					</div>
-					
-					<div class="layui-form-item api_wyc ">
-			            <label class="layui-form-label">apikey</label>
-			            <div class="layui-input-inline">
-			                <input class="layui-input w450" type="text" id="api_mediaapikey" name="api_mediaapikey" value="{:config('sys.api_mediaapikey')}">
-			            </div>
-			        </div>
-
-					<div class="layui-form-item">
-			            <label class="layui-form-label">是否开启</label>
-			            <div class="layui-input-inline w100">
-			                <input type="checkbox" {if config('sys.api_media') eq 1}checked{/if} id="api_media" name="api_media" lay-skin="switch" lay-filter="api_media">
-			            </div>
-			            {if !$isagent}<div class="layui-input-inline w450"><font class="font_tip"><a href="http://www.yunucms.com/Article/show/id/119.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a></font></div>{/if}
+			            <div class="layui-input-inline w600"><font class="font_tip">开启排名监控获取前需先在控制平台添加排名监控查询 {if !$isagent}<a href="http://www.yunucms.com/article/show/id/91.html" target="_blank" style="text-decoration:underline;">[ 使用说明 ]</a>{/if}</font></div>
 			        </div>
 
 					<div class="layui-form-item">
@@ -277,7 +266,14 @@ layui.use(['form','common'], function(){
 		        	$("#api_wyc").removeAttr('checked');
 					form.render();			
 		        }else{
-	        		$(".api_wyc").show();
+		        	if ({$issq}) {
+		        		$(".api_wyc").show();
+		        	}else{
+		        		common.layerAlertE('先前往系统管理 - 平台管理 绑定您的授权账号后再进行开启!', '提示');
+		        		$("#api_wyc").removeAttr('checked');
+		        		form.render();
+		        	}
+	        		
 	        	}
 	        }else{
 	        	$(".api_wyc").hide();
@@ -302,34 +298,6 @@ layui.use(['form','common'], function(){
 							form.render();
                         }
                     }
-                });			
-        	}
-        });
-
-        form.on('switch(api_media)', function(data) {
-        	if (this.checked) {
-        		if (!$("#api_mediaapikey").val()) {
-		        	common.layerAlertE('开启媒体联盟，请先填写apikey', '提示');
-		        	$("#api_media").removeAttr('checked');
-					form.render();
-					return;		
-		        }
-
-        		$.ajax({
-                    url: '{:url('checkMedia')}',
-                    type: 'post',
-                    dataType: 'json',
-                    data: {'apikey':$("#api_mediaapikey").val()},
-                    success: function (info) {
-                     	info = JSON.parse(info);
-                        if (info && info.state == 1) {
-
-                        }else{
-                        	common.layerAlertE('授权用户未在平台上购买媒体联盟服务', '提示');
-                            $("#api_media").removeAttr('checked');
-							form.render();
-                        }
-                    },
                 });			
         	}
         });

@@ -1,37 +1,64 @@
+{:runhook('sys_admin_tips')}
 <div class="header">
-	<div class="logo fl"><a href="javascript:;"><i class="icon icon-yun"></i></a></div>
-	<div class="head_name fl"><a href="{:url('index/index')}">管理控制台</a></div>
+	<div class="logo fl"><a href="{:url('index/index')}"><i class="icon icon-yun"></i></div>
+	<div class="head_name fl">管理控制台</div>
 	<div class="nav fl">
-		<ul class="clearfix">
-			{foreach name="menu" item="v"}
-			<li><a href="{$v.tophref}" {if $menu_child.id eq $v.id}class="v-link-active"{/if}><i class="{$v.icon}"></i>{$v.title}</a></li>
-			{/foreach}
-            {if !$isagent}
-            <li><a href="http://www.yunucms.com/handbook/" target="_blank"><i class="fa fa-book"></i>标签手册</a></li>
-            <li><a href="http://www.yunucms.com/Help/index.html" target="_blank"><i class="fa fa-book"></i>帮助手册</a></li>
-            {/if}
-		</ul>
 	</div>
 	<div class="head_tool fr">
-		<a href="/" target="_blank" title="站点首页"><i class="icon-home"></i></a>
-		<a class="doCache" href="javascript:;" title="更新缓存"><i class="icon-cache"></i></a>
-		<a class="doLoginOut" title="安全退出" data-type="doLoginOut" data-href="{:url('index/loginout')}" data-rturl="/{:config('sys.login_url')}"><i class="icon-out"></i></a>
+		<a class="doCache" href="javascript:;" title="清空缓存"><i class="icon-cache"></i>清空缓存</a>
+        {if !$isagent}
+        <a href="http://www.yunucms.com/handbook/" target="_blank"><i class="fa fa-book"></i>标签手册</a>
+        <a href="http://www.yunucms.com/Help/index.html" target="_blank"><i class="fa fa-book"></i>帮助手册</a>
+        {/if}
+        <a href="/" target="_blank" title="预览前台"><i class="icon-home"></i>预览前台</a>
+		<a class="doLoginOut" title="退出" data-type="doLoginOut" data-href="{:url('index/loginout')}" data-rturl="/{:config('sys.login_url')}"><i class="icon-out"></i>退出</a>
 	</div>
 </div>
 <div class="sidebar">
 	<div class="sidebar_tool"><i class="icon-dedent"></i></div>
 	<div class="nav_left">
-		<ul>
-			{foreach name="menu_child.child" item="v"}
-			<li><a href="{$v.href}" {if $v.ischk eq 1}class="v-link-active"{/if}><i class="{$v.css}"></i>{$v.title}</a></li>
-			{/foreach}
-		</ul>
+        <div lay-filter="test">
+            {foreach name="menu" item="v"}
+            <div class="layui-colla-item">
+                {if $v['href'] neq '#'}<a href="{$v.href}">{/if}<h2 class="layui-colla-title {empty name="v['children']"}iconone {/empty} {if $menu_child.id eq $v.id}v-link-active{/if}" ><i class="{$v.icon} navi" title="{$v.title}"></i>{$v.title}{notempty name="v['children']"}<i class="layui-icon layui-colla-icon">{if $menu_child.id eq $v.id}{else/}{/if}</i>{/notempty}</h2>{if $v['href'] neq '#'}</a>{/if}
+                {notempty name="v['children']"}
+                <div class="layui-colla-content {if $menu_child.id eq $v.id}layui-show{/if}">
+                     <ul>
+                        {foreach name="v['children']" item="child"}
+                        <li class="{if $menu_child.id eq $v.id}v-link-active{/if}"><a href="{$child.href}" >{$child.title}</a></li>
+                        {/foreach}
+                    </ul>
+                </div>
+                {/notempty}
+            </div>
+            {/foreach}
+        </div>
 	</div>
-</div>
+</div>{$sitehtml}
+<script type="text/html" id="popCloudBind">
+    <form class="layui-form layui-form-pane page-form" action="{:url()}" method="post" id="editForm">
+        <div class="layui-form-item">
+            <div class="layui-input-inline ">
+                <input type="text" class="layui-input" name="username" lay-verify="required" autocomplete="off" placeholder="请输入云平台登陆账号">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline ">
+                <input type="password" class="layui-input" name="password" lay-verify="required" autocomplete="off" placeholder="请输入云平台登陆密码">
+            </div>
+        </div>
+        <!--<div class="layui-form-item">
+            <div class="layui-input-inline ">
+                <input type="text" class="layui-input" name="vcode" lay-verify="required" autocomplete="off" placeholder="请输入验证码"  style="width:50%;float:left;">
+                <img id="verify" src="http://www.yunucms.com/Index/verify.html" alt="" width="100" height="35" onclick="this.src = 'http://www.yunucms.com/Index/verify.html' + '#' + Math.random()" title="点击更换" style="float:left;margin-left:10px;">
+            </div>
+        </div>-->
+        <div class="layui-form-item" id="resultTips"></div>
+    </form>
+</script>
 <script>
 layui.use(['layer', 'common'], function () {
     var $ = layui.jquery , common = layui.common;
-
     //退出系统
     var adminActive = {
         doLoginOut: function () {
@@ -39,32 +66,58 @@ layui.use(['layer', 'common'], function () {
             var rturl = $(this).data('rturl');
             if (url) {
                 common.signOut('确认退出系统？', '请再次确认是否要退出系统！', url, rturl, 'post', 'json', {});
-            }
-            else {
+            }else {
                 common.layerAlertE('链接错误！', '提示');
             }
         }
     };
-
+    $('.cloudBind').on('click', function() {
+        layer.open({
+            title:'绑定云平台 {if !$isagent}/ <a href="http://www.yunucms.com/index/index/is_register/1?domain={$_SERVER["SERVER_NAME"]}" target="_blank" class="mcolor">注册云平台</a>{/if}',
+            id:'popLoginBox',
+            area:'380px',
+            content:$('#popCloudBind').html(),
+            btn:['确认绑定', '取消'],
+            btnAlign:'c',
+            move:false,
+            yes:function(index) {
+                var tips = $('#resultTips');
+                tips.html('请稍后，云平台通信中...');
+                $.post("{:url('upgrade/index')}", $('#editForm').serialize(), function(res) {
+                    if (res.code == 1) {
+                        common.layerAlertS(res.msg, '提示');
+                        setTimeout(function() {
+                            location.href = '{:url("upgrade/index")}'; 
+                        }, 2000);
+                    } else {
+                        tips.addClass('mcolor2').html(res.msg);
+                        setTimeout(function() {
+                            tips.removeClass('mcolor2').html('');
+                        }, 2000);
+                    }
+                });
+                return false;
+            }
+        });
+    });
     $('.doLoginOut').on('click', function (event) {
         var type = $(this).data('type');
         adminActive[type] ? adminActive[type].call(this) : '';
         return false;
     });
-
     $(document).on('click','.doCache', function () {
         $.ajax({
-            	url: '{:url("index/cache")}',
-                dataType: "json",
-                type: "POST",
-                success: function(data){
-                    layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
-                },
-                error:function(ajaxobj)
-                {
-                    if(ajaxobj.responseText!='')
-                        alert(ajaxobj.responseText);
-                }
+            url: '{:url("index/cache")}',
+            dataType: "json",
+            type: "POST",
+            data: {'cachetype':'default'},
+            success: function(data){
+                common.layerAlertS(data.msg, '提示');
+            },
+            error:function(ajaxobj){
+                if(ajaxobj.responseText!='')
+                    alert(ajaxobj.responseText);
+            }
        	});
   	});
  });

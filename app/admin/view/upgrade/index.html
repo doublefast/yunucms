@@ -1,8 +1,4 @@
 {include file="public/header" /}
-<style>
-.mcolor { color: #0099cc;}
-.mcolor2 { color: #f00; }
-</style>
 </head>
 <body>
     <div id="main-container">
@@ -86,27 +82,7 @@
 			
 		</div>
 	</div>
-<script type="text/html" id="popCloudBind">
-    <form class="layui-form layui-form-pane page-form" action="{:url()}" method="post" id="editForm">
-        <div class="layui-form-item">
-            <div class="layui-input-inline ">
-                <input type="text" class="layui-input" name="username" lay-verify="required" autocomplete="off" placeholder="请输入云平台登陆账号">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <div class="layui-input-inline ">
-                <input type="password" class="layui-input" name="password" lay-verify="required" autocomplete="off" placeholder="请输入云平台登陆密码">
-            </div>
-        </div>
-        <!--<div class="layui-form-item">
-            <div class="layui-input-inline ">
-                <input type="text" class="layui-input" name="vcode" lay-verify="required" autocomplete="off" placeholder="请输入验证码"  style="width:50%;float:left;">
-                <img id="verify" src="http://www.yunucms.com/Index/verify.html" alt="" width="100" height="35" onclick="this.src = 'http://www.yunucms.com/Index/verify.html' + '#' + Math.random()" title="点击更换" style="float:left;margin-left:10px;">
-            </div>
-        </div>-->
-        <div class="layui-form-item" id="resultTips"></div>
-    </form>
-</script>
+
 <script type="text/html" id="popCopyright">
     <form class="layui-form layui-form-pane page-form" action="" method="post" id="copyForm">
         <div class="layui-form-item">
@@ -127,7 +103,7 @@
                <input type="text" class="layui-input" style="width:200px;" name="copy_url" lay-verify="required" autocomplete="off" value="{:config('sys.copy_url')}" placeholder="请输入官网地址">
             </div>
         </div>
-        <div class="layui-form-item"><font class="mcolor"> * 如果设置项为空，默认显示云优版权</font></div>
+        <div class="layui-form-item"><font class="mcolor"> * 如果设置项为空，显示默认版权</font></div>
         <div class="layui-form-item" id="resultTips"></div>
     </form>
 </script>
@@ -135,8 +111,11 @@
 layui.use(['form','common'], function(){
     var $ = layui.jquery;
     $form = $('form');
+    var openbind = "{$openbind}";
     var form = layui.form(),layer = layui.layer, common=layui.common;
-
+    if (openbind == 1) {
+        $(".cloudBind").click();
+    };
     if ('{$html_status}' == '1') {
         $('#connectionStatus').html('<font class="mcolor">通信正常</font>');
         $('.showupgeade').show();
@@ -144,36 +123,6 @@ layui.use(['form','common'], function(){
         $('#connectionStatus').html('<font class="mcolor2">通信异常</font>');
         $('.showupgeade').hide();
     }
-
-    $('.cloudBind').on('click', function() {
-        layer.open({
-            title:'绑定云平台 {if !$isagent}/ <a href="http://www.yunucms.com/index/index/is_register/1?domain={$_SERVER["SERVER_NAME"]}" target="_blank" class="mcolor">注册云平台</a>{/if}',
-            id:'popLoginBox',
-            area:'380px',
-            content:$('#popCloudBind').html(),
-            btn:['确认绑定', '取消'],
-            btnAlign:'c',
-            move:false,
-            yes:function(index) {
-                var tips = $('#resultTips');
-                tips.html('请稍后，云平台通信中...');
-                $.post('{:url('')}', $('#editForm').serialize(), function(res) {
-                    if (res.code == 1) {
-                        common.layerAlertS(res.msg, '提示');
-                        setTimeout(function() {
-                            location.reload();
-                        }, 3000);
-                    } else {
-                        tips.addClass('mcolor2').html(res.msg);
-                        setTimeout(function() {
-                            tips.removeClass('mcolor2').html('');
-                        }, 3000);
-                    }
-                });
-                return false;
-            }
-        });
-    });
 
     $('.copyright').on('click', function() {
         layer.open({

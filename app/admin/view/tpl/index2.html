@@ -1,0 +1,895 @@
+{include file="public/header" /}
+<script src="__ADM_PUBLIC__/js/ace/ace.js"></script>
+<script src="__ADM_PUBLIC__/js/ace/ext-beautify.js"></script>
+<script src="__ADM_PUBLIC__/js/ace/ext-language_tools.js"></script>
+<script src="__ADM_PUBLIC__/js/ace/mode-javascript.js"></script>
+<link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/js/dropzone/dropzone.min.css">
+<script src="__ADM_PUBLIC__/js/dropzone/dropzone.min.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/alifont/iconfont.js"></script>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/jquery.debounce-1.0.5.js"></script>
+
+<style type="text/css" media="screen">
+    #editor {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+    .showdir{cursor:pointer;}
+
+    .crumbs_search {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        justify-content: space-between;
+        -ms-align-items: center;
+        align-items: center;
+    }
+    .crumbs {
+        height: 32px;
+        line-height: 30px;
+        border: 1px solid #e1e6eb;
+        background-color: #f3f3f3;
+        flex: auto;
+        margin-right: 600px;
+    }
+    .crumbs .back {
+        display: inline-block;
+        border-right: 1px solid #e1e6eb;
+        width: 32px;
+        text-align: center;
+    }
+    .crumbs .back + .gt {
+        display: none;
+    }
+    .crumbs .reload {
+        float: right;
+        display: inline-block;
+        border-left: 1px solid #e1e6eb;
+        width: 32px;
+        text-align: center;
+        background-color: #fff;
+    }
+    .crumbs .gt {
+        font-style: normal;
+    }
+    .crumbs .showdir {
+        display: inline-block;
+        padding: 0 5px;
+    }
+    .crumbs .showdir:hover {
+        background-color: #f3fbf9;
+    }
+    .search .search_btn {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 30px;
+        line-height: 30px;
+    }
+    body .dropzone {
+        border: 1px solid #e5e5e5;
+        overflow-x: hidden;
+    }
+    body .dropzone .dz-preview .dz-image {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        justify-content: center;
+        -ms-align-items: center;
+        align-items: center;
+    }
+    body .dropzone .dz-message{
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .layui-layer-imgnext, .layui-layer-imgprev {
+        z-index: 2;
+    }
+    .layui-layer-imgbar {
+        z-index: 1;
+    }
+    .icon {
+       width: 1em; height: 1em;
+       vertical-align: -0.15em;
+       fill: currentColor;
+       overflow: hidden;
+    }
+    /* path {
+      fill: unset;
+    } */
+    .file_list {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        -webkit-flex-wrap: wrap;
+        -moz-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        -o-flex-wrap: wrap;
+        flex-wrap: wrap;
+        position: relative;
+    }
+    .file_list .icon {
+       width: 32px;
+       height: 32px;
+       margin-bottom: 10px;
+    }
+    .file_list .item {
+        padding: 20px;
+        text-align: center;
+        width: 150px;
+        position: relative;
+    }
+    .file_list .dir {
+        cursor: pointer;
+    }
+    /* .file_list .item.checked {
+        background-color: #f0f9f7;
+    } */
+    .file_list .item:hover .icheckbox_square-green {
+        display: block;
+    }
+    .file_list .file_name {
+        line-height: 16px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        height: 18px;
+    }
+    .file_list .icheckbox_square-green {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+    }
+    .file_list .i-checks {
+        display: none;
+    }
+    .file_list .icheckbox_square-green.checked {
+        display: block;
+    }
+    .file_list .menu {
+        display: none;
+        width: 120px;
+        box-shadow: 0 0 5px #bbb;
+        border-radius: 5px;
+        text-align: left;
+        padding: 5px 0;
+        background: #fff;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 9;
+    }
+    .file_list .menu .btn_icon {
+        height: 32px;
+        line-height: 32px;
+        cursor: pointer;
+        padding: 0 15px;
+    }
+    .file_list .menu .btn_icon:hover {
+        background-color: #efefef;
+    }
+    .file_list .menu .icon {
+       width: 16px;
+       height: 16px;
+       margin-bottom: 0;
+    }
+</style>
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="none" id="addfile" style="padding-top:20px;">
+            <form  class="layui-form layui-form-pane" id="formaddfile" method="post" role="form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">文件</label>
+                    <div class="layui-input-inline">
+                        <input id="upfile" class="layui-input" type="text" name="upfile" value=""><br>
+                    </div>
+                    <div class="layui-input-inline w100">
+                        <div class="site-demo-upload upload-img fl ml5">
+                            <div class="site-demo-upbar">
+                                <input type="file" name="uploadfile" class="layui-upload-file" id="upload-file">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="none" id="adddir" style="padding-top:20px;">
+            <form  class="layui-form layui-form-pane" id="formadddir" method="post" role="form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">文件夹</label>
+                    <div class="layui-input-inline w350">
+                        <input class="layui-input w350" type="text" name="dirname" id="dirname" placeholder="" >
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+                <div class="crumbs_search">
+                    <div class="crumbs">
+                        <a class="back showdir" href="javascript:;" rel="{:dirname($filedir)}&template={$template}">&lt;</a>
+                        {volist name="crumbs" id="v"}
+                        <i class="gt">&gt;</i>
+                        <a class="link showdir" href="javascript:;" rel="{$v['filedir']}&template={$template}">{$v['filename']}</a>
+                        {/volist}
+                        <a class="reload" href="javascript:window.location.reload();"><i class="icon-redo"></i></a>
+                    </div>
+                    <div class="search">
+                        <form class="layui-form layui-form-pane" id="searchform" method="get">
+                            <input type="text" id="key" value="{:input('param.key')}" placeholder="请输入关键词" >
+                            <button class="btn search_btn" type="submit">搜索</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="mt20 clearfix">
+                    <div class="fl w550">
+                        <a class="btn upload mr10">上传</a>
+                        <a class="btn do-action doAdddir mr10">新建文件夹</a>
+                        <a class="btn select_copy mr10" data-iscut="0">复制</a>
+                        <a class="btn select_copy mr10" data-iscut="1">剪切</a>
+                        <a class="btn select_del mr10">删除</a>
+                        <a class="btn select_paste mr10" data-filedir="{$filedir}">粘贴</a>
+                    </div>
+                    <div class="fr">
+                        {if $template == 'index'}
+                        <img class="showdir" rel="{$filedir}&template=index2" src="__ADM_PUBLIC__/img/icon_list.png" alt=""><img class="showdir" rel="{$filedir}&template=index" src="__ADM_PUBLIC__/img/icon_table_a.png" alt="">
+                        {else/}
+                        <img class="showdir" rel="{$filedir}&template=index2" src="__ADM_PUBLIC__/img/icon_list_a.png" alt=""><img class="showdir" rel="{$filedir}&template=index" src="__ADM_PUBLIC__/img/icon_table.png" alt="">
+                        {/if}
+                    </div>
+                </div>
+                <div class="file_list mt20" id="file_list">
+                    {notempty name="dirlist"}
+                        {volist name="dirlist" id="v"}
+                        <div class="item dir" data-filedir="{$filedir}" data-filename="{$v.dirname}" title="{$v.dirname}">
+                            <td><input class="i-checks" type="checkbox"></td>
+                            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-wenjianjia"></use></svg>
+                            <div class="file_name">{$v.dirname}</div>
+                            <div class="menu">
+                                <div class="btn_icon select_copy" data-iscut="0">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-fuzhi"></use></svg>
+                                    <span>复制</span>
+                                </div>
+                                <div class="btn_icon select_copy" data-iscut="1">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shear"></use></svg>
+                                    <span>剪切</span>
+                                </div>
+                                <div class="btn_icon btn_rename">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-nlp-nermingmingshiti"></use></svg>
+                                    <span>重命名</span>
+                                </div>
+                                <div class="btn_icon select_del" rel="{$filedir}/{$v.dirname}">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-weibiaoti544"></use></svg>
+                                    <span>删除</span>
+                                </div>
+                            </div>
+                        </div>
+                        {/volist}
+                    {/notempty}
+                    {notempty name="tpllistinfo"}
+                        {volist name="tpllistinfo" id="v"}
+                        <div class="item" data-filedir="{$filedir}" data-filename="{$v.filename}" title="{$v.filename}">
+                            <td><input class="i-checks" type="checkbox"></td>
+                            <svg class="icon" aria-hidden="true"><use xlink:href="#{$v.icon}"></use></svg>
+                            <div class="file_name">{$v.filename}</div>
+                            <div class="menu">
+                                {if $v['isedit']}
+                                <div class="btn_icon dofileedit" rel="{$filedir}/{$v.filename}">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-yulan"></use></svg>
+                                    <span>编辑</span>
+                                </div>
+                                {/if}
+                                {if $v['isshow']}
+                                <div class="btn_icon btn_show" data-filedir="{$filedir}" data-filename="{$v.filename}">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-yulan"></use></svg>
+                                    <span>查看</span>
+                                </div>
+                                {/if}
+                                <div class="btn_icon select_copy" data-iscut="0">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-fuzhi"></use></svg>
+                                    <span>复制</span>
+                                </div>
+                                <div class="btn_icon select_copy" data-iscut="1">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shear"></use></svg>
+                                    <span>剪切</span>
+                                </div>
+                                <div class="btn_icon btn_rename">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-nlp-nermingmingshiti"></use></svg>
+                                    <span>重命名</span>
+                                </div>
+                                <div class="btn_icon select_del" rel="{$filedir}/{$v.filename}">
+                                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-weibiaoti544"></use></svg>
+                                    <span>删除</span>
+                                </div>
+                            </div>
+                        </div>
+                        {/volist}
+                    {/notempty}
+                    <div id="mouse_drag" style="position: absolute; top: 0; left: 0; border: 1px solid rgb(7, 34, 70); background-color: rgb(204, 232, 255); opacity: 0.15; overflow: hidden; z-index: 9; width: 0; height: 0; display: none;"></div>
+                </div>
+			</div>
+		</div>
+	</div>
+<script>
+var laytpl,laypage;
+layui.use(['form','laypage','common', 'icheck','laytpl','upload'], function () {
+   	var $ = layui.jquery, layer = layui.layer, form = layui.form(),common = layui.common;
+
+    //加载单选框样式
+    $("[type='checkbox']").iCheck({
+        checkboxClass: 'icheckbox_square-green',
+    });
+    //全选的实现
+    $('.check-all').on('ifChecked', function (event) {
+        $('input.i-checks').iCheck('check');
+    });
+    $('.check-all').on('ifUnchecked', function (event) {
+        $('input.i-checks').iCheck('uncheck');
+    });
+
+    $('.i-checks').on('ifChecked', function (event) {
+        $(this).closest('.item').addClass('checked');
+    }).on('ifUnchecked', function (event) {
+        $(this).closest('.item').removeClass('checked');
+    });
+
+    //上传ico
+    layui.upload({
+        url: "{:url('Upload/uploadico',['file'=>'ico'])}"
+        ,before: function(input){}
+        ,title:'上传图片'
+        ,elem: '#upload-ico'
+        ,method: 'post'
+        ,ext: 'ico'
+        ,type:'images'
+        ,success: function(data){
+            if(data.status == 1){
+                $("#ico1").val(data.image_name);
+            }else{
+                alert(data.error_info);
+            }
+        }
+    });
+
+    form.on('select(seldir)', function(data) {
+       	window.location.href="{:url('tpl/index')}&filedir="+data.value;
+    });
+	$(document).on('click','.showdir', function () {
+		window.location.href="{:url('tpl/index')}&filedir="+$(this).attr('rel');
+	});
+
+    $(document).on('click','.dofileedit', function () {
+    	var filename = $(this).attr('rel');
+        // filename = filename.replace("*-*", ".");
+        var diqulay = layer.open({
+			title: '编辑文件 '+filename,
+			type: 2,
+			skin: 'layer_diqu',
+			area: ['1000px','600px'],
+			content: '{:url("editfile")}&filename='+filename,
+			btn: '保存',
+			yes: function(index, layero){
+				var iframeWindow=(layero).find("iframe")[0].contentWindow;
+				iframeWindow.Buttun_Submit();
+			}
+		});
+    });
+    $(document).on('click','.dofiledel', function () {
+    	var filename = $(this).attr('rel');
+    	layer.confirm("此操作不可逆，请再次确认是否要操作。", {
+    		title: "确定删除该文件吗?",
+    		btnAlign: 'c',
+    		resize: false,
+    		icon: 3,
+    		btn: ['确定删除', '我再想想'],
+    		yes: function () {
+    			$.ajax({
+    				url: '{:url("delfile")}',
+    				dataType: "json",
+    				data:{'filename':filename},
+    				type: "POST",
+    				success: function(data){
+    					if (data.code == 1) {
+                            window.location.reload();
+                        }else {
+                            common.layerAlertE(data.msg, '提示');
+                        }
+    				},
+    				error:function(ajaxobj)
+    				{
+    					if(ajaxobj.responseText!='')
+    						alert(ajaxobj.responseText);
+    				}
+    			});
+    		}
+    	});
+    });
+    $(document).on('click','.dodirdel', function () {
+    	var dirname = $(this).attr('rel');
+    	layer.confirm("此操作不可逆，请再次确认是否要操作。", {
+    		title: "确定删除该文件夹吗?",
+    		btnAlign: 'c',
+    		resize: false,
+    		icon: 3,
+    		btn: ['确定删除', '我再想想'],
+    		yes: function () {
+    			$.ajax({
+    				url: '{:url("deldir")}',
+    				dataType: "json",
+    				data:{'dirname':dirname},
+    				type: "POST",
+    				success: function(data){
+    					if (data.code == 1) {
+                            window.location.reload();
+                        }else {
+                            common.layerAlertE(data.msg, '提示');
+                        }
+    				},
+    				error:function(ajaxobj)
+    				{
+    					if(ajaxobj.responseText!='')
+    						alert(ajaxobj.responseText);
+    				}
+    			});
+    		}
+    	});
+    });
+
+    $(document).on('click','.doimgshow', function () {
+    	var filename = $(this).attr('rel');
+    	// filename = filename.replace("*-*", ".");
+        var imgHtml = "<img src='" + filename + "' width='500px'/>";
+        //弹出层
+        layer.open({
+            type: 1,
+            shade: 0.8,
+            offset: 'auto',
+            maxWidth: '650px',
+            shadeClose:true,
+            scrollbar: false,
+            title: "图片预览",
+            content: imgHtml,
+            offset: '100px',
+            cancel: function () {
+
+            }
+        });
+    });
+    //新建文件夹
+    $(document).on('click','.doAdddir', function () {
+        var diqulay = layer.open({
+            title: '新建文件夹',
+            type: 1,
+            content: $("#adddir"),
+            skin: 'layer_diqu1',
+            area: ['530px','200px'],
+            btn: '确定',
+            yes: function(index, layero){
+                var dirname = $('#dirname').val();
+                var filedir = '{$filedir}';
+                $.ajax({
+                    url: '{:url("adddir")}',
+                    dataType: "json",
+                    data:{'filedir':filedir, 'dirname':dirname},
+                    type: "POST",
+                    success: function(data){
+                        if(data.code == 1){
+                            parent.layer.alert(data.msg, {
+                                title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                            },function(){
+                                window.location.reload();
+                            });
+                        }else{
+                            common.layerAlertE(data.msg, '提示');
+                        }
+                    }
+                });
+            }
+        });
+    });
+    //上传ico
+    layui.upload({
+        url: "{:url('uploadfile',['file'=>'uploadfile','filedir'=>urlencode($filedir)])}"
+        ,before: function(input){}
+        ,title:'上传文件'
+        ,elem: '#upload-file'
+        ,method: 'post'
+        ,exts: 'js|css|jpg|jpeg|png|gif|html'
+        ,type:'file'
+        ,success: function(data){
+            if(data.status == 1){
+                $("#upfile").val(data.file_path);
+                parent.layer.alert(data.msg, {
+                    title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                });
+            }else{
+                common.layerAlertE(data.msg, '提示');
+            }
+        }
+    });
+
+    //上传文件
+    $(document).on('click','.doAddfile', function () {
+        var diqulay = layer.open({
+            title: '上传文件',
+            type: 1,
+            content: $("#addfile"),
+            skin: 'layer_diqu1',
+            area: ['650px','200px'],
+            btn: '确定',
+            yes: function(index, layero){
+                window.location.reload();
+            }
+        });
+
+    });
+
+    // 搜索
+    $('#searchform').on('submit', function () {
+        window.location.href = "{:url()}&template=index2&filedir={$filedir}&key="+$('#key').val();
+        return false;
+    });
+
+    // 上传
+    $('.upload').on('click', function(event) {
+        event.preventDefault();
+        layer.open({
+            title: '上传文件',
+            type: 1,
+            content: '<div class="pd20" style="height: 100%;"><a class="btn mb10" id="dropzone_upload_btn" >上传文件</a><div id="dropzone" class="dropzone" style="height: calc(100% - 84px);"></div><a class="btn fr mt10 upload_close">确定</a></div>',
+            area: ['707px','580px'],
+            success: function(layero, index){
+                $("#dropzone").dropzone({
+                    url: "{:url('drop_upload')}",
+                    dictDefaultMessage: '请将需要上传的文件拖拽到此处',
+                    params: {
+                        filedir: "{$filedir}",
+                    },
+                    clickable: '#dropzone_upload_btn,#dropzone',
+                    thumbnailWidth: 120,
+                    thumbnailMethod: 'contain',
+                    // addRemoveLinks: true,
+                    success: function (file, res) {
+                        if (res.status != 1) {
+                            layer.msg(res.msg);
+                            $(file.previewElement).addClass('dz-error').find('.dz-error-message').text(res.msg);
+                        } else {
+                            $(file.previewElement).addClass('dz-success')
+                        }
+                    }
+                });
+                $('.upload_close').on('click', function() {
+                    layer.close(index);
+                });
+            },
+            end: function(){
+                window.location.reload();
+            }
+        });
+    });
+
+    // 重命名 复制剪切 查看
+    $('#file_list').on('click', '.btn_rename', function(event) {
+        event.preventDefault();
+        var tr = $(this).closest('.item');
+        var filename = tr.attr('data-filename');
+        var filedir = tr.attr('data-filedir');
+        // filename = filename.replace('*-*', '.');
+        layer.prompt({
+            title: '重命名',
+            value: filename,
+        }, function(value, index, elem){
+            $.ajax({
+                url: "{:url('rename')}",
+                dataType: "json",
+                data:{
+                    oldname: filename,
+                    filename: value,
+                    filedir: filedir
+                },
+                type: "POST",
+                success: function(data){
+                    if (data.code == 1) {
+                        layer.close(index);
+                        window.location.reload();
+                    }else {
+                        common.layerAlertE(data.msg, '提示');
+                    }
+                },
+                error: function(ajaxobj) {
+                    ajaxobj.responseText != '' && alert(ajaxobj.responseText);
+                }
+            });
+        });
+    }).on('click', '.btn_copy', function(event) {
+        event.preventDefault();
+        var $this = $(this);
+        var iscut = $this.attr('data-iscut');
+        var tr = $this.closest('.item');
+        var filename = tr.attr('data-filename');
+        var filedir = tr.attr('data-filedir');
+        // filename = filename.replace('*-*', '.');
+        var select_file = [];
+        select_file.push({
+            filename: filename,
+            filedir: filedir,
+        });
+        localStorage.setItem('iscut', iscut);
+        localStorage.setItem('select_file', JSON.stringify(select_file));
+        var msg = (iscut == 1 ? '剪切' : '复制') + '成功';
+        layer.msg(msg);
+    }).on('click', '.btn_show', function(event) {
+        event.preventDefault();
+        var data = [];
+        var thisname = $(this).attr('data-filename');
+        var start = 0;
+        $('.btn_show').each(function(index, el) {
+            var $el = $(el);
+            var filedir = $el.attr('data-filedir');
+            var filename = $el.attr('data-filename');
+            if (filename == thisname) {
+                start = index
+            }
+            // filename = filename.replace('*-*', '.');
+            var src = filedir + '/' + filename;
+            data.push({src: src, alt: filename});
+        });
+        layer.photos({
+            anim: 5,
+            photos: {
+                title: '查看',
+                id: 1,
+                start: start,
+                data: data
+            }
+        });
+    });
+
+    // 粘贴
+    $('.select_paste').on('click', function(event) {
+        var filedir = $(this).attr('data-filedir');
+        var iscut = localStorage.getItem('iscut');
+        var select_file = localStorage.getItem('select_file');
+        $.ajax({
+            url: "{:url('paste')}",
+            dataType: "json",
+            data:{
+                filedir: filedir,
+                iscut: iscut,
+                select_file: select_file,
+            },
+            type: "POST",
+            success: function(data){
+                if (data.code == 1) {
+                    window.location.reload();
+                }else {
+                    common.layerAlertE(data.msg, '提示');
+                }
+            },
+            error: function(ajaxobj) {
+                ajaxobj.responseText != '' && alert(ajaxobj.responseText);
+            }
+        });
+    });
+
+    // 复制剪切
+    $('.select_copy').on('click', function(event) {
+        var iscut = $(this).attr('data-iscut');
+        var checked = $('#file_list input.i-checks:checked').map(function(index, el) {
+            var tr = $(el).closest('.item');
+            var filename = tr.attr('data-filename');
+            var filedir = tr.attr('data-filedir');
+            var result = {
+                filename: filename,
+                filedir: filedir,
+            }
+            return result;
+        }).get();
+        if (!checked.length) {
+            layer.msg('请选择');
+            return false;
+        }
+        localStorage.setItem('iscut', iscut);
+        localStorage.setItem('select_file', JSON.stringify(checked));
+
+        var msg = (iscut == 1 ? '剪切' : '复制') + '成功';
+        localStorage.setItem('select_file', JSON.stringify(checked));
+        layer.msg(msg);
+    });
+
+    // 删除
+    $('.select_del').on('click', function(event) {
+        var filename = $(this).attr('rel');
+
+        layer.confirm("此操作不可逆，请再次确认是否要操作。", {
+            title: "确定删除该文件吗?",
+            btnAlign: 'c',
+            resize: false,
+            icon: 3,
+            btn: ['确定删除', '我再想想'],
+            yes: function () {
+                var checked = $('#file_list input.i-checks:checked').map(function(index, el) {
+                    var tr = $(el).closest('.item');
+                    var filename = tr.attr('data-filename');
+                    var filedir = tr.attr('data-filedir');
+                    var result = {
+                        filename: filename,
+                        filedir: filedir,
+                    }
+                    return result;
+                }).get();
+                if (!checked.length) {
+                    layer.msg('请选择');
+                    return false;
+                }
+                $.ajax({
+                    url: '{:url("delete")}',
+                    dataType: "json",
+                    data:{select_file: JSON.stringify(checked)},
+                    type: "POST",
+                    success: function(data){
+                        if (data.code == 1) {
+                            window.location.reload();
+                        }else {
+                            common.layerAlertE(data.msg, '提示');
+                        }
+                    },
+                    error:function(ajaxobj)
+                    {
+                        if(ajaxobj.responseText!='')
+                            alert(ajaxobj.responseText);
+                    }
+                });
+            }
+        });
+    });
+
+    // 右击
+    var file_list = $('#file_list');
+    file_list.find('.item').on('contextmenu', function(event) {
+        event.preventDefault();
+        $('.menu').hide();
+        $(this).find('.menu').fadeIn();
+    });
+
+    $('body').on('click', function() {
+        $('.menu').hide();
+    });
+
+    // 左击
+    var start_time;
+    file_list.find('.dir').on('mousedown', function(event) {
+        start_time = new Date();
+    }).on('mouseup', function(event) {
+        if (event.button == 0 && new Date() - start_time < 300) {
+            event.preventDefault();
+            event.stopPropagation();
+            window.location.href = '{:url('tpl/index')}&template=index2&filedir={$filedir}/' + $(this).attr('data-filename')
+        }
+    });
+
+    // 框选
+    var mouse_drag = $('#mouse_drag');
+    var mousedown = false;
+    var clientX,clientY;
+    var file_list_item = file_list.find('.item');
+    var drag_handle = $.throttle(function(){
+        if (!mousedown) return;
+        var mouse_drag_t = mouse_drag.offset().top;
+        var mouse_drag_b = mouse_drag_t + mouse_drag.outerHeight();
+        var mouse_drag_l = mouse_drag.offset().left;
+        var mouse_drag_r = mouse_drag_l + mouse_drag.outerWidth();
+
+        if (mouse_drag_t !== mouse_drag_b || mouse_drag_l !== mouse_drag_r) {
+            mouse_drag.show();
+        } else {
+            mouse_drag.hide();
+        }
+        file_list_item.each(function(index, el) {
+            var self = $(el);
+            var item_t = self.offset().top;
+            var item_b = item_t + self.outerHeight();
+            var item_l = self.offset().left;
+            var item_r = item_l + self.outerWidth();
+            if (
+                (
+                    (mouse_drag_t >= item_t && mouse_drag_t <= item_b) ||
+                    (mouse_drag_b >= item_t && mouse_drag_b <= item_b) ||
+                    (item_t >= mouse_drag_t && item_t <= mouse_drag_b) ||
+                    (item_b >= mouse_drag_t && item_b <= mouse_drag_b)
+                )
+                &&
+                (
+                    (mouse_drag_l >= item_l && mouse_drag_l <= item_r) ||
+                    (mouse_drag_r >= item_l && mouse_drag_r <= item_r) ||
+                    (item_l >= mouse_drag_l && item_l <= mouse_drag_r) ||
+                    (item_r >= mouse_drag_l && item_r <= mouse_drag_r)
+                )
+            ) {
+                self.find('input.i-checks').iCheck('check');
+            } else {
+                self.find('input.i-checks').iCheck('uncheck');
+            }
+        });
+    }, 100);
+
+    $('.main').on('mousedown', function(event) {
+        event.preventDefault();
+        mousedown = true;
+        clientX = event.clientX;
+        clientY = event.clientY;
+        mouse_drag.css({
+            left: clientX - file_list.offset().left,
+            top: clientY - file_list.offset().top,
+            width: 0,
+            height: 0,
+        });
+    }).on('mousemove', function(event) {
+        event.preventDefault();
+        if (mousedown) {
+            if (event.clientY > clientY) {
+                if (event.clientX > clientX) {
+                    // 右下
+                    mouse_drag.css({
+                        width: event.clientX - clientX,
+                        height: event.clientY - clientY,
+                    });
+                } else {
+                    // 左下
+                    mouse_drag.css({
+                        left: event.clientX - file_list.offset().left,
+                        width: clientX - event.clientX,
+                        height: event.clientY - clientY,
+                    });
+                }
+            } else {
+                if (event.clientX > clientX) {
+                    // 右上
+                    mouse_drag.css({
+                        top: event.clientY - file_list.offset().top,
+                        width: event.clientX - clientX,
+                        height: clientY - event.clientY,
+                    });
+                } else {
+                    // 左上
+                    mouse_drag.css({
+                        top: event.clientY - file_list.offset().top,
+                        left: event.clientX - file_list.offset().left,
+                        width: clientX - event.clientX,
+                        height: clientY - event.clientY,
+                    });
+                }
+            }
+
+            drag_handle();
+        }
+    }).on('mouseup', function(event) {
+        event.preventDefault();
+        mousedown = false;
+        mouse_drag.hide();
+    });
+});
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@ class UserModel extends Model
     public function getUsersByWhere($map, $Nowpage, $limits)
     {
         return $this->field(config('database.prefix').'admin.*,title')->join(config('database.prefix').'auth_group', config('database.prefix').'admin.groupid = '.config('database.prefix').'auth_group.id')
-            ->where($map)->page($Nowpage, $limits)->order('id desc')->select();
+            ->where($map)->page($Nowpage, $limits)->orderRaw('id desc')->select();
     }
 
     public function getAllUsers($where)

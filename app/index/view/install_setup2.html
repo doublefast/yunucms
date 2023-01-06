@@ -10,7 +10,7 @@
 <body>
 <div class="g-install">
   <div class="m-head">
-    <h1>YUNUCMS安装配置</h1>
+    <h1>YUNUCMS账号验证</h1>
   </div>
   <form action="/index.php?s=index/install/setup3" method="post">
   <div class="m-body">
@@ -18,46 +18,26 @@
     <div class="m-form">
       
         <div class="formitm">
-          <label class="lab">数据库地址：</label>
+          <label class="lab">云平台账号：</label>
           <div class="ipt">
-            <input type="text" class="u-element" name="DB_HOST" id="DB_HOST" value="127.0.0.1" />
+            <input type="text" class="u-element" name="username" id="username" value="" />
           </div>
         </div>
         <div class="formitm">
-          <label class="lab">数据库端口：</label>
+          <label class="lab">云平台密码：</label>
           <div class="ipt">
-            <input type="text" class="u-element" name="DB_PORT" id="DB_PORT" value="3306" />
+            <input type="password" class="u-element" name="password" id="password" value="" />
           </div>
         </div>
-        <div class="formitm">
-          <label class="lab">数据库名称：</label>
-          <div class="ipt">
-            <input type="text" class="u-element" name="DB_NAME" id="DB_NAME" value="yunucms"  />
-          </div>
+        <div class="setuptxt">
+          如果您还未在云优官网注册账号，请 <a href="http://www.yunucms.com/index/index/is_register/1?domain={$_SERVER["SERVER_NAME"]}" target="_blank">点击注册</a> 。如果您已注册账号，请填写信息进行下一步安装操作。
         </div>
-        <div class="formitm">
-          <label class="lab">数据库用户名：</label>
-          <div class="ipt">
-            <input type="text" class="u-element" name="DB_USER" id="DB_USER" value="root"  />
-          </div>
-        </div>
-        <div class="formitm">
-          <label class="lab">数据库密码：</label>
-          <div class="ipt">
-            <input type="text" class="u-element" name="DB_PWD" id="DB_PWD" value="" />
-          </div>
-        </div>
-        <div class="formitm">
-          <label class="lab">数据表前缀：</label>
-          <div class="ipt">
-            <input type="text" class="u-element" name="DB_PREFIX"  value="yunu_" id="DB_PREFIX" />
-          </div>
-        </div>
+
     </div>
   </div>
   <div class="m-foot"> 
   	<a href="/index.php?s=index/install/setup1">上一步</a>
-    <button type="submit" class="submit">安装</button>
+    <button type="submit" class="submit">下一步</button>
   </div>
   </form>
 </div>

@@ -9,7 +9,7 @@ class BlockcategoryModel extends Model
 
     public function getAllBlockcategory()
     {
-        return $this->order('sort asc')->select();
+        return $this->orderRaw('sort asc')->select();
     }
 
     public function insertBlockcategory($param)

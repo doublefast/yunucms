@@ -1,4 +1,4 @@
-.nav_hover:hover, .header .head_name:hover, .header .head_tool a:hover, .nav ul li a:hover, .nav_hover.v-link-active, .header .v-link-active.head_name, .header .head_tool a.v-link-active, .nav ul li a.v-link-active {
+.nav_hover:hover, .header .head_tool a:hover, .nav ul li a:hover, .nav_hover.v-link-active, .header .v-link-active.head_name, .header .head_tool a.v-link-active, .nav ul li a.v-link-active {
   background: #008fbf; }
 
 .header {
@@ -11,15 +11,13 @@
 .header .head_name {
     width: 110px;
     height: 50px;
-    border-right: 1px solid #008fbf;
     text-align: center;
     margin-right: 40px; }
 .header .head_tool {
     margin-right: 38px; }
-.header .head_tool a {
-      float: left; }
+.header .head_tool a {float: left; padding-right:10px;}
 .header .head_tool i {
-      padding: 0 10px; }
+      padding: 0 10px; height: 14px;}
 .logo {
   width: 50px;
   height: 50px;
@@ -153,7 +151,7 @@
 
 .table input.edittitle {
   border: 1px solid #fff;
-  width: 100%;
+  width: 70%;
   text-align: left;
   line-height: 27px; 
 }
@@ -485,4 +483,42 @@
     background-color: #fff;
     box-sizing: border-box!important;
 }
+.sidebar .nav_left{padding-top: 0px;}
+.nav_left h2{font-size: 12px;margin-top:0px; margin-bottom: 0px; display: block;}
+.nav_left .layui-colla-icon{position: relative;top: 1px;}
+.nav_left .navi{
+    font-size: 15px;
+    width: 45px;
+    text-align: center;
+}
+.nav_left .layui-colla-title{color: #fff;background-color:#37424f;padding: 0 15px;}
+.nav_left .layui-collapse{border: none;}
+.nav_left .layui-show{border: none;}
+.nav_left .layui-colla-item{border: none;}
+.nav_left .layui-colla-content{padding: 0px; background: #293038;}
+.nav_left .layui-colla-content a{padding-left:60px; color: #fff;}
+.sidebar{background-color:#37424f;}
+
+.nav_left h2:hover, .nav_left h2.v-link-active{
+  background: #0099cc;
+}
+.nav_left li a {
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+    display: block;
+}
+
+.sidebar.sidebar_mini .nav_left h2 {
+    width: 50px;
+    padding-left: 0;
+    overflow: hidden;
+}
+.sidebar.sidebar_mini .nav_left .layui-colla-content{
+  display: none;
+  overflow: hidden;
+}
+.nav_left .iconone .layui-icon{display: none;}
 /*# sourceMappingURL=public.css.map */
+.mcolor { color: #0099cc;}
+.mcolor2 { color: #f00; }

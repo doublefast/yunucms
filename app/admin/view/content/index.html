@@ -10,10 +10,67 @@
 <script type="text/javascript" src="__ADM_PUBLIC__/js/diqu.js"></script>
 <link rel="stylesheet" type="text/css" href="__ADM_PUBLIC__/css/masonry.css">
 <script type="text/javascript" src="__ADM_PUBLIC__/js/masonry-docs.min.js"></script>
+<link rel="stylesheet" href="__ADM_PUBLIC__/css/formSelects-v4.css">
 </head>
 <body>
 	<div id="main-container">
 		{include file="public/menu" /}
+        <div class="none" id="addcid" style="padding-top:20px;">
+            <form  class="layui-form layui-form-pane" id="formaddcid" method="post" role="form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">附加栏目</label>
+                    <div class="layui-input-inline w450">
+                        <select name="seladdcid" id="seladdcid" xm-select="seladdcid" xm-select-search="" xm-select-height="38px">
+                            {notempty name="addcatelist"}
+                            {volist name="addcatelist" id="v"}
+                                <option value="{$v.id}">{$v.title} [ID:{$v.id}]</option>
+                            {/volist}
+                            {/notempty}
+                        </select>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="none" id="tdk" style="padding-top:20px;">
+            <form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">SEO标题</label>
+                    <div class="layui-input-inline w450">
+                        <input class="layui-input w450" type="text" name="seo_title" id="seo_title" placeholder="SEO标题" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">SEO关键词</label>
+                    <div class="layui-input-inline w450">
+                        <input class="layui-input w450" type="text" name="seo_keywords" id="seo_keywords" placeholder="SEO关键词" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">SEO描述</label>
+                    <div class="layui-input-inline w450">
+                        <textarea name="seo_desc" id="seo_desc" placeholder="SEO描述" class="layui-textarea w450"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">&nbsp;</label>
+                    <div class="layui-input-inline w450">
+                        <font class="font_tip">注：{标题名称}为内容通配符，[prov_or_city]为地区通配符，可插入至标题、关键词、描述里</font>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="none" id="tag" style="padding-top:20px;">
+            <form  class="layui-form layui-form-pane" id="formtag" method="post" role="form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">TAG</label>
+                    <div class="layui-input-inline w450">
+                        <input class="layui-input w450" type="text" name="inptag" id="inptag" placeholder="标签1，标签2，标签3(全角逗号间隔)" >
+                    </div>
+                </div>
+            </form>
+        </div>
+
 		<div class="main">
 			<div class="sidebar2" >
 				<a class="btn_expand" href="javascript:;"></a>
@@ -23,7 +80,7 @@
 					{notempty name="catlist"}
 		            {volist name="catlist" id="v"}
 		            <li data-pid="{$v['pid']}">
-                        <a href="{if $v.cover eq 0}{:url('content/index',['cid'=>$v['id']])}{else}{:url('category/editcategory',['id'=>$v['id']])}{/if}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
+                        <a href="{:url('content/index',['cid'=>$v['id']])}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
                             {if $v.pid eq 0}
                                 <i data-id="{$v['id']}" ></i>
                             {else}
@@ -84,7 +141,11 @@
                 })();
             </script>
 			{notempty name="cate.title"}
+                
+
 			<div class="content_box">
+
+                
 
                 <div class="layui-form check_diqu" id="diqu">
                 </div>
@@ -99,15 +160,22 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="{:url('batchaddcontent',['cid'=>$cate['id']])}">添加</a></li>
                         <li><a class="do-action" data-type="doDelete" data-href="{:url('delcontent')}">删除</a></li>
-                        <li><a class="do-action" data-type="doState" data-href="{:url('copyContent')}">复制</a></li>
+                        <li><a class="do-action" data-type="doState" data-href="{:url('copycontent')}">复制</a></li>
                         <li><a class="do-action" data-type="doState" data-href="{:url('stateall',['istop'=>1])}">推荐</a></li>
                         <li><a class="do-action" data-type="doState" data-href="{:url('stateall',['istop'=>0])}">取消推荐</a></li>
+                        <li><a class="do-action doAddcid">附加栏目</a></li>
+                        <li><a class="do-action doTdk">设置TDK</a></li>
+                        <li><a class="do-action doTag">设置TAG</a></li>
+                        {if config('sys.api_bdqc') eq 1}<li><a class="do-action" data-type="doState" data-href="{:url('createtag')}">生成TAG</a></li>{/if}
                         <li><a class="do-action" data-type="doState" data-href="{:url('mainurl',['mainurl'=>1])}">链接同步主站</a></li>
                         <li><a class="do-action" data-type="doState" data-href="{:url('mainurl',['mainurl'=>0])}">取消同步主站</a></li>
                         <li class="divider"></li>
-                        {if config('sys.api_bdts') eq 1}<li><a class="do-action" data-type="doState" data-href="{:url('baidu')}">百度推送</a></li>{/if}
-                        {if config('sys.api_bdxzh') eq 1}<li><a class="do-action" data-type="doState" data-href="{:url('xzh')}">熊掌号推送</a></li>{/if}
-                        {if config('sys.api_media') eq 1}<li><a class="do-action media">媒体联盟推送</a></li>{/if}
+                        {if config('sys.api_bdts') eq 1}<li><a class="do-action" data-type="doState" data-href="{:url('baidu')}">百度普通收录推送</a></li>{/if}
+                        {if config('sys.api_bdxzh') eq 1}
+                            <li><a class="do-action" data-type="doState" data-href="{:url('xzh',['tstype'=>1])}">百度快速收录推送</a></li>
+                            <li><a class="do-action" data-type="doState" data-href="{:url('xzh',['tstype'=>3])}">MIP推送</a></li>
+                        {/if}
+                        <li><a class="showtitle" href="{:url('showtitle',['cid'=>$cate['id']])}" target="_blank">批量导出标题</a></li>
                     </ul>
                 </div>
 				
@@ -131,7 +199,7 @@
 								<th width="80"><span>发布时间</span></th>
 								<th width="80"><span>推荐</span></th>
 								<th width="80"><span>排序</span></th>
-								<th width="200"><span>操作</span></th>
+								<th width="150"><span>操作</span></th>
 							</tr>
 						</thead>
 						<script id="arlist" type="text/html">
@@ -148,9 +216,9 @@
                                 <td><a href="javascript:;" class="change_status" data-id="{{d[i].id}}"> <div class="layui-unselect layui-form-switch {{# if(d[i].istop == 1){}} layui-form-onswitch{{#  } }} "><i></i></div> </a></td>
                                 <td><input class="sort" type="number" maxlength="4" data-id="{{d[i].id}}" value="{{d[i].sort}}"/></td>
                                 <td>
-                                    <a class="btn" href="{{d[i].indexurl}}" target='_blank'>查看</a>
-                                    <a class="btn do-action" data-type="doEdit" data-href="{:url('editcontent')}" data-id="{{d[i].id}}&gopage={{d[i].gopage}}">编辑</a>
-                                    <a class="btn do-action" data-type="doDelOne" data-href="{:url('delcontent')}" data-id="{{d[i].id}}">删除</a>
+                                    <a class="btn btn2" href="{{d[i].indexurl}}" target='_blank'>查看</a>
+                                    <a class="btn btn2 do-action" data-type="doEdit" data-href="{:url('editcontent')}" data-id="{{d[i].id}}&gopage={{d[i].gopage}}">编辑</a>
+                                    <a class="btn btn2 do-action" data-type="doDelOne" data-href="{:url('delcontent')}" data-id="{{d[i].id}}">删除</a>
                                 </td>
                             </tr>
                             {{# } }}
@@ -168,7 +236,7 @@
 											<select name="ftype" id="ftype">
 				                                <option value="0">选择分类</option>
 				                                {foreach name="catlist" id='v' }
-				                                <option value="{$v.id}" {if ($v.cover neq 0) or ($v.mid neq $cate.mid) or ($v.id eq $cate.id)}disabled{/if}>{if $v.pid neq 0}{$v.leftkong}├ {/if}{$v.title}</option>
+				                                <option value="{$v.id}" {if ($v.cover neq 0) or ($v.mid neq $cate.mid) or ($v.id eq $cate.id)}disabled{/if}>{:lvlstr($v.lvl)}{$v.title}</option>
 				                                {/foreach}
 				                            </select>
 			                        </div>
@@ -266,7 +334,9 @@
 			{/notempty}
 		</div>
 	</div>
+<script type="text/javascript" src="__ADM_PUBLIC__/js/formSelects-v4.js"></script>
 <script>
+    var formSelects = layui.formSelects;
     var laytpl,laypage;
     var url='{:url("content/index",['cid'=>$cate['id']])}';
     var allpages='{$allpage}';
@@ -371,44 +441,38 @@
             });
         });
 
-        $('.media').on('click', function(){
-            if (1 > $(".layuitable .article_list input:checked").size()){
+        treeClicked('open');
+        //批量附加栏目
+        $(document).on('click','.doAddcid', function () {
+
+            
+
+            if (1 > $(".layuitable input:checked").size()){
                 layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
             }else{
-                var diqulay = layer.confirm('此操作不可逆，请再次确认是否要操作',{
-                    title: '确认更新这些信息',
-                    btnAlign: 'c',
-                    resize: false,
-                    icon: 3,
-                    btn: ['确定操作', '我再想想'],
+                var diqulay = layer.open({
+                    title: '批量附加栏目',
+                    type: 1,
+                    content: $("#addcid"),
+                    skin: 'layer_diqu1',
+                    area: ['630px','350px'],
+                    btn: '确定',
                     yes: function(index, layero){
-                        parent.layer.alert("数据正在推送中...请耐心等待...", {
-                            title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
-                        });
-                        layer.close(diqulay);
-                        var value = $("input:checkbox[name='diqu[]']:checked").map(function(index, el) {
-                            return $(el).val();
-                        }).get().join(',');
-                        for (var c = "", d = $(".layuitable .article_list input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                        for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+
+                        var addcidval = formSelects.value('seladdcid','valStr');
+
                         $.ajax({
-                            url: '{:url("media")}',
+                            url: '{:url("doaddcid")}',
                             dataType: "json",
-                            data:{'ids':c, aid:value},
+                            data:{'ids':c, 'addcidval':addcidval},
                             type: "POST",
                             success: function(data){
-                                if (data.code == 1) {
+                                if(data.code == 1){
                                     parent.layer.alert(data.msg, {
                                         title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
-                                    }, function () {
-                                        location.href = location.href;
                                     });
-                                }
-                                else {
-                                    parent.layer.alert(data.msg, {
-                                        title: "提示", icon: 2, resize: false, zIndex: layer.zIndex
-                                    }, function () {
-                                        location.href = location.href;
-                                    });
+                                    layer.close(diqulay);
                                 }
                             }
                         }); 
@@ -416,8 +480,78 @@
                 });
             }
         });
-        treeClicked('open');
+        //批量设置TDK
+        $(document).on('click','.doTdk', function () {
+            if (1 > $(".layuitable input:checked").size()){
+                layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+            }else{
+                var diqulay = layer.open({
+                    title: '批量设置TDK',
+                    type: 1,
+                    content: $("#tdk"),
+                    skin: 'layer_diqu1',
+                    area: ['630px','420px'],
+                    btn: '确定',
+                    yes: function(index, layero){
+                        for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                        var seo_title = $('#seo_title').val();
+                        var seo_keywords = $('#seo_keywords').val();
+                        var seo_desc = $('#seo_desc').val();
+
+                        $.ajax({
+                            url: '{:url("dotdk")}',
+                            dataType: "json",
+                            data:{'ids':c, 'seo_title':seo_title, 'seo_keywords':seo_keywords, 'seo_desc':seo_desc},
+                            type: "POST",
+                            success: function(data){
+                                if(data.code == 1){
+                                    parent.layer.alert(data.msg, {
+                                        title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                    });
+                                    layer.close(diqulay);
+                                }
+                            }
+                        }); 
+                    }
+                });
+            }
+        });
+        //批量设置TAG
+        $(document).on('click','.doTag', function () {
+            if (1 > $(".layuitable input:checked").size()){
+                layer.alert("对不起，请选中您要操作的记录！", { title: "提示", icon: 2, time: 5000, resize: false, zIndex: layer.zIndex });
+            }else{
+                var diqulay = layer.open({
+                    title: '批量设置TAG',
+                    type: 1,
+                    content: $("#tag"),
+                    skin: 'layer_diqu1',
+                    area: ['630px','180px'],
+                    btn: '确定',
+                    yes: function(index, layero){
+                        for (var c = "", d = $(".layuitable input:checked"), e = 0; e < d.length; e++) d[e].checked && "disabled" != $(d[e]).attr("disabled") && (c += $(d[e]).attr("ids") + ",");
+                        var inptag = $('#inptag').val();
+
+                        $.ajax({
+                            url: '{:url("dotag")}',
+                            dataType: "json",
+                            data:{'ids':c, 'inptag':inptag},
+                            type: "POST",
+                            success: function(data){
+                                if(data.code == 1){
+                                    parent.layer.alert(data.msg, {
+                                        title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+                                    });
+                                    layer.close(diqulay);
+                                }
+                            }
+                        }); 
+                    }
+                });
+            }
+        });
     });
+
 
     function masonry() {
         var $container = $('#masonry');
@@ -545,12 +679,12 @@
     });
 
     $(document).on('click','.icon-search', function () {
-        window.location.href = "{:url("content/index",['cid'=>$cate['id']])}?key="+$('#key').val();
+        window.location.href = "{:url("content/index",['cid'=>$cate['id']])}&key="+$('#key').val();
     });
 
     $("#key").keydown(function (event) {
         if (event.keyCode==13){
-            window.location.href = "{:url("content/index",['cid'=>$cate['id']])}?key="+$('#key').val();
+            window.location.href = "{:url("content/index",['cid'=>$cate['id']])}&key="+$('#key').val();
             return false;
         };
     });

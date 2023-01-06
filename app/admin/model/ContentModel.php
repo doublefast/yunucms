@@ -2,6 +2,7 @@
 namespace app\admin\model;
 use think\Model;
 use think\Db;
+use Aip\AipNlp;
 
 class ContentModel extends Model
 {
@@ -9,7 +10,7 @@ class ContentModel extends Model
 
     public function getContentByWhere($where, $Nowpage, $limits)
     {
-        return $this->where($where)->page($Nowpage, $limits)->order('id desc')->select();
+        return $this->where($where)->page($Nowpage, $limits)->orderRaw('id desc')->select();
     }
 
     public function getContentIdByCid($cid)
@@ -70,16 +71,22 @@ class ContentModel extends Model
             }
             
             $tabname = DB::name('diymodel')->where(['id'=>$mid])->value('tabname');
+
+            foreach ($param as $k => $v) {
+                $param[$k] = disablewords($v);//替换禁用词 
+            }
+
             $param['vid'] = DB::name('diy_'.$tabname)->strict(false)->insertGetId($param);
             $param['create_time'] = $param['create_time'] ? strtotime($param['create_time']) : time();
             $param['update_time'] = time();
             $param['aid'] = session('admin_uid');
 
+
             $result = $this->validate('Content')->strict(false)->insertGetId($param);
             if(false === $result){            
                 return ['code' => -1, 'data' => '', 'msg' => $this->getError()];
             }else{
-                return ['code' => 1, 'data' => '', 'msg' => '添加内容成功'];
+                return ['code' => 1, 'data' => $result, 'msg' => '添加内容成功'];
             }
         }catch( PDOException $e){
             return ['code' => -2, 'data' => '', 'msg' => $e->getMessage()];
@@ -103,6 +110,11 @@ class ContentModel extends Model
             $tabname = DB::name('diymodel')->where(['id'=>$mid])->value('tabname');
             $param['create_time'] = $param['create_time'] ? strtotime($param['create_time']) : time();
             $param['update_time'] = time();
+
+            foreach ($param as $k => $v) {
+                $param[$k] = disablewords($v);//替换禁用词 
+            }
+
             $result1 =  $this->validate('Content')->allowField(true)->save($param, ['id' => $param['id']]);
             $param['conid'] = $param['vid'];
             $result2 =  DB::name('diy_'.$tabname)->strict(false)->update($param);
@@ -182,6 +194,96 @@ class ContentModel extends Model
             }
             $this->where(['cid'=>['IN', $cidlist]])->delete();
             return ['code' => 1, 'data' => '', 'msg' => '删除内容成功'];
+        }catch( PDOException $e){
+            return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
+        }
+    }
+
+    public function getHomeContentUrl($condata, $isjumpurl = true){
+        $conurl = "";
+        if ($condata['jumpurl']) {
+            if ($isjumpurl) {
+                return $condata['jumpurl'];
+            }else{
+                return $conurl;//非外链
+            }
+        }
+        
+        $homecon = new \app\index\model\ContentModel;
+        if ($condata['area']) {
+            $arealist = explode(",", $condata['area']);
+            $areaid = '';
+            foreach ($arealist as $k => $v) {
+                $areaid = $v && $areaid == '' ? $v : $areaid;
+            }
+            if ($areaid) {
+                $areadata = db('area')->where(['id'=>$areaid, 'isopen'=>1])->find();
+                if ($areadata) {
+                    $conurl = $homecon->getContentUrl($condata, '', $areadata);
+                    $conurl = config('sys.url_model') == 3 ? $conurl.'html' : $conurl;
+                }else{
+                    if ($areaid == '88888888') {
+                        $conurl = $homecon->getContentUrl($condata);
+                        $conurl = config('sys.url_model') == 3 ? $conurl.'html' : $conurl;
+                    }
+                }
+            }
+        }else{
+            $conurl = $homecon->getContentUrl($condata);
+            $conurl = config('sys.url_model') == 3 ? $conurl.'html' : $conurl;
+        }
+
+        return $conurl;
+    }
+
+    public function baiduqc($title){
+        $appid = config('sys.bdqc_appid');
+        $apikey = config('sys.bdqc_apikey');
+        $arcretkey = config('sys.bdqc_arcretkey');
+
+        if (empty($appid) || empty($apikey) || empty($arcretkey)) {
+            return ['code' => -1, 'data' => '', 'msg' => "请先设置：扩展管理->接口管理->百度切词接口"];
+        }
+        
+        $client = new AipNlp(config('sys.bdqc_appid'), config('sys.bdqc_apikey'), config('sys.bdqc_arcretkey'));
+        $lexer = $client->lexer($title);
+        $tagstr = '';
+        if (isset($lexer['error_code'])) {
+            return ['code' => -1, 'data' => '', 'msg' => "请检查百度切词API设置：".$lexer['error_msg']];
+        }
+        
+        if (isset($lexer['items'])) {
+            $items = $lexer['items'];
+            $qcnum = config('sys.bdqc_qcnum') ? config('sys.bdqc_qcnum') : rand(1,count($items));
+            $itemcount = count($items) > $qcnum ? $qcnum : count($items);
+            $result = array_rand($items, $itemcount == 0 ? 1 : $itemcount);
+            $resultstr = [];
+            if (is_array($result)) {
+                foreach ($result as $k => $v) {
+                    $resultstr[] = $items[$v]['item'];
+                }
+                $tagstr = implode(',', $resultstr);
+            }else{
+                $tagstr = $items[$result]['item'];
+            }    
+        }
+        return ['code' => 1, 'data' => '', 'msg' => $tagstr];
+    }
+
+    public function createtag($id)
+    {
+        try{
+            $id = strpos($id,',') ?  $id."0" : $id;
+            $list = $this->where('id', 'IN', $id)->select();
+            foreach ($list as $k => $v) {
+                $info = $this->baiduqc($v['title']);
+                if ($info['code']) {
+                    $this->where(['id' => $v['id']])->setField(['tag'=>$info['msg']]);
+                }else{
+                    return $info;
+                }
+            }
+            return ['code' => 1, 'data' => '', 'msg' => '生成TAG完成'];
         }catch( PDOException $e){
             return ['code' => 0, 'data' => '', 'msg' => $e->getMessage()];
         }

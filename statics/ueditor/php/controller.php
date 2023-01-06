@@ -12,7 +12,10 @@
  * header('Access-Control-Allow-Origin: http://www.baidu.com'); 
  * header('Access-Control-Allow-Headers: X-Requested-With,X_Requested_With'); 
  */
-
+session_start();
+if (!isset($_SESSION['think']['admin_uid'])) {
+    exit();
+}
 date_default_timezone_set("Asia/chongqing");
 error_reporting(E_ERROR);
 header("Content-Type: text/html; charset=utf-8");

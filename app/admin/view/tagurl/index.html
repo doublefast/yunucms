@@ -1,0 +1,176 @@
+{include file="public/header" /}
+<style type="text/css">
+.layui-input-inline .icheckbox_square-green{display: none;}
+body .tagmainurl .font_tip{line-height: 38px;margin-left:10px; }
+body .tagmainurl .layui-form-switch{margin-top:0px;}
+</style>
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<a class="btn mr10" href="{:url('addtagurl')}">添加</a>
+				<a class="btn mr10" href="{:url('batchaddtagurl')}">批量添加</a>
+				<a class="btn do-action mr10" data-type="doDelete" data-href="{:url('deltagurl')}">删除</a>
+				<a class="btn mr10 allcontag">一键生成内容TAG</a>
+				<a class="btn domainurl">TAG同步主站URL</a>
+				<div class="none" id="mainurl" style="padding-top:20px;">
+                    <form  class="layui-form layui-form-pane" id="formseo" method="post" role="form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">同步主站URL</label>
+                            <div class="layui-input-inline w450 tagmainurl">
+                                <input type="checkbox" name="tagmainurl_chk" {if config('sys.tagmainurl') eq 1}checked{/if} lay-skin="switch" lay-filter="tagmainurl">
+                                <input type="hidden" name="tagmainurl" id="tagmainurl" value="{:config('sys.tagmainurl')}">
+                                <font class="font_tip">开启，则分站TAG的URL同步到主站</font>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="search fr">
+					<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<input type="text" id="key" value="{:input('param.key')}" placeholder="请输入TAG名称/别名" >
+					<a class="icon-search" href="javascript:;"></a>
+					</form>
+				</div>
+				<div class="clear"></div>
+				<div class="table">
+					<table class="layuitable">
+						<thead>
+							<tr>
+								<th width="50"><input type="checkbox" class="selected-all" id="selected-all"></th>
+								<th width="50"><span>ID</span></th>
+								<th><span>TAG名称</span></th>
+								<th><span>URL别名</span></th>
+                                <th width="160"><span>操作</span></th>
+							</tr>
+						</thead>
+						<script id="arlist" type="text/html">
+                            {{# for(var i=0;i<d.length;i++){  }}
+                            <tr class="long-td">
+                                <td>
+                                    <div class="icheckbox_square-green diychk" style="position: relative;"><input type="checkbox" style="position: absolute; opacity: 0;width:0px;height:0px;" name="ck" ids="{{d[i].id}}" value="true"><ins class="iCheck-helper"></ins></div>  
+                                </td>
+                                <td>{{d[i].id}}</td>
+                                <td>{{d[i].tagname}}</td>
+                                <td>{{d[i].tagurl}}</td>
+                                <td>
+                                	<a class="btn btn2" href="{{d[i].showurl}}" target='_blank'>查看</a>
+                                    <a class="btn do-action btn2" data-type="doEdit" data-href="{:url('edittagurl')}" data-id="{{d[i].id}}">编辑</a>
+                                    <a class="btn do-action btn2" data-type="doDelOne" data-href="{:url('deltagurl')}" data-id="{{d[i].id}}">删除</a>
+                                </td>
+                            </tr>
+                            {{# } }}
+                        </script>
+                        <tbody id="article_list"></tbody>
+					</table>
+				</div>
+                <div id="AjaxPage" style="float: right;margin-top:-10px;margin-left:10px;"></div>
+                <div class="CountPage" style="float: right; line-height:30px;">
+                    共 {$count} 条&nbsp;&nbsp;
+                    <select name="list_rows" id="list_rows" class="list_rows">
+                        <option value="10" {if config('sys.admin_list_rows') eq 10}selected{/if}>10 条/页</option>
+                        <option value="20" {if config('sys.admin_list_rows') eq 20}selected{/if}>20 条/页</option>
+                        <option value="50" {if config('sys.admin_list_rows') eq 50}selected{/if}>50 条/页</option>
+                        <option value="100" {if config('sys.admin_list_rows') eq 100}selected{/if}>100 条/页</option>
+                    </select>            
+                </div>
+                <div style="clear:both;"></div>
+			</div>
+		</div>
+	</div>
+<script>
+    var laytpl,laypage;
+    var url='{:url("tagurl/index")}';
+    var allpages='{$allpage}';
+    layui.use(['layer', 'form','laypage','common', 'icheck','laytpl'], function () {
+        var $ = layui.jquery, layer = layui.layer, common = layui.common, form = layui.form();
+        $form = $('form');
+        laytpl =layui.laytpl;
+        laypage = layui.laypage;
+        
+        common.Ajaxpage();
+        //加载单选框样式
+        $(("[type='checkbox']")).iCheck({
+            checkboxClass: 'icheckbox_square-green',
+        });
+
+        //全选
+        $(document).on('ifChanged','.selected-all', function (event) {
+            var $input = $('.layuitable tbody tr td').find('input');
+            if ($('.selected-all').prop("checked")) {
+                $("#article_list .diychk").addClass('checked');
+                $("#article_list .diychk").children('input:checkbox').prop("checked", true);
+            }else{
+                $("#article_list .diychk").removeClass('checked');
+                $("#article_list .diychk").children('input:checkbox').prop("checked", false);
+            }
+        });
+        $(document).on('click','.allcontag', function () {
+	        $.ajax({
+	            url: '{:url("allcontag")}',
+	            dataType: "json",
+	            data:{},
+	            type: "POST",
+	            success: function(data){
+	                if(data.code == 1){
+	                	common.layerAlertSHref(data.msg, '提示', "{:url('index')}");
+	                }else{
+	                    layer.msg(data.msg,{icon:1,time:1500,shade: 0.1,});
+	                }
+	            },
+	        });
+	    });
+        form.on('switch(tagmainurl)', function (data) {
+	        if (this.checked) {
+	            $("#tagmainurl").val(1);
+	        }else{
+	            $("#tagmainurl").val(0);
+	        }
+	    });
+	    $(document).on('click','.icon-search', function () {
+	        window.location.href = "{:url("tagurl/index")}&key="+$('#key').val();
+	    });
+	    $("#key").keydown(function (event) {
+	        if (event.keyCode==13){
+	            window.location.href = "{:url("tagurl/index")}&key="+$('#key').val();
+	            return false;
+	        };
+	    });
+	    //批量设置seo(指定)
+	    $(document).on('click','.domainurl', function () {
+	    	var diqulay = layer.open({
+	    		title: 'TAG同步主站URL',
+	    		type: 1,
+	    		content: $("#mainurl"),
+	    		skin: 'layer_diqu',
+	    		area: ['630px','180px'],
+	    		btn: '确定',
+	    		yes: function(index, layero){
+	    			var tagmainurl = $("#tagmainurl").val();
+	    			$.ajax({
+	    				url: '{:url("system/dotagmainurl")}',
+	    				dataType: "json",
+	    				data:{'tagmainurl':tagmainurl},
+	    				type: "POST",
+	    				success: function(data){
+	    					if(data.code == 1){
+	    						parent.layer.alert(data.msg, {
+	    							title: "提示", icon: 1, resize: false, zIndex: layer.zIndex
+	    						});
+	    						layer.close(diqulay);
+	    					}
+	    				}
+	    			}); 
+	    		}
+	    	});
+	    });
+    });
+</script>
+</body>
+</html>

@@ -16,10 +16,14 @@ class Page extends Paginator
 {
 	protected function upurl($url){
 		if (config('sys.url_model') == 3) {
-			$url = preg_replace('/page\/*\//','',$url);
-			$url = str_replace([ "?", '='], ['', '/'], $url);
-            if (isset($_GET["ctitle"])) {
-                $url = "/".$_GET["ctitle"].'/'.$url;
+			$url = preg_replace('/page\/*\/[0-9]/','',$url);
+            $url = str_replace([ "?", '='], ['', '/'], $url);
+            if (!strstr($url, "/page/") && strstr($url, "/tag/") ) {
+                if (isset($_GET['page']) >=10) {
+                    $url = str_replace("/page/", "/page/", $url);
+                }else{
+                    $url = str_replace("page/", "/page/", $url);
+                }
             }
 		}
 		return $url;

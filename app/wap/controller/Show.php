@@ -15,8 +15,7 @@ class Show extends Common
 			$id = (int)$etitle;
 		}
 		if (empty($id) && empty($etitle)) {
-			$this->error('参数错误');
-			exit();
+			$this->error('参数错误'); exit();
 		}
 		if ($etitle) {
 			$where = ['etitle'=>$etitle];
@@ -27,28 +26,22 @@ class Show extends Common
 
 		$content = db('content')->where($where)->find();
 		if (empty($content)) {
-			abort(404);
-			exit();
+			abort(404); exit();
 		}
 		db('content')->where(['id'=>$content['id']])->setInc('click');//增加浏览
-
+		$content['ys_title'] = $content['title'];//记录原始title
 		$catemodel = new CategoryModel();
 		$category = $catemodel->getOneCategory($content['cid']);
 
 		if (empty($category)) {
-			abort(404);
-			exit();
+			abort(404); exit();
 		}
 
 		if ($category['tpl_show'] == '') {
-			$this->error('模版不存在');
-			exit();
+			$this->error('模版不存在'); exit();
 		}
 		$conmodel = new ContentModel();
 		$content = $conmodel->getContentByCon($content);
-
-		$content['ys_title'] = $content['title'];//记录原始title
-
 		$content = $conmodel->getContentArea($content);
 		
 		if ($cw !== '') {
@@ -74,9 +67,13 @@ class Show extends Common
 
 		$pccontent = new \app\index\model\ContentModel();
 
-		$content = update_str_dq($content, config('sys.sys_area'));
+		$content = update_str_dq($content, session('sys_areainfo'));
 		$content['pcurl'] = $pccontent->getContentUrl($content, '', []);
 
+		//{标题名称}
+		foreach ($content as $k1 => $v1) {
+            $content[$k1] = str_replace('{标题名称}', $content['title'], $v1);;
+        }
 		$this->assign([
 			'content' => $content,
 			'category' => $category,
@@ -86,8 +83,8 @@ class Show extends Common
 			'cid' => $category['id'],
 			'parent' => $category['pid'] != 0 ? $catemodel->getOneCategory($category['pid']): null
 		]);
-
-		return $this->fetch($this->tpl_file.$category['tpl_show']);
+		$tplfile = !empty($content['tpl_show']) && $content['tpl_show'] != "选择模板" ? $content['tpl_show'] : $category['tpl_show'];
+		return $this->fetch($this->tpl_file.$tplfile);
 	}
 }
 

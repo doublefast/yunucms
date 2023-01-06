@@ -1,0 +1,180 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="sidebar2" >
+				<a class="btn_expand" href="javascript:;"></a>
+				<a class="btn_contract" href="javascript:;"></a>
+				
+				<ul class="content_nav_list">
+					{notempty name="catlist"}
+		            {volist name="catlist" id="v"}
+		            <li data-pid="{$v['pid']}">
+                        <a href="{:url('content/index',['cid'=>$v['id']])}" {if $v.id eq $cate.id}class="v-link-active"{/if} style="{if $v.cover eq 1}color:#999;{/if}">
+                            {if $v.pid eq 0}
+                                <i data-id="{$v['id']}" ></i>
+                            {else}
+                                <span style="display:inline-block;width:{$v.leftpin / 2}px;"></span>├ 
+                            {/if}
+                            {$v['title']}
+                        </a>
+                    </li>
+		            {/volist}
+		            {/notempty}
+				</ul>
+			</div>
+            <script type="text/javascript">
+                ;(function () {
+                    var item = $('.content_nav_list>li');
+                    var localStorage = window.localStorage || {
+                        getItem: function () {return false},
+                        setItem: function () {return false},
+                        removeItem: function () {return false}
+                    }
+                    var active = localStorage.getItem('content_nav_list_active');
+                    var slideToggle = function (obj) {
+                        if (obj.attr('data-pid') > 0) {
+                            obj.slideToggle();
+                            slideToggle(obj.next());
+                        }
+                    }
+
+                    item.filter('[data-pid!=0]').hide();
+                    item.each(function (i, v) {
+                        var $this = $(v);
+                        var pid = $this.next().attr('data-pid');
+                        if (pid > 0) {
+                            $this.find('i').addClass('fa fa-folder');
+                        }
+                    }).find('i').on('click', function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        var $this = $(this);
+                        var id = $this.attr('data-id');
+
+                       	if (!$this.hasClass('fa')) return;
+
+                        slideToggle($this.closest('li').next());
+                        // item.filter('[data-pid='+id+']').slideToggle();
+                        if ($this.hasClass('fa-folder')) {
+                            $this.removeClass('fa-folder').addClass('fa-folder-open');
+                            localStorage.setItem('content_nav_list_active', id);
+                        } else {
+                            $this.removeClass('fa-folder-open').addClass('fa-folder');
+                            localStorage.removeItem('content_nav_list_active');
+                        }
+                    });
+                    if (active) {
+                        item.find('i').filter('[data-id='+active+']').click();
+                    }
+                })();
+            </script>
+			<div class="content_box">
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<input type="hidden" name="id" value="{$cate.id}">
+					<div class="title">
+						<span>{$cate.title}</span>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">栏目简介</label>
+						<div class="layui-input-inline">
+						    <textarea name="desc" id="desc">{$cate.desc}</textarea>
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">栏目内容</label>
+			            <div class="layui-input-inline">
+			                <textarea name="content" id="content">{$cate.content}</textarea>
+			             </div>
+			        </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('category/editcategorycon')}'>提交</button>
+	                    </div>
+			        </div>
+				
+				</form>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+	var option= {toolbars: [[
+        'fullscreen', 'source', '|',
+        'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor',
+        'paragraph', 'fontfamily', 'fontsize', '|',
+        'indent', 'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+        'link', 'unlink',
+    ]],initialFrameHeight:100};
+    window.UEDITOR_HOME_URL = '__UEDITOR__/';
+    window.onload = function() {
+        window.UEDITOR_CONFIG.initialFrameWidth=700;
+        window.UEDITOR_CONFIG.initialFrameHeight=450;
+        UE.getEditor('desc', option);
+        UE.getEditor('content');
+    }
+</script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.config.js?time=20211202"></script>
+<script type="text/javascript" src="__UEDITOR__/ueditor.all.min.js"></script>  
+
+<script>
+layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer, common=layui.common;
+
+
+        $('[lay-submit]').click(function(event) {
+	        var submit = $(this);
+	        var editor_source_btn = $('.edui-for-source .edui-state-checked .edui-button-body');
+	        if (editor_source_btn.length) {
+	            if (event) {
+	                event.preventDefault();
+	                event.stopPropagation();
+	            }
+	            editor_source_btn.trigger('click');
+	            setTimeout(function(){
+	                submit.trigger('click')
+	            }, 500 * editor_source_btn.length);
+	        }
+	    });
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('content/index',['cid'=>$cate['id']])}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

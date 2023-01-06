@@ -71,23 +71,23 @@
         });
     });
     $(document).on('blur','.sort', function () {
-        var id = $(this).attr('data-id');
-        var obs = $(this);
-        $.ajax({
-                url: '{:url("sortbanner")}',
-                dataType: "json",
-                data:{'id':id,'sort':obs.val()},
-                type: "POST",
-                success: function(data){
-                    //layer.msg(data.msg,{icon:1,time:500,shade: 0.1,});
-                },
-                error:function(ajaxobj)
-                {
-                    if(ajaxobj.responseText!='')
-                        alert(ajaxobj.responseText);
-                }
-            });
-       });
+    	var id = $(this).attr('data-id');
+    	var obs = $(this);
+    	$.ajax({
+    		url: '{:url("sortbanner")}',
+    		dataType: "json",
+    		data:{'id':id,'sort':obs.val()},
+    		type: "POST",
+    		success: function(data){
+    			
+    		},
+    		error:function(ajaxobj)
+    		{
+    			if(ajaxobj.responseText!='')
+    				alert(ajaxobj.responseText);
+    		}
+    	});
+    });
 </script>
 </body>
 </html>

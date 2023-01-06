@@ -1,4 +1,5 @@
 {include file="public/header" /}
+<script type="text/javascript" src="__ADM_PUBLIC__/js/mydate/WdatePicker.js"></script>
 </head>
 <body>
     <div id="main-container">
@@ -18,23 +19,74 @@
 				<div class="layui-form-item">
                     <label class="layui-form-label">URL模式</label>
                     <div class="layui-input-inline">
-                        <input type="radio" name="url_model" {if config('sys.url_model') eq 1}checked{/if} value="1" lay-filter="urlmodel" title="动态" checked>
+                        <input type="radio" name="url_model" id="url_model1" {if config('sys.url_model') eq 1}checked{/if} value="1" lay-filter="urlmodel" title="动态" checked>
                         <input type="radio" name="url_model" {if config('sys.url_model') eq 3}checked{/if} value="3" lay-filter="urlmodel" title="伪静态">
                     </div>
                 </div>
+                
+                <div class="title_bar mb20">
+                    网站加速设置
+                </div>
+                <div class="ui_prompt">
+					<p class="ui_prompt_tit">温馨提示</p>
+                    <p>· 关分站提示：指不开启任何分站时提升站点访问速度；</p>
+                    <p>· 全站缓存开关：开启则每次访问页面都会生成缓存文件，空间用户谨慎开启会占用一定空间！</p>
+                    <p>· 主站生成缓存：点击生成主站缓存文件，速度媲美静态页面；</p>
+                    <p>· 分站生成缓存：点击生成分站缓存文件，速度媲美静态页面；</p>
+                    <p>· 自动更新时间：开启全站缓存开关后，每天在指定时间自动更新页面；</p>
+				</div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">关分站提速</label>
+                    <div class="layui-input-inline">
+                        <input type="checkbox" {if config('sys.openarea')}checked{/if} name="openarea" id="openarea" lay-skin="switch" lay-filter="openarea">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">全站缓存开关</label>
+                    <div class="layui-input-inline w60">
+                        <input type="checkbox" {if config('sys.indexhtml') eq 1}checked{/if} name="indexhtml" lay-skin="switch" lay-filter="switchHtml">
+                    </div>
+                    <font class="font_tip">状态如有变动，请先提交，再进行以下生成静态</font>
+                </div>
+               
+                <div class="layui-form-item html {if config('sys.indexhtml') neq 1}none{/if}">
+                    <label class="layui-form-label">主站生成缓存</label>
+                    <div class="layui-input-inline">
+                        <a class="btn dostatichtml" data-href="mainindex">生成首页</a>
+                        <a class="btn dostatichtml" data-href="mainlist">生成栏目页</a>
+                        <a class="btn dostatichtml" data-href="maincontent">生成详情页</a>
+                    </div>
+                </div>
+                <div class="layui-form-item html {if config('sys.indexhtml') neq 1}none{/if}">
+                    <label class="layui-form-label">分站生成缓存</label>
+                    <div class="layui-input-inline">
+                        <a class="btn dostatichtml" data-href="areaindex">生成首页</a>
+                        <a class="btn dostatichtml" data-href="arealist">生成栏目页</a>
+                    </div>
+                </div>
+
+				<div class="layui-form-item html {if config('sys.indexhtml') neq 1}none{/if}">
+                    <label class="layui-form-label">自动更新时间</label>
+                    <div class="layui-input-inline w100" >
+                        <input class="layui-input w100" id="indexhtml_time" type="text" value="{:config('sys.indexhtml_time')}" name="indexhtml_time" placeholder="HH:mm:ss" onclick="WdatePicker({dateFmt:'HH:mm:ss'})">
+                    </div>
+                     <font class="font_tip">如果为空则不会自动更新</font>
+                </div>
+                <div class="layui-form-item html {if config('sys.indexhtml') neq 1}none{/if}">
+                    <label class="layui-form-label">清理缓存</label>
+                    <div class="layui-input-inline">
+                    	<font style="font-size:12px;line-height:20px;padding-top:5px;" class="cachesize"> [ 点击检测缓存大小 ]</font>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a class="btn delcache" data-href="delcache">清理缓存</a>
+                    </div>
+                </div>
+                
                 <div class="layui-form-item">
                     <label class="layui-form-label"></label>
                     <div class="layui-input-inline">
                         <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('index')}'>提交</button>
                     </div>
                 </div>
-    
-				<ul class="list box" {if config('sys.url_model') neq 2}style="display:none;"{/if}>
-					<li><a class="btn" href="javascript:;">生成所有页面</a></li>
-					<li><a class="btn" href="javascript:;">生成首页</a></li>
-					<li><a class="btn" href="javascript:;">生成栏目页</a></li>
-					<li><a class="btn" href="javascript:;">生成内容页</a></li>
-				</ul>
 
 				</form>
 			</div>
@@ -42,11 +94,11 @@
 		</div>
 	</div>
 <script>
-layui.use(['form','common'], function(){
+
+layui.use(['form','common','laydate'], function(){
     var $ = layui.jquery;
     $form = $('form');
-    var form = layui.form(),layer = layui.layer, common=layui.common;
-
+    var form = layui.form(),layer = layui.layer, common=layui.common,laydate = layui.laydate;
     //监听提交
     form.on('submit(save)', function(data){
         var sub = true;
@@ -71,14 +123,147 @@ layui.use(['form','common'], function(){
         }
         return false;
     });
+    form.on('switch(switchHtml)', function(data) {
+        var checked = data.elem.checked;
+        if (this.checked) {
+            $.ajax({
+                url: '{:url('checkIndexHtml')}',
+                type: 'post',
+                dataType: 'json',
+                data: {},
+                success: function (info) {
+                    info = JSON.parse(info);
+                    if (info.state == 1) {
+                        common.layerAlertE(info.msg, '提示');
+                        data.elem.checked = !checked;
+                        form.render();
+                    }else{
+                        $(".html").show();
+                    }
+                }
+            });    
+        }else{
+            $(".html").hide();
+        }
+    });
+
+    //监听生成静态
+    $(document).on('click','.dostatichtml', function () {
+        var htmltype = $(this).data('href');
+        if (htmltype == "mainlist" || htmltype == "maincontent" || htmltype == "areaindex" || htmltype == "arealist") {
+            $.ajax({
+                url: '{:url('statichtmlcount')}',
+                type: 'post',
+                dataType: 'json',
+                data: {'htmltype':htmltype},
+                success: function (info) {
+                    if (info.code == 1) {
+                        layer.confirm(info.msg+"此次生成预计需要："+info.time+"；预计占用："+info.size+"；生成前请关闭防火墙，否则会生成失败！", {
+                            title: "生成提示",
+                            btnAlign: 'c',
+                            resize: false,
+                            icon: 3,
+                            btn: ['确定生成', '我再想想'],
+                            yes: function () {
+                                layer.close(layer.index);
+                                statichtmlup(htmltype);
+                            }
+                        });
+                    }else {
+                        common.layerAlertE(info.msg, '提示');
+                    }
+                }
+            });
+        }else{
+            statichtmlup(htmltype);
+        }
+    });
+    //监听清理缓存
+    $(document).on('click','.delcache', function () {
+        $.ajax({
+            url: '{:url('index/cache')}',
+           	type: 'post',
+            dataType: 'json',
+            data: {'cachetype':'html'},
+            success: function (info) {
+                common.layerAlertS(info.msg, '提示');
+            }
+        });
+    });
+    //监听检测缓存大小
+    $(document).on('click','.cachesize', function () {
+        $.ajax({
+            url: '{:url('index/cachesize')}',
+           	type: 'post',
+            dataType: 'json',
+            data: {'cachetype':'html'},
+            success: function (info) {
+                $(".cachesize").html("[ 缓存大小："+info.msg+" ] ");
+            }
+        });
+    });
+    function statichtmlup(htmltype){
+        if (htmltype == "mainlist" || htmltype == "maincontent" || htmltype == "areaindex" || htmltype == "arealist") {
+            var url = "{:url('maincontent')}/htmltype/"+htmltype;
+            var index = layer.open({type: 2,title: '开始生成',area: ['500px', '180px'],fix: false, maxmin: false,content: url});
+            return;
+        };
+        
+        var indexload = layer.load();
+        $.ajax({
+            url: '{:url('statichtml')}',
+            type: 'post',
+            dataType: 'json',
+            data: {'htmltype':htmltype},
+            success: function (info) {
+                if (info.code == 1) {
+                    common.layerAlertS(info.msg, '提示');
+                }else {
+                    common.layerAlertE(info.msg, '提示');
+                }
+                layer.close(indexload);
+            }
+        });
+    }
 
     form.on('radio(urlmodel)', function(data){
-	  	if (data.value == 2) {
-	  		$('.list.box').show();
-	  	}else{
-	  		$('.list.box').hide();
+	  	if (data.value == 3) {
+            $.ajax({
+                url: '{:url('checkIndexHtml')}',
+                type: 'post',
+                dataType: 'json',
+                data: {},
+                success: function (info) {
+                    info = JSON.parse(info);
+                    if (info.state == 1) {
+                        common.layerAlertE(info.msg, '提示');
+                        $("#url_model1").prop("checked",true);
+                        form.render();
+                    }
+                }
+            });         	
 	  	}
 	});
+
+    form.on('switch(openarea)', function(data) {
+        var checked = data.elem.checked;
+        if (this.checked) {
+            $.ajax({
+                url: '{:url('checkOpenArea')}',
+                type: 'post',
+                dataType: 'json',
+                data: {},
+                success: function (info) {
+                    info = JSON.parse(info);
+                    if (info.state == 1) {
+                        common.layerAlertE(info.msg, '提示');
+                        data.elem.checked = !checked;
+                        form.render();
+                    }
+                }
+            });         
+        }
+    });      
 });
 </script>
 </body>

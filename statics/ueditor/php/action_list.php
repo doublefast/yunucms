@@ -42,6 +42,7 @@ if (!count($files)) {
 }
 
 /* 获取指定范围的列表 */
+$files=array_sort($files,'mtime','asc');
 $len = count($files);
 for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $start; $i--){
     $list[] = $files[$i];
@@ -52,6 +53,7 @@ for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $s
 //}
 
 /* 返回数据 */
+
 $result = json_encode(array(
     "state" => "SUCCESS",
     "list" => $list,
@@ -113,4 +115,23 @@ function list_sort_by($list, $field, $sortby='asc') {
        return $resultSet;
    }
    return false;
+}
+function array_sort($array,$row,$type){
+    $array_temp = array();
+    $arr=array();
+    foreach($array as $v){
+        $array_temp[$v[$row]] = $v;
+    }
+    if($type == 'asc'){
+        ksort($array_temp);
+    }elseif($type='desc'){
+        krsort($array_temp);
+    }else{
+    }
+    $i=0;
+    foreach ($array_temp as $vd){
+        $arr[$i]=$vd;
+        $i++;
+    }
+    return $arr;
 }

@@ -1,0 +1,101 @@
+{include file="public/header" /}
+</head>
+<body>
+    <div id="main-container">
+        {include file="public/menu" /}
+        <div class="main">
+            <div class="notice">{$position.url}</div>
+            <div class="main_content">
+                <div class="title">
+                    <span>{$position.name}</span>
+                </div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+					<div class="layui-form-item">
+			            <label class="layui-form-label">TAG名称</label>
+			            <div class="layui-input-inline w300">
+			                <input class="layui-input" type="text" name="tagname" placeholder="TAG名称" lay-verify="required">
+			            </div>
+			        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">URL别名</label>
+                        <div class="layui-input-inline w300">
+                            <input class="layui-input" type="text" name="tagurl" placeholder="URL别名" lay-verify="required">
+                        </div>
+                    </div>
+                    
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">SEO标题</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input w700" type="text" name="seo_title" placeholder="SEO标题" >
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">SEO关键词</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input w700" type="text" name="seo_keywords" placeholder="SEO关键词" >
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">SEO描述</label>
+                        <div class="layui-input-inline">
+                            <textarea name="seo_description" placeholder="SEO描述" class="layui-textarea w700"></textarea>
+                        </div>
+                    </div>
+
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              <button class="btn" lay-submit="" lay-filter="save" data-href='{:url('addtagurl')}'>提交</button>
+	                    </div>
+			        </div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common','upload'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(), common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('tagurl/index')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

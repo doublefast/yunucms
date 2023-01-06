@@ -2,9 +2,9 @@
 return [
 	'type'=>'mysql',
 	'hostname'=>'127.0.0.1',
-	'database'=>'yunucms',
-	'username'=>'root',
-	'password'=>'root',
+	'database'=>'',
+	'username'=>'',
+	'password'=>'',
 	'hostport'=>'3306',
 	'dsn'=>'',
 	'charset'=>'utf8',

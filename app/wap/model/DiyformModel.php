@@ -10,7 +10,7 @@ class DiyformModel extends Model
 
     public function getAlldiyform()
     {
-        return $this->order('id desc')->select();
+        return $this->orderRaw('id desc')->select();
     }
 
     public function insertDiyform($param)

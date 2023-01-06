@@ -1,87 +1,98 @@
- <?php error_reporting(0); ?>
+    <div class="iet">
+        <p>您的浏览器版本过低，为保证更佳的浏览体验，<a href="https://www.imooc.com/static/html/browser.html">请点击更新高版本浏览器</a></p>
+        <span class="closed">以后再说<i>X</i></span>
+    </div>
+    <script type="text/javascript">
+        $('.closed').click(function(){
+            $('.iet').hide();
+        })
+    </script>
     <div class="header">
         <div class="center">
             <div class="head_top_content">
                 <div class="head_logo fl">
-                    <img src="<yunu:config name='site_logo'/>" alt="">
+                    <a href="<yunu:url name='home'/>"><img src="<yunu:config name="site_logo">"></a>
                     <div class="head_tit fl">
-                        <h4><yunu:config name="site_title"/></h4>
-<yunu:block name='head_text1' />
+                        <h4><yunu:config name="site_title"></h4>
+                        <h6><yunu:block name='head_text1' /></h6>
                     </div>
                     <div class="head_text fl">
-<yunu:block name='head_text2' />
+                        <yunu:block name='head_text2' />    
                     </div>
                 </div>
                 <div class="fr">
-                    <img src="__PUBLIC__/img/ren.png" alt="">
-                    <yunu:block name='head_text3' />
+                    <img src="__PUBLIC__/img/ren.png" alt="图片名">
+                    <p><i>全国服务热线：</i><span><yunu:block name='head_text3' /></span></p>
                 </div>
             </div>
             <div class="head_nav">
                 <ul>
-                	<?php $cid = isset($cid) ? $cid : 0;  ?>
-                    <li><a href="<yunu:url name='home'/>" <if condition="!isset($cid)">class="active"</if>>网站首页</a></li>
+                    <li><a href="<yunu:url name='home'/>">首页</a></li>
+                    <?php
+                    $chkid = isset($cid) ? $cid : 0;
+                    $catid = isset($category) ? $category['pid'] : 0;
+                    ?>
                     <yunu:nav typeid='1'>
-                    <li><a href="{$nav.url}" <eq name="$nav['id']" value="$cid">class="active"</eq> target="{$nav.target}">{$nav.title}</a></li>
+                        <li <if condition="$nav['id'] eq $chkid || $nav['id'] eq $catid">class="on"</if>>
+                            <a href="{$nav.url}">{$nav.title}</a>
+                            <div class="v_list">
+                                <volist name="nav['child']" id="v">
+                                    <a href="{$v.url}">{$v.title}</a>
+                                </volist>
+                            </div>
+                        </li>
                     </yunu:nav>
                 </ul>
             </div>
+            <script type="text/javascript">
+                $(".head_nav li").hover(function(){
+                    $(this).toggleClass("active").siblings('.head_nav li').removeClass("active");//切换图标
+                    $(this).children(".head_nav .v_list").slideToggle(150).siblings("#app_menu .v_list").slideUp(150);
+                });
+            </script>
         </div>
     </div>
 
-<if condition="!is_array([index])">
-    <div class="banner">
-        <div class="banner_img" id="wowslider-container">
-            <div class="ws_images" id="banner">
-                <ul>
-                    <yunu:banner type="1" limit="10" orderby="sort desc">
-                    <li>
-                    <a href="{$banner.url}"><img src="{$banner.pic}" alt="{$banner.title}" width="1920" height="550"></a>
-                    </li>
-                    </yunu:banner>
-                </ul>
+    <div class="m_header">
+        <div class="m_head_content" id="mheader">
+            <div class="m_head_logo clearfix">
+                <a href="<yunu:url name='home'/>"><img src="<yunu:config name="site_logo">"></a>
+                <p>
+                    <span><yunu:config name="site_title"></span>
+                    <i><yunu:block name='head_text1' /></i>
+                </p>
             </div>
-            <!-- <div class="ws_bullets">
-                <div>
-                    <a href="javascript:;">
-                        <span>1</span>
-                    </a>
-                    <a href="javascript:;">
-                        <span>2</span>
-                    </a>
-                </div>
-            </div>
-            <div class="ws_shadow"></div> -->
+            <div class="menu" id="menu"><img src="__PUBLIC__/img/menu.png"></div>
         </div>
-        <!-- <script type="text/javascript" src="__PUBLIC__/js/wowslider.js"></script>
-        <script type="text/javascript" src="__PUBLIC__/js/script.js"></script> -->
-        <div class="banner_text">
-            <div class=" center">
-                <div class="banner_text_content">
-                    <img class="imgleft" id="imgleft" src="__PUBLIC__/img/jb.png" alt="">
-                    <div class="banner_text_bg">
-                        <yunu:block name='banner_text' />
+        <div class="app_menu" id="app_menu">
+            <ul>
+                <li><a href="<yunu:url name='home'/>"><span>首页</span></a></li>
+                <yunu:nav typeid='1'>
+                    <li><a href="{$nav.url}"><span>{$nav.title}</span></a></li>
+                    <div class="v_list">
+                        <volist name="nav['child']" id="v">
+                            <a href="{$v.url}">{$v.title}</a>
+                        </volist>
                     </div>
-                    <script type="text/javascript">
-                        $(document).ready(function(){
-                            $('#banner').roll({
-                                height: 550,
-                                banner: true,
-                                btn: true,
-                                center: false
-                            });
-                            $('#imgleft').animate({left: "0"},1000);
-                            $('#pbottom').animate({top: "0"},1000);
-                            $('#fonts').animate({fontSize: "43px"},1000);
-                            $('#fonts').animate({opacity: "1"},2000);
-                        });
-                    </script>
-                </div>
-            </div>
+                </yunu:nav>
+            </ul>
         </div>
+        <script type="text/javascript">
+            $("#menu").on('click', function (event) {
+                if($("#app_menu").css("display")=="none"){
+                    $("#app_menu").slideDown(600);
+                }else{
+                    $("#app_menu").slideUp(600);
+                }
+            }); 
+            $("#app_menu li").eq(1).addClass('on');
+            $("#app_menu li").eq(2).addClass('on');
+            $("#app_menu li").eq(3).addClass('on');
+            $("#app_menu li").eq(5).addClass('on');
+
+            $("#app_menu li").click(function(){
+                $(this).toggleClass("active").siblings('#app_menu li').removeClass("active");//切换图标
+                $(this).next("#app_menu .v_list").slideToggle(500).siblings("#app_menu .v_list").slideUp(500);
+            });
+        </script>
     </div>
-<else/>
-    <div class="page_banner">
-        <yunu:block name='page_banner' />
-    </div>
-</if>

@@ -1,7 +1,6 @@
 <?php
 namespace app\index\model;
 use think\Model;
-use think\Db;
 
 class CategoryModel extends Model
 {
@@ -10,8 +9,8 @@ class CategoryModel extends Model
     //状态，导航类型，标题是否带地区
     public function getCategory($status = 0, $nav = 0, $isarea = true) {
 		if (!cache('catlist')) {
-			$catlist = $this->order('sort asc')->select();
-			cache('catlist', $catlist, 3600);
+			$catlist = $this->orderRaw('sort asc')->select();
+			cache('catlist', $catlist, 7200);
 		}else{
 			$catlist = cache('catlist');
 		}
@@ -52,9 +51,16 @@ class CategoryModel extends Model
 	public function unlimitedForLayer($cate, $name = 'child', $pid = 0){
 		$arr = array();
 		foreach ($cate as $v) {
-			if ($v['pid'] == $pid) {
-				$v[$name] = $this->unlimitedForLayer($cate, $name, $v['id']);
-				$arr[] = $v;
+			if (is_array($pid)) {
+				if (in_array($v['pid'], $pid)) {
+					$v[$name] = $this->unlimitedForLayer($cate, $name, $v['id']);
+					$arr[] = $v;
+				}
+			}else{
+				if ($v['pid'] == $pid) {
+					$v[$name] = $this->unlimitedForLayer($cate, $name, $v['id']);
+					$arr[] = $v;
+				}
 			}
 		}
 		return $arr;
@@ -114,9 +120,13 @@ class CategoryModel extends Model
 	            $area = session('sys_areainfo');
 	        }
 	    }
+	    //默认地区修正
+        if ($area && config('sys.seo_default_area') == $area['id']) {
+        	$area = null;
+        }
 	    switch (config('sys.url_model')) {
 	    	case '1'://动态
-	    		$url = "/index.php/index/category/index?id=".$cate['id'];
+	    		$url = "/index.php?s=index/category/index&id=".$cate['id'];
 	    		if ($area) {
 	    			if ($area['isurl']) {
 		    			$url = $area['etitle'].'.'.config('sys.site_levelurl').$url;
@@ -155,7 +165,16 @@ class CategoryModel extends Model
 
 	public function getOneCategory($id)
     {
-        return $this->where(['id'=>$id])->find();
+    	return $this->where(['id'=>$id])->find();
+    }
+
+    public function getListCategory($ids)
+    {
+    	$catlist = $this->where(['id'=>['IN', $ids]])->select();
+    	foreach ($catlist as $k => $v) {
+	    	$catlist[$k] = $this->getCategoryArea($v, [], true);
+	    }
+	    return $catlist;
     }
 
     public function getCategoryArea($cate, $area = [], $openarea = true)
@@ -163,22 +182,87 @@ class CategoryModel extends Model
     	if (!$area) {
     		$area = session('sys_areainfo');
     	}
-
     	//同步主站URL
-    	if ($cate['catmainurl']) {
+    	if (isset($cate['catmainurl']) && $cate['catmainurl']) {
 			$cate['url'] = $this->getCategoryUrl($cate, [] , false);
         }else{
-        	if ($area && $openarea) {
-				$cate['title'] = $cate['isarea'] ? $area['stitle'].$cate['title'] : $cate['title'];
+        	if ($area && $openarea && $cate) {
+				$cate['ys_title'] = $cate['title'];
+				$cate['title'] = $cate['isarea'] && $cate['areatitle'] ? $area['stitle'].$cate['title'] : $cate['title'];
 	        }
 			$cate['url'] = $this->getCategoryUrl($cate, $area);
         }
-        $cate['target'] = $cate['target'] ? '_blank' : '_self';
-		if (config('sys.wap_mip') && is_mobile()) { 
+        $cate['target'] = isset($cate['target']) ? '_blank' : '_self';
+		if (config('sys.pc_mip')) { 
 			foreach ($cate as $k => $v) {
 	            $cate[$k] = str_replace("<img", '<mip-img', $v);
 	        }
 	    }
         return $cate;
+    }
+
+    public function getCatlist($cid, $type, $flag, $limit){
+    	$cidarr = [];
+		if($cid == -1){
+			$cidarr[] = input('cid') ? input('cid') : 0;
+		}else{
+			if (strpos($cid, ',')) {
+				$cidarr = explode(',', $cid); 
+			}else{
+				$cidarr[] = intval($cid);
+			}
+		}
+		if ($type == 'current' && $cid) {
+			$catlist = $this->getListCategory($cid);
+
+
+		}else{
+			$catlist = $this->getCategory(1);
+			if ($flag == 0) {
+				$catlist = $this->clearLink($catlist);//去除外部链接的栏目
+			}
+			//type为parent
+			if ($type == 'parent') {
+				$parent  = $this->getParents($catlist, $cidarr[0]);
+				$catlist  = $this->unlimitedForLayer($catlist, 'child', $parent[0]['id']);
+
+			}else{
+				//type为top,忽略cid
+				if($cid == 0 || $type == 'top') {
+					$catlist  = $this->unlimitedForLayer($catlist);
+				}else {
+					
+					if ($type == 'self') {
+						//同级分类
+						$pidarr = [];
+						foreach ($cidarr as $k => $v) {
+							$typeinfo = $this->getSelf($catlist, $v);
+							if ($typeinfo) {
+								$pidarr[] = $typeinfo['pid'];
+							}
+						}
+						$catlist  = $this->unlimitedForLayer($catlist, 'child', $pidarr ? $pidarr : 0);
+					}else {
+						//son，子类列表
+						$catlist  = $this->unlimitedForLayer($catlist, 'child', $cidarr);
+					}
+				}
+			}
+		}
+		$limit_list = explode(',', $limit);
+		$returncatlist = [];
+		foreach($catlist as $k => $v){
+			if(count($limit_list) > 1){
+				if(($k < intval($limit_list[0])) || ($k >= intval($limit_list[1])+intval($limit_list[0]))){
+					continue;
+				};
+			} else{
+				if($k >= $limit_list[0]) break;
+			}
+			$catlist[$k] = update_str_dq($v, session('sys_areainfo'));
+
+			$returncatlist[] = $catlist[$k];
+		}
+		return json_encode($returncatlist);
     }
 }

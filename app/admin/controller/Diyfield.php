@@ -149,7 +149,7 @@ class Diyfield extends Common
         $db = Db::name('diyfield');
 
         $flag = $db->where(['id'=>$id])->setField(['sort'=>$sort]);
-        return json(['code' => 1, 'data' => $flag['data'], 'msg' => '已更新']);
+        return json(['code' => 1, 'data' => '', 'msg' => '已更新']);
     }
 
     private function addSql($param)
@@ -199,7 +199,7 @@ class Diyfield extends Common
                 break;
             case 'int':
                 $defaultvalue = intval($defaultvalue);
-                Db::execute("ALTER TABLE `{$tablename}` CHANGE `{$oldfield}` `{$field}` INT(10) UNSIGNED  DEFAULT '{$defaultvalue}'");
+                Db::execute("ALTER TABLE `{$tablename}` CHANGE `{$oldfield}` `{$field}` INT(11) UNSIGNED  DEFAULT '{$defaultvalue}'");
                 break;
             case 'smallint':
                 $defaultvalue = intval($defaultvalue);

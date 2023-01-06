@@ -33,7 +33,8 @@
 					<div class="layui-form-item">
 	                    <label class="layui-form-label"></label>
 	                    <div class="layui-input-inline">
-			              	<button class="btn" lay-submit="" lay-filter="save" data-href='{:url('disablewords')}'>提交</button>
+			              	<button class="btn" lay-submit="" lay-filter="save" data-href='{:url('disablewords')}'>提交</button>&nbsp;&nbsp;
+                            <button class="btn disablewords editcontent {if config('sys.disablewords_status') neq 1}none{/if}">更新已有数据</button>
 	                    </div>
 			        </div>
 				</form>
@@ -79,6 +80,37 @@ layui.use(['form','common'], function(){
             }
             return false;
         });
+
+        $(document).on('click','.editcontent', function () {
+            $.ajax({
+                url: '{:url('content/disablewordscount')}',
+                type: 'post',
+                dataType: 'json',
+                success: function (info) {
+                    if (info.code == 1) {
+                        layer.confirm("此次更新已有内容预计需要："+info.time+"，请关闭您的系统防火墙再执行，否则您的IP可能会被防火墙拦截!", {
+                            title: "更新提示",
+                            btnAlign: 'c',
+                            resize: false,
+                            icon: 3,
+                            btn: ['确定更新', '我再想想'],
+                            yes: function () {
+                                layer.close(layer.index);
+                                statichtmlup();
+                            }
+                        });
+                    }else {
+                        common.layerAlertE(info.msg, '提示');
+                    }
+                }
+            });
+            return false;
+        });
+        function statichtmlup(){
+            var url = "{:url('content/disablewordsshow')}";
+            var index = layer.open({type: 2,title: '开始更新',area: ['500px', '180px'],fix: false, maxmin: false,content: url});
+            return;
+        }
 
         form.on('switch(switchTest)', function(data) {
         	if (this.checked) {

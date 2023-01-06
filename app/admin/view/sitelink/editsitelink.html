@@ -1,4 +1,23 @@
 {include file="public/header" /}
+<script type="text/javascript" src="__ADM_PUBLIC__/js/minicolor/jquery.minicolors.js"></script>
+<link rel="stylesheet" href="__ADM_PUBLIC__/js/minicolor/jquery.minicolors.css">
+<script>
+$(document).ready( function() {
+    $('.color').each( function() {
+        $(this).minicolors({
+            control: 'hue',
+            change: function(hex, opacity) {
+                $('#color').val(hex);
+            },
+            theme: 'default'
+        });
+    });
+});
+</script>
+<style>
+body .minicolors-theme-default .minicolors-swatch{top: 10px;}
+body .minicolors-theme-default .minicolors-input{height: 38px;}
+</style>
 </head>
 <body>
     <div id="main-container">
@@ -16,6 +35,10 @@
                         <div class="layui-input-inline">
                             <input class="layui-input" type="text" name="name" value="{$info.name}" placeholder="关键词名称" lay-verify="required">
                         </div>
+                        <div class="layui-input-inline">
+                            <input class="layui-input color" type="text" value="{$info.color}" placeholder="颜色选取">
+                            <input type="hidden" id="color" name="color">
+                        </div>
                     </div>
 
                     <div class="layui-form-item">
@@ -23,7 +46,7 @@
                         <div class="layui-input-inline">
                             <input class="layui-input" type="text" name="url" value="{$info.url}" placeholder="链接地址" lay-verify="required">
                         </div>
-                        <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
+                        <font class="font_tip w450">内部链接可使用“@其他栏目ID”进行内链，外链填写完整URL“http://~~”</font>
                     </div>
 
                     <div class="layui-form-item">
@@ -31,7 +54,7 @@
                         <div class="layui-input-inline">
                             <input class="layui-input" type="text" name="wapurl" value="{$info.wapurl}" placeholder="链接地址">
                         </div>
-                        <font class="font_tip">内部链接可使用“@其他栏目ID”的方式进行内链，外链填写完整URL“http://~~”</font>
+                        <font class="font_tip w450">内部链接可使用“@其他栏目ID”进行内链，外链填写完整URL“http://~~”</font>
                     </div>
 
                     <div class="layui-form-item">
@@ -58,7 +81,7 @@
 
                     <div class="layui-form-item">
                         <label class="layui-form-label">分站自动前缀</label>
-                        <div class="layui-input-inline w100">
+                        <div class="layui-input-inline w60">
                             <input type="checkbox" {if $info.areapre eq 1}checked{/if} name="areapre" lay-skin="switch" lay-filter="switchTest">
                         </div>
                         <font class="font_tip">开启时，进入地区时站内锚文本自动带地区前缀</font>
@@ -94,7 +117,7 @@ layui.use(['form','common'], function(){
                         data: data.field,
                         success: function (info) {
                             if (info.code == 1) {
-                                common.layerAlertSHref(info.msg, '提示', "{:url('sitelink/index')}");
+                                common.layerAlertSHref(info.msg, '提示', "{:url('sitelink/index',['gopage'=>$gopage])}");
                             }
                             else {
                                 common.layerAlertE(info.msg, '提示');

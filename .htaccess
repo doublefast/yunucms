@@ -5,21 +5,24 @@
 
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)\.(asp|aspx|asa|asax|dll|jsp|cgi|fcgi|pl)(.*)$ /404.htm
+    RewriteRule ^(.*)\.(asp|aspx|asa|asax|dll|jsp|cgi|fcgi|pl|log)(.*)$ /404.htm
 
+    RewriteRule ^(caches|config)/(.*)$ /404.htm [QSA,PT,L]
+    
+    RewriteRule ^language/(.*).html$ index.php?s=index/plugins&p=multilingual&c=index&a=index&lang=$1 [QSA,PT,L]
+    RewriteRule ^phpMyAdmin/(.*)$ phpMyAdmin/$1 [QSA,PT,L]
+    RewriteRule ^404.htm$ index.php?s=index/index/empty404 [QSA,PT,L]
     RewriteRule ^admin/(.*).html$ index.php?s=admin/$1 [QSA,PT,L]
     RewriteRule ^admin/(.*)$ index.php?s=admin/$1 [QSA,PT,L]
-
-    RewriteRule ^config/(.*)$ /404.htm [QSA,PT,L]
     RewriteRule ^statics/ueditor/dialogs/(.*)/(.*).html$ statics/ueditor/dialogs/$1/$2.html [QSA,PT,L]
-
+    RewriteRule ^index.html$ index.html [QSA,PT,L]
     RewriteRule ^m/$ index.php?s=wap/index/index [QSA,PT,L]
-    RewriteRule ^m/search/$ index.php?s=wap/search/index [QSA,PT,L]
     RewriteRule ^m/myform/$ index.php?s=wap/myform/index [QSA,PT,L]
     RewriteRule ^m/captcha/(\d*)$ index.php?s=wap/myform/captcha&id=$1 [QSA,PT,L]
+    RewriteRule ^m/search/$ index.php?s=wap/search/index [QSA,PT,L]
     RewriteRule ^m/(.*)_search/$ index.php?s=wap/search/index&area=$1 [QSA,PT,L]
-    RewriteRule ^m/(.*)_tag/([\s\S]*)$ index.php?s=wap/tag/index&title=$2&area=$1 [QSA,PT,L]
     RewriteRule ^m/tag/([\s\S]*)$ index.php?s=wap/tag/index&title=$1 [QSA,PT,L]
+    RewriteRule ^m/(.*)_tag/([\s\S]*)$ index.php?s=wap/tag/index&title=$2&area=$1 [QSA,PT,L]
 
     RewriteRule ^m/(.*)/(.*)_(.*)/(.*)_(.*).html$ index.php?s=wap/show/index&etitle=$4&ctitle=$1/$3&area=$2&cw=$5 [QSA,PT,L]
     RewriteRule ^m/(.*)_(.*)/(.*)_(.*).html$ index.php?s=wap/show/index&etitle=$3&ctitle=$2&area=$1&cw=$4 [QSA,PT,L]
@@ -41,12 +44,21 @@
     RewriteRule ^(.*)_myform/$ index.php?s=index/myform/index&area=$1 [QSA,PT,L]
     RewriteRule ^captcha/(\d*)$ index.php?s=index/myform/captcha&id=$1 [QSA,PT,L]
     RewriteRule ^(.*)_captcha/(\d*)$ index.php?s=index/myform/captcha&area=$1&id=$2 [QSA,PT,L]
-    RewriteRule ^search/$ index.php?s=index/search/index [QSA,PT,L]
-    RewriteRule ^search/page/(\d*)$ index.php?s=index/search/index&page=$1 [QSA,PT,L]
-    RewriteRule ^(.*)_search/$ index.php?s=index/search/index&area=$1 [QSA,PT,L]
-    RewriteRule ^(.*)_tag/([\s\S]*)$ index.php?s=index/tag/index&title=$2&area=$1 [QSA,PT,L]
-    RewriteRule ^tag/([\s\S]*)$ index.php?s=index/tag/index&title=$1 [QSA,PT,L]
 
+    RewriteRule ^search/$ index.php?s=index/search/index [QSA,PT,L]
+
+    RewriteRule ^search/page/(\d*)$ index.php?s=index/search/index&page=$1 [QSA,PT,L]
+    RewriteRule ^search/key/(.*)/page/(\d*)$ index.php?s=index/search/index&key=$1&page=$2 [QSA,PT,L]
+
+    RewriteRule ^(.*)_search/$ index.php?s=index/search/index&area=$1 [QSA,PT,L]
+    RewriteRule ^(.*)_search/page/(\d*)$ index.php?s=index/search/index&area=$1&page=$2 [QSA,PT,L]
+    RewriteRule ^(.*)_search/key/(.*)/page/(\d*)$ index.php?s=index/search/index&area=$1&key=$2&page=$3 [QSA,PT,L]
+
+    RewriteRule ^(.*)_tag/([\s\S]*)/page/(\d*)$ index.php?s=index/tag/index&title=$2&area=$1&page=$3 [QSA,PT,L]
+    RewriteRule ^(.*)_tag/([\s\S]*)$ index.php?s=index/tag/index&title=$2&area=$1 [QSA,PT,L]
+    RewriteRule ^tag/([\s\S]*)/page/(\d*)$ index.php?s=index/tag/index&title=$1&page=$2 [QSA,PT,L]
+    RewriteRule ^tag/([\s\S]*)$ index.php?s=index/tag/index&title=$1 [QSA,PT,L]
+    
     RewriteRule ^(.*)/(.*)_(.*)/(.*)_(.*).html$ index.php?s=index/show/index&etitle=$4&ctitle=$1/$3&area=$2&cw=$5 [QSA,PT,L]
     RewriteRule ^(.*)_(.*)/(.*)_(.*).html$ index.php?s=index/show/index&etitle=$3&ctitle=$2&area=$1&cw=$4 [QSA,PT,L]
     RewriteRule ^(.*)/(.*)_(.*)/(.*).html$ index.php?s=index/show/index&etitle=$4&ctitle=$1/$3&area=$2 [QSA,PT,L]

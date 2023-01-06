@@ -1,0 +1,61 @@
+{include file="public/header" /}
+<script src="__ADM_PUBLIC__/js/ace/ace.js"></script>
+<script src="__ADM_PUBLIC__/js/ace/ext-beautify.js"></script>
+<script src="__ADM_PUBLIC__/js/ace/ext-language_tools.js"></script>
+<script src="__ADM_PUBLIC__/js/ace/mode-javascript.js"></script>
+
+<style type="text/css" media="screen">
+#editor { position: absolute;top: 0;right: 0;bottom: 0;left: 0;}
+</style>
+</head>
+<body>
+<div id="editor"><textarea class="ace_text-input" id="ace_text-input">{$filecontent}</textarea></div>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    {if $ext eq "css"}
+    editor.getSession().setMode("ace/mode/css");
+    {/if}
+    {if $ext eq "js"}
+    editor.getSession().setMode("ace/mode/javascript");
+    {/if}
+    {if $ext eq "html"}
+    editor.getSession().setMode("ace/mode/html");
+    editor.getSession().setMode("ace/mode/php");
+    {/if}
+    editor.setFontSize(14); //字体大小
+    document.getElementById("editor").style.lineHeight="18px";//设置行高;
+    editor.setOption("wrap", "free");//自动换行
+    ace.require("ace/ext/language_tools");
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+    editor.setShowPrintMargin(false);
+    editor.getSession().setUseWorker(false); 
+    editor.getSession().setUseWrapMode(true); //支持代码折叠   
+function Buttun_Submit() { 
+    var content = editor.getValue();
+    $.ajax({
+        url: '{:url("editfile")}',
+        type: 'post',
+        dataType: 'json',
+        data: {'filecontent':content,'filename':"{$filename}"},
+        success: function (info) {
+            layer.msg(info.msg,{icon:info.code,time:2000,shade: 0.1,});
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            layer.msg(textStatus,{icon:2,time:1500,shade: 0.1,});
+        }
+    });
+}
+document.addEventListener('keydown', function(e){
+    if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+        e.preventDefault();
+        Buttun_Submit();
+     }
+});
+</script>
+</body>
+</html>

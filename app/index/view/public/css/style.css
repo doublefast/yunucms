@@ -17,3 +17,5 @@ a:hover { color: #F60 }
 .u-element { border: 1px solid #ddd; color: #444; background: #fff; padding: 5px 5px; max-width: 100%; vertical-align: middle; width: 260px; }
 .m-log {}
 .m-log .error { color:#F00}
+.setuptxt{border: 1px solid #ddd; margin:30px 0px 10px 0px; padding: 20px 30px;}
+.setuptxt a{color: red;text-decoration: none;border-bottom:none;}

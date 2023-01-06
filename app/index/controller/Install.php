@@ -9,6 +9,7 @@ class Install extends Controller
 	public function _initialize()
     {
     	$this->lock = 'data/install.lock';
+    	
 		if(is_file($this->lock)){
 			$this->redirect("/");
 		}
@@ -16,6 +17,18 @@ class Install extends Controller
         $controller = strtolower(request()->controller());
         $action     = strtolower(request()->action());
     	$this->tpl_file = './app/index/view/'.$controller.'_'.$action.'.html';
+
+        $version = include_once(ROOT_PATH.'version.php');
+        config($version);
+
+        $root_dir = request()->baseFile();
+        $root_dir  = preg_replace(['/index.php$/'], [''], $root_dir);
+        define('ROOT_DIR', $root_dir);
+
+        $this->update_path = ROOT_PATH.'data'.DS.'uppack'.DS;
+        $this->cloud = new \com\Cloud(config('cloud.identifier'), $this->update_path);
+  
+
     }
 	public function index(){
 		return $this->fetch($this->tpl_file);
@@ -33,6 +46,55 @@ class Install extends Controller
 		return $this->fetch($this->tpl_file);
 	}
 	public function setup3(){
+		if (request()->isPost()) {
+			header('Content-Type: text/html; charset=utf-8');
+			$username = input('post.username/s');
+            $password = input('post.password/s');
+
+            $vcode = input('post.vcode/s');
+            if ($username == '') {
+                echo "<script>alert('云平台账号不能为空~');history.go(-1);</script>"; exit();
+            }
+            if ($password == '') {
+                echo "<script>alert('云平台密码不能为空~');history.go(-1);</script>"; exit();
+            }
+
+            $this->assign([
+				'admpass'=>rand(11111111, 99999999),
+			]);
+
+            $data = [];
+            $data['username'] = $username;
+            $data['password'] = $password;
+            $data['timestamp'] = time();
+            $data['format'] = 'json';
+            $data['domain'] = $_SERVER["HTTP_HOST"];
+            $data['site_name'] = "站点安装";
+            $data['version'] = config('yunucms.version');
+            $res = $this->cloud->data($data)->api('bindapi');
+            if (isset($res['code']) && $res['code'] == 1) {
+                $coffile = CONF_PATH.DS.'extra'.DS.'cloud.php';
+                $condata['identifier'] = $res['data'];
+                $condata['grant'] = $res['grant'];
+                $condata['agent'] = $res['agent'];
+                setConfigfile($coffile, $condata);
+
+            	$this->cloud->record("站点安装", config('yunucms.version'))->api('recordapi');
+                // 缓存站点标识
+                if (is_file($coffile)) {
+                    Config::load($coffile, '', 'cloud');
+                    $conflist = Config::get('','cloud');
+                    if (isset($conflist['identifier']) && !empty($conflist['identifier'])) {
+                        return 	$this->fetch($this->tpl_file);
+                    }
+                }
+                echo "<script>alert('".CONF_PATH.DS.'extra'.DS.'cloud.php写入失败！'."');history.go(-1);</script>"; exit();
+            }else{
+            	echo "<script>alert('用户名密码验证失败');history.go(-1);</script>"; exit();
+            }
+		}
+	}
+	public function setup4(){
 		if (request()->isPost()) {
 			$this->assign([
 				'showstr'=>$this->ste()
@@ -62,6 +124,14 @@ class Install extends Controller
 	        }
 	        if(!$data['DB_PREFIX']){
 	        	$showstr .= show_msg('请填写数据表前缀！',false);
+	        	return $showstr;
+	        }
+	        if(!$data['ADM_PASS']){
+	        	$showstr .= show_msg('请填写管理员密码！',false);
+	        	return $showstr;
+	        }
+	        if(strlen($data['ADM_PASS']) < 8){
+	        	$showstr .= show_msg('管理员密码长度不能少于8位！',false);
 	        	return $showstr;
 	        }
 
@@ -127,7 +197,7 @@ class Install extends Controller
             	'prefix'	=>	$data['DB_PREFIX']
            	);
 
-            setConfigfile($coffile, array_merge($conflist, $param));
+            setConfigfile($coffile, add_slashes_recursive(array_merge($conflist, $param)));
 	        $showstr .= show_msg('配置数据库信息完成...');
 	
 
@@ -155,6 +225,16 @@ class Install extends Controller
 	            }
 	        }
 
+	        //重置密码
+	        $password = md5(md5($data['ADM_PASS']).config('auth_key'));
+	        $sql = "UPDATE yunu_admin SET password='".$password."' WHERE username='admin'";
+	        $sql = str_replace('yunu_', $data['DB_PREFIX'], $sql);
+	        if ($mysqli) {
+			    $rst = mysqli_query($link, $sql);
+			}else{
+			    $rst = mysql_query($sql);
+			}
+
 	        $http_host = $_SERVER['HTTP_HOST'];
 	        if (!filter_var($http_host, FILTER_VALIDATE_IP) && !filter_var('http://'.$http_host, FILTER_VALIDATE_URL)) {
 	        	$showstr .= show_msg('HTTP_HOST 不是合法信息！',false);
@@ -170,15 +250,14 @@ class Install extends Controller
             	'site_url'	=>	$_SERVER['HTTP_HOST'],
             	'site_levelurl'	=> $_SERVER['HTTP_HOST']
            	);
-            setConfigfile($coffile, array_merge($conflist, $param));
-	       	$showstr .= show_msg('安装程序执行完毕！后台默认帐号密码均为：admin');
+            setConfigfile($coffile, add_slashes_recursive(array_merge($conflist, $param)));
+	       	$showstr .= show_msg('安装程序执行完毕！后台默认帐号为：admin 密码：'.$data['ADM_PASS']);
 
 	        $homeUrl = '//'.$http_host;
-	        $adminUrl = '//'.$http_host.'/yunu.php';
+	        $adminUrl = '//'.$http_host.'/'.config('sys.login_url');
 	        $showstr .=  "<script type=\"text/javascript\">insok(\"{$homeUrl}\",\"{$adminUrl}\")</script>";
-
+	        runhook('sys_index_install');
 	        return $showstr;
 	}
 }
-
 ?>

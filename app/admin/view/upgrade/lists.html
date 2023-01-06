@@ -19,7 +19,7 @@
 				    <table class="layui-table mt10" lay-even="" lay-skin="row">
 				        <tbody>
 				            <tr>
-				                <td align="center" style="padding:50px 0" class="mcolor font18" id="loading">请稍等，正在检查最新版......</td>
+				                <td align="center" style="padding:50px 0" class="mcolor font18 cloudBind" id="loading">请稍等，正在检查最新版......</td>
 				            </tr>
 				        </tbody>
 				    </table>
@@ -40,7 +40,9 @@
 				                <td>{{ item.version }}</td>
 				                <td style="text-align:left;padding:10px 0px;">{{ item.content }}</td>
 				                <td>
-				                    <a href="javascript:;" data-version="{{ item.version }}" class="btn doUpgrade">更新至此版本</a>
+                                    {{# if(item.isupgrade){ }}
+                                        <a href="javascript:;" data-version="{{ item.version }}" rel="{{ item.tips }}" class="btn doUpgrade">更新至此版本</a>
+                                    {{#  } }}
 				                </td>
 				            </tr>
 				            {{#  }); }}
@@ -58,6 +60,22 @@ layui.use(['jquery', 'layer', 'laytpl'], function(){
     // 执行升级，
     $(document).on('click', '.doUpgrade', function(){
         var that = $(this);
+        if (that.attr('rel')) {
+            parent.layer.confirm(that.attr('rel'), {
+                title: "版本更新提示",
+                btnAlign: 'c',
+                resize: false,
+                icon: 7,
+                btn: ['确定更新', '我再想想'],
+                yes: function () {
+                    upgrade(that);
+                }
+            });
+        }else{
+            upgrade(that);
+        }
+    });
+    function upgrade(that){
         layer.msg('正在获取 '+that.attr('data-version')+' 升级包....',{time:500000});
         $.ajax({
             type: "POST",
@@ -84,7 +102,7 @@ layui.use(['jquery', 'layer', 'laytpl'], function(){
             }
         });
         return false;
-    });
+    }
 });
 
 // 获取可升级版本
@@ -106,7 +124,7 @@ function getVersion() {
                     view.innerHTML = html;
                 });
             } else {
-                $('#loading').html('<span style="color:red;">'+res.msg+'</span> <a href="javascript:;" onclick="getVersion()" class="mcolor2">点此刷新重试</a>');
+                $('#loading').html('<a href="javascript:;" class="mcolor2"><span style="color:red;">'+res.msg+'</span></a>');
             }
         }
     });

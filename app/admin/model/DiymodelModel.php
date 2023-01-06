@@ -9,12 +9,13 @@ class DiymodelModel extends Model
 
     public function getAllDiymodel()
     {
-        return $this->order('sort asc')->select();
+        return $this->orderRaw('sort asc')->select();
     }
 
     public function insertDiymodel($param)
     {
         try{
+            $param['tabname'] = strtolower($param['tabname']);
             $result = $this->validate('DiymodelValidate')->save($param);
             if(false === $result){            
                 writelog(session('admin_uid'),session('admin_username'),'用户【'.session('admin_username').'】创建模型失败',2);
@@ -31,6 +32,7 @@ class DiymodelModel extends Model
     public function editDiymodel($param)
     {
         try{
+            $param['tabname'] = strtolower($param['tabname']);
             $result =  $this->validate('DiymodelValidate')->save($param, ['id' => $param['id']]);
             if(false === $result){ 
                 writelog(session('admin_uid'),session('admin_username'),'用户【'.session('admin_username').'】编辑模型失败',2);

@@ -46,6 +46,7 @@
 			</div>
 		</div>
 	</div>
+    
 <!-- 权限分配 -->
 <div class="zTreeDemoBackground left" style="display: none" id="role">
     <input type="hidden" id="nodeid" value="">
@@ -90,7 +91,7 @@
         //加载层
         index2 = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
         //获取权限信息
-        $.getJSON('./giveAccess', {'type' : 'get', 'id' : id}, function(res){
+        $.getJSON('{:url('giveaccess')}', {'type' : 'get', 'id' : id}, function(res){
             layer.close(index2);
             if(res.code == 1){
                 zNodes = JSON.parse(res.data);  //将字符串转换成obj
@@ -132,7 +133,7 @@
         //加载层
         index2 = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
         //获取权限信息
-        $.getJSON('./giveAccessCat', {'type' : 'get', 'id' : id}, function(res){
+        $.getJSON('{:url('giveaccessCat')}', {'type' : 'get', 'id' : id}, function(res){
             layer.close(index2);
             if(res.code == 1){
                 zNodes = JSON.parse(res.data);  //将字符串转换成obj
@@ -183,7 +184,7 @@
 
         var id = $("#nodeid").val();
         //写入库
-        $.post('{:url('giveAccess')}', {'type' : 'give', 'id' : id, 'rule' : NodeString}, function(res){
+        $.post('{:url('giveaccess')}', {'type' : 'give', 'id' : id, 'rule' : NodeString}, function(res){
             layer.close(index);
             if(res.code == 1){
                 layer.msg(res.msg,{icon:1,time:1500,shade: 0.1}, function(){});
@@ -208,7 +209,7 @@
 
         var id = $("#nodeid").val();
         //写入库
-        $.post('{:url('giveAccessCat')}', {'type' : 'give', 'id' : id, 'rule' : NodeString}, function(res){
+        $.post('{:url('giveaccessCat')}', {'type' : 'give', 'id' : id, 'rule' : NodeString}, function(res){
             layer.close(index);
             if(res.code == 1){
                 layer.msg(res.msg,{icon:1,time:1500,shade: 0.1}, function(){});

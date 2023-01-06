@@ -8,7 +8,8 @@ class Search extends Common
 		$input = input();
 
 		$this->assign([
-			'keyword' => htmlspecialchars($input['key'])
+			'keyword' => htmlspecialchars(isset($input['key']) ? $input['key'] : ""),
+			'cid' => isset($input['cid']) ? htmlspecialchars($input['cid']) : 0
 		]);
 		return $this->fetch();
 	}
